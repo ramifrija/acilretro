@@ -13,6 +13,19 @@ export default function LandingPage() {
   const [promos, setPromos] = useState<Product[]>([]);
   const [newArrivals, setNewArrivals] = useState<Product[]>([]);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  
+  const slides = [
+    '/images/carousel1.png',
+    '/images/carousel2.png'
+  ];
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     supabase.from('products').select('*').eq('featured', true).limit(5).then(({ data }) => setFeatured(data || []));
@@ -54,11 +67,28 @@ export default function LandingPage() {
     <div className="animate-fade-in">
       {/* ===== HERO ===== */}
       <section className="relative overflow-hidden bg-brand-radial pt-12 pb-20 lg:pt-20 lg:pb-32">
+        {/* Carousel Backgrounds */}
+        {slides.map((src, i) => (
+          <div
+            key={src}
+            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+              currentSlide === i ? 'opacity-40' : 'opacity-0'
+            }`}
+            style={{
+              backgroundImage: `url(${src})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            }}
+          />
+        ))}
+        {/* Dark Overlay to make text readable */}
+        <div className="absolute inset-0 bg-gradient-to-r from-brand-950/90 to-brand-950/50" />
+
         {/* Animated background blobs */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 -left-40 w-96 h-96 bg-brand-600/30 rounded-full blur-3xl animate-float" />
-          <div className="absolute top-20 -right-40 w-96 h-96 bg-accent-500/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }} />
-          <div className="absolute bottom-0 left-1/2 w-96 h-96 bg-brand-700/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '4s' }} />
+        <div className="absolute inset-0 overflow-hidden pointer-events-none mix-blend-overlay">
+          <div className="absolute -top-40 -left-40 w-96 h-96 bg-brand-600/50 rounded-full blur-3xl animate-float" />
+          <div className="absolute top-20 -right-40 w-96 h-96 bg-accent-500/30 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }} />
+          <div className="absolute bottom-0 left-1/2 w-96 h-96 bg-brand-700/30 rounded-full blur-3xl animate-float" style={{ animationDelay: '4s' }} />
         </div>
 
         <div className="container-x relative">

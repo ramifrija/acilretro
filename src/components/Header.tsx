@@ -44,8 +44,10 @@ export default function Header() {
   const navLink = (to: string, label: string) => (
     <button
       onClick={() => navigate(to)}
-      className={`text-sm font-medium transition-colors hover:text-brand-500 ${
-        path === to ? 'text-brand-500' : 'text-slate-700 dark:text-slate-200'
+      className={`text-base px-6 py-2.5 rounded-xl font-semibold transition-all duration-200 hover:scale-105 ${
+        path === to 
+          ? 'bg-brand-500 text-white shadow-lg shadow-brand-500/30' 
+          : 'bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/20 text-slate-700 dark:text-slate-200 shadow-sm'
       }`}
     >
       {label}
@@ -134,28 +136,9 @@ export default function Header() {
           </div>
 
           {/* Nav (desktop) */}
-          <nav className="hidden md:flex items-center justify-between pb-3 gap-6">
-            <div className="flex items-center gap-6">
+          <nav className="hidden md:flex items-center justify-center pb-3 w-full">
+            <div className="flex items-center gap-8">
               {navLink('/', 'Accueil')}
-              <div className="relative group">
-                <button className="text-sm font-medium text-slate-700 dark:text-slate-200 flex items-center gap-1 hover:text-brand-500 transition-colors">
-                  Sélectionner véhicule <ChevronDown className="w-3.5 h-3.5" />
-                </button>
-                <div className="absolute top-full left-0 mt-2 w-64 glass-card p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 max-h-96 overflow-y-auto">
-                  {brands.map((b) => (
-                    <button
-                      key={b.slug}
-                      onClick={() => navigate(`/catalog?brand=${b.slug}`)}
-                      className="block w-full text-left px-3 py-2 rounded-lg text-sm hover:bg-brand-50 dark:hover:bg-white/10 transition-colors"
-                    >
-                      {b.name}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              {navLink('/catalog', 'Catalogue')}
-              {navLink('/catalog?filter=promo', 'Promotions')}
-              {navLink('/quote', 'Demander un devis')}
               {navLink('/contact', 'Contact')}
             </div>
           </nav>
@@ -187,11 +170,7 @@ export default function Header() {
             <div className="flex flex-col gap-1">
               {[
                 ['/', 'Accueil'],
-                ['/catalog', 'Catalogue'],
-                ['/catalog?filter=promo', 'Promotions'],
-                ['/quote', 'Demander un devis'],
                 ['/contact', 'Contact'],
-                ['/admin', 'Espace Pro'],
               ].map(([to, label]) => (
                 <button
                   key={to}
