@@ -27,8 +27,8 @@ export default function AdminOrders({ quotesOnly = false }: { quotesOnly?: boole
     setLoading(false);
   };
 
-  useEffect(() => { 
-    load(); 
+  useEffect(() => {
+    load();
 
     const channel = supabase
       .channel('public:orders')
@@ -152,11 +152,11 @@ export default function AdminOrders({ quotesOnly = false }: { quotesOnly?: boole
       type = 'quote';
       status = 'pending';
     }
-    
+
     // Check if we need to refund or reduce stock
     const wasStockReduced = order.status === 'accepted' || order.status === 'paid' || order.status === 'completed' || order.status === 'delivered';
     const willStockReduce = status === 'accepted' || status === 'paid' || status === 'completed' || status === 'delivered';
-    
+
     if (wasStockReduced && !willStockReduce && order.type === 'order') {
       // Refund stock
       for (const item of order.order_items) {
@@ -478,26 +478,26 @@ export default function AdminOrders({ quotesOnly = false }: { quotesOnly?: boole
 
       {/* Print document modal */}
       {printDoc && (
-        <div className="fixed inset-0 z-[62] bg-white overflow-y-auto animate-fade-in">
-          <div className="sticky top-0 bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between print:hidden">
+        <div className="fixed inset-0 z-[62] bg-white overflow-y-auto animate-fade-in print:static print:h-auto print:overflow-visible">
+          <div className="sticky top-0 z-10 bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between print:hidden shadow-sm">
             <div className="flex items-center gap-3">
-              <button onClick={() => setPrintDoc(null)} className="flex items-center gap-2 px-4 py-2 rounded-xl glass hover:bg-slate-50 transition-all text-sm font-medium">
+              <button onClick={() => setPrintDoc(null)} className="flex items-center gap-2 px-4 py-2 rounded-xl text-slate-700 bg-slate-100 hover:bg-slate-200 transition-all text-sm font-bold">
                 <X className="w-4 h-4" /> Fermer
               </button>
-              <span className="text-sm text-slate-500">
+              <span className="text-sm font-bold text-slate-700">
                 {printDoc.type === 'invoice' ? 'Facture' : 'Devis'} #{printDoc.order.id.slice(0, 8).toUpperCase()}
               </span>
             </div>
             <div className="flex gap-2">
-              <button onClick={() => window.print()} className="btn-primary text-sm">
+              <button onClick={() => window.print()} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-600 text-white hover:bg-brand-700 transition-all text-sm font-bold shadow-sm">
                 <Printer className="w-4 h-4" /> Imprimer
               </button>
-              <button onClick={() => downloadAsText(printDoc.order, printDoc.type)} className="btn-ghost text-sm">
+              <button onClick={() => downloadAsText(printDoc.order, printDoc.type)} className="flex items-center gap-2 px-4 py-2 rounded-xl text-slate-700 bg-slate-100 hover:bg-slate-200 transition-all text-sm font-bold">
                 <Download className="w-4 h-4" /> Télécharger
               </button>
             </div>
           </div>
-          <div className="print:block">
+          <div className="print:block p-4 sm:p-8 bg-white min-h-screen">
             <PrintableDocument order={printDoc.order} documentType={printDoc.type} />
           </div>
         </div>
@@ -518,7 +518,6 @@ function downloadAsText(order: OrderWithItems, type: 'invoice' | 'quote') {
   lines.push(`ACIL RETRO - Pièces Auto Premium`);
   lines.push(`Zone Industrielle, Rue 12, Tunis, Tunisie`);
   lines.push(`Tél: +216 71 000 000 | contact@acilretro.com`);
-  lines.push(`MF: 0000000A | RC: B0000000 | TVA: 0000000`);
   lines.push(``);
   lines.push(`Date: ${formatDate(order.created_at)}`);
   if (!isInvoice && order.expires_at) lines.push(`Valable jusqu'au: ${formatDate(order.expires_at)}`);

@@ -21,6 +21,9 @@ export default function AdminDashboard() {
   const [topProducts, setTopProducts] = useState<{ product_name: string; sum: number }[]>([]);
   const [lowStock, setLowStock] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [chartView, setChartView] = useState<'week' | 'month'>('week');
+  const [chartData, setChartData] = useState({ week: [] as number[], month: [] as number[] });
+  const [weekLabels, setWeekLabels] = useState<string[]>([]);
 
   useEffect(() => {
     (async () => {
@@ -42,6 +45,44 @@ export default function AdminDashboard() {
         totalCustomers: customersCount || 0,
         inventoryValue: invValue,
       });
+
+      const currentYear = new Date().getFullYear();
+      const monthTotals = new Array(12).fill(0);
+      
+      const weekTotals = new Array(7).fill(0);
+      const today = new Date();
+      today.setHours(23, 59, 59, 999);
+      const sevenDaysAgo = new Date(today);
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
+      sevenDaysAgo.setHours(0, 0, 0, 0);
+
+      confirmedOrders.forEach(o => {
+        const d = new Date(o.created_at);
+        const amount = Number(o.total) || 0;
+        
+        if (d.getFullYear() === currentYear) {
+          monthTotals[d.getMonth()] += amount;
+        }
+
+        if (d >= sevenDaysAgo && d <= today) {
+          const diffTime = Math.abs(today.getTime() - d.getTime());
+          const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+          const index = 6 - diffDays;
+          if (index >= 0 && index < 7) {
+            weekTotals[index] += amount;
+          }
+        }
+      });
+
+      const daysList = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
+      const dynamicWeekLabels = Array.from({ length: 7 }).map((_, i) => {
+        const d = new Date(sevenDaysAgo);
+        d.setDate(d.getDate() + i);
+        return daysList[d.getDay()];
+      });
+
+      setChartData({ week: weekTotals, month: monthTotals });
+      setWeekLabels(dynamicWeekLabels);
 
       const { data: recent } = await supabase
         .from('orders')
@@ -76,10 +117,11 @@ export default function AdminDashboard() {
     { label: 'Valeur stock', value: formatPrice(stats.inventoryValue), icon: Package, trend: '+5.4%', up: true, color: 'from-success-600 to-success-500' },
   ];
 
-  // Simple bar chart data (mock weekly)
-  const weekData = [42, 58, 35, 72, 65, 88, 54];
-  const weekLabels = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
-  const maxWeek = Math.max(...weekData);
+  const monthLabels = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
+
+  const currentData = chartView === 'week' ? chartData.week : chartData.month;
+  const currentLabels = chartView === 'week' ? weekLabels : monthLabels;
+  const maxData = Math.max(...currentData, 1);
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -107,25 +149,40 @@ export default function AdminDashboard() {
         <div className="lg:col-span-2 glass-card p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h3 className="font-display font-bold text-lg text-slate-900 dark:text-white">Ventes de la semaine</h3>
-              <p className="text-xs text-slate-500">Commandes par jour (TND)</p>
+              <h3 className="font-display font-bold text-lg text-slate-900 dark:text-white">
+                Ventes {chartView === 'week' ? 'de la semaine' : 'de l\'année'}
+              </h3>
+              <p className="text-xs text-slate-500">Commandes {chartView === 'week' ? 'par jour' : 'par mois'} (TND)</p>
             </div>
-            <TrendingUp className="w-5 h-5 text-brand-500" />
+            <div className="flex items-center gap-2 bg-slate-100 dark:bg-white/5 p-1 rounded-lg">
+              <button
+                onClick={() => setChartView('week')}
+                className={`px-3 py-1 rounded-md text-xs font-semibold transition-all ${chartView === 'week' ? 'bg-white dark:bg-brand-600 shadow-sm text-slate-900 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+              >
+                Semaine
+              </button>
+              <button
+                onClick={() => setChartView('month')}
+                className={`px-3 py-1 rounded-md text-xs font-semibold transition-all ${chartView === 'month' ? 'bg-white dark:bg-brand-600 shadow-sm text-slate-900 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+              >
+                Mois
+              </button>
+            </div>
           </div>
-          <div className="flex items-end justify-between gap-2 h-48">
-            {weekData.map((v, i) => (
-              <div key={i} className="flex-1 flex flex-col items-center gap-2">
+          <div className="flex items-end justify-between gap-1 sm:gap-2 h-48">
+            {currentData.map((v, i) => (
+              <div key={i} className="flex-1 flex flex-col items-center gap-2 h-full">
                 <div className="w-full flex-1 flex items-end">
                   <div
                     className="w-full rounded-t-lg bg-gradient-to-t from-brand-700 to-brand-400 hover:from-brand-600 hover:to-brand-300 transition-all cursor-pointer relative group"
-                    style={{ height: `${(v / maxWeek) * 100}%` }}
+                    style={{ height: `${(v / maxData) * 100}%` }}
                   >
                     <span className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-bold text-slate-900 dark:text-white opacity-0 group-hover:opacity-100 transition-opacity">
-                      {v}k
+                      {v > 1000 ? `${(v / 1000).toFixed(1)}k` : v}
                     </span>
                   </div>
                 </div>
-                <span className="text-xs text-slate-500">{weekLabels[i]}</span>
+                <span className="text-[10px] sm:text-xs text-slate-500 overflow-hidden text-ellipsis whitespace-nowrap max-w-full">{currentLabels[i]}</span>
               </div>
             ))}
           </div>

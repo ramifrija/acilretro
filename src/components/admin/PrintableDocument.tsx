@@ -28,8 +28,8 @@ export default function PrintableDocument({ order, documentType }: Props) {
       {/* Header */}
       <div className="flex items-start justify-between mb-10 pb-6 border-b-2 border-brand-900">
         <div className="flex items-center gap-3">
-          <div className="w-14 h-14 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #050f33 0%, #1a38b8 100%)' }}>
-            <span className="text-white font-extrabold text-2xl">A</span>
+          <div className="w-16 h-16 rounded-2xl overflow-hidden shrink-0 shadow-lg border border-slate-100">
+            <img src="/images/acil_logo.png" alt="ACIL RETRO Logo" className="w-full h-full object-cover" />
           </div>
           <div>
             <div className="font-extrabold text-2xl text-brand-950">{COMPANY.name}</div>
@@ -58,10 +58,7 @@ export default function PrintableDocument({ order, documentType }: Props) {
           <div className="text-xs text-slate-600 mt-1 leading-relaxed">
             {COMPANY.address}<br />
             Tél: {COMPANY.phone}<br />
-            Email: {COMPANY.email}<br />
-            MF: {COMPANY.taxId}<br />
-            RC: {COMPANY.rc}<br />
-            TVA: {COMPANY.vatNumber}
+            Email: {COMPANY.email}
           </div>
         </div>
         <div>
@@ -156,7 +153,6 @@ export default function PrintableDocument({ order, documentType }: Props) {
         <div className="text-sm font-bold text-slate-900 mb-1">{COMPANY.name}</div>
         <div className="text-xs text-slate-500">
           {COMPANY.address} · Tél: {COMPANY.phone} · {COMPANY.email}<br />
-          MF: {COMPANY.taxId} · RC: {COMPANY.rc} · TVA: {COMPANY.vatNumber}<br />
           <span className="block mt-2 text-slate-400">Merci de votre confiance</span>
         </div>
       </div>

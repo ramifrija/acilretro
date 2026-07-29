@@ -14,10 +14,10 @@ export default function LandingPage() {
   const [newArrivals, setNewArrivals] = useState<Product[]>([]);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [currentSlide, setCurrentSlide] = useState(0);
-  
+
   const slides = [
-    '/images/carousel1.png',
-    '/images/carousel2.png'
+    '/images/1.png',
+    '/images/2.png'
   ];
 
   useEffect(() => {
@@ -71,9 +71,8 @@ export default function LandingPage() {
         {slides.map((src, i) => (
           <div
             key={src}
-            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-              currentSlide === i ? 'opacity-40' : 'opacity-0'
-            }`}
+            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${currentSlide === i ? 'opacity-40' : 'opacity-0'
+              }`}
             style={{
               backgroundImage: `url(${src})`,
               backgroundSize: 'cover',
@@ -165,19 +164,7 @@ export default function LandingPage() {
       {/* ===== BEST SELLERS ===== */}
       <ProductSection title="Meilleures ventes" subtitle="Les plus populaires chez nos clients" products={bestSellers} cta="/catalog" />
 
-      {/* ===== STATS ===== */}
-      <section className="bg-brand-950 py-16 my-16">
-        <div className="container-x">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 text-center">
-            {stats.map((s, i) => (
-              <div key={i} className="animate-fade-in-up" style={{ animationDelay: `${i * 0.1}s` }}>
-                <div className="font-display font-extrabold text-4xl lg:text-5xl text-gradient">{s.value}</div>
-                <div className="text-sm text-brand-300 mt-2">{s.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* ===== STATS REMOVED ===== */}
 
       {/* ===== NEW ARRIVALS ===== */}
       <ProductSection title="Nouveautés" subtitle="Les derniers produits ajoutés" products={newArrivals} cta="/catalog" />
@@ -291,13 +278,25 @@ export default function LandingPage() {
               Nous écrire <ArrowRight className="w-4 h-4" />
             </button>
           </div>
-          <div className="glass-card overflow-hidden min-h-[400px]">
+          <div className="glass-card overflow-hidden min-h-[400px] relative">
             <iframe
               title="ACIL RETRO Location"
-              src="https://www.openstreetmap.org/export/embed.html?bbox=10.18%2C36.78%2C10.22%2C36.82&layer=mapnik&marker=36.8065%2C10.1815"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d332.0176421332464!2d10.225286132015679!3d36.76302831247425!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x12fd374cef98a113%3A0xf55bc8964120d5b!2sDREI-Drira%20Rebobinage!5e1!3m2!1sen!2stn!4v1785335011295!5m2!1sen!2stn"
               className="w-full h-full min-h-[400px] border-0"
               loading="lazy"
+              allowFullScreen
+              referrerPolicy="strict-origin-when-cross-origin"
             />
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10">
+              <a
+                href="https://www.google.com/maps/place/DREI-Drira+Rebobinage/@36.7630283,10.2252861,17z"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-primary shadow-xl shadow-brand-500/20 whitespace-nowrap"
+              >
+                Ouvrir dans Google Maps <MapPin className="w-4 h-4 ml-1" />
+              </a>
+            </div>
           </div>
         </div>
       </section>

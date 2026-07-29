@@ -14,10 +14,10 @@ export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [brands, setBrands] = useState<Brand[]>([]);
   const [search, setSearch] = useState('');
-  const [settings, setSettings] = useState({ 
-    email: 'contact@acilretro.com', 
-    phone: '+216 71 000 000', 
-    address: 'Zone Industrielle, Tunis' 
+  const [settings, setSettings] = useState({
+    email: 'contact@acilretro.com',
+    phone: '+216 71 000 000',
+    address: 'Zone Industrielle, Tunis'
   });
 
   useEffect(() => {
@@ -44,13 +44,15 @@ export default function Header() {
   const navLink = (to: string, label: string) => (
     <button
       onClick={() => navigate(to)}
-      className={`text-base px-6 py-2.5 rounded-xl font-semibold transition-all duration-200 hover:scale-105 ${
-        path === to 
-          ? 'bg-brand-500 text-white shadow-lg shadow-brand-500/30' 
-          : 'bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/20 text-slate-700 dark:text-slate-200 shadow-sm'
-      }`}
+      className={`text-sm font-semibold transition-colors relative group py-2 ${path === to
+          ? 'text-brand-600 dark:text-brand-400'
+          : 'text-slate-600 dark:text-slate-300 hover:text-brand-500 dark:hover:text-brand-400'
+        }`}
     >
       {label}
+      {path === to && (
+        <span className="absolute bottom-0 left-0 w-full h-0.5 bg-brand-500 dark:bg-brand-400 rounded-full" />
+      )}
     </button>
   );
 
@@ -74,16 +76,15 @@ export default function Header() {
       </div>
 
       <header
-        className={`sticky top-0 z-50 transition-all duration-300 ${
-          scrolled ? 'glass shadow-glass' : 'bg-transparent'
-        }`}
+        className={`sticky top-0 z-50 transition-all duration-300 ${scrolled ? 'glass shadow-glass' : 'bg-transparent'
+          }`}
       >
         <div className="container-x">
           <div className="flex items-center justify-between gap-4 py-3">
             {/* Logo */}
             <button onClick={() => navigate('/')} className="flex items-center gap-2.5 shrink-0">
-              <div className="w-10 h-10 rounded-xl bg-brand-gradient flex items-center justify-center shadow-lg shadow-brand-600/30">
-                <span className="text-white font-display font-extrabold text-lg">A</span>
+              <div className="w-10 h-10 rounded-xl overflow-hidden shrink-0 shadow-md">
+                <img src="/images/acil_logo.png" alt="ACIL RETRO Logo" className="w-full h-full object-cover" />
               </div>
               <div className="text-left leading-none">
                 <div className="font-display font-extrabold text-lg text-brand-900 dark:text-white tracking-tight">ACIL RETRO</div>
@@ -91,18 +92,11 @@ export default function Header() {
               </div>
             </button>
 
-            {/* Search (desktop) */}
-            <form onSubmit={submitSearch} className="hidden md:flex flex-1 max-w-xl mx-4">
-              <div className="relative w-full group">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-brand-500 transition-colors" />
-                <input
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Rechercher par référence, pièce, véhicule..."
-                  className="w-full pl-11 pr-4 py-2.5 rounded-xl glass text-sm text-slate-800 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-brand-500/40 outline-none transition-all"
-                />
-              </div>
-            </form>
+            {/* Nav (desktop) */}
+            <nav className="hidden md:flex flex-1 items-center justify-center gap-8 mx-4">
+              {navLink('/', 'Accueil')}
+              {navLink('/contact', 'Contact')}
+            </nav>
 
             {/* Actions */}
             <div className="flex items-center gap-2 shrink-0">
@@ -135,13 +129,7 @@ export default function Header() {
             </div>
           </div>
 
-          {/* Nav (desktop) */}
-          <nav className="hidden md:flex items-center justify-center pb-3 w-full">
-            <div className="flex items-center gap-8">
-              {navLink('/', 'Accueil')}
-              {navLink('/contact', 'Contact')}
-            </div>
-          </nav>
+
         </div>
       </header>
 
@@ -156,17 +144,7 @@ export default function Header() {
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <form onSubmit={submitSearch} className="mb-6">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <input
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Rechercher..."
-                  className="input-field pl-10"
-                />
-              </div>
-            </form>
+            {/* Mobile search removed */}
             <div className="flex flex-col gap-1">
               {[
                 ['/', 'Accueil'],

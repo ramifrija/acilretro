@@ -84,7 +84,7 @@ export default function AdminVehicles() {
 
   const handleSave = async () => {
     if (!formData.name || !formData.slug) return alert('Le nom et le slug sont obligatoires');
-    
+
     if (editingBrand) {
       const { error } = await supabase.from('brands').update(formData).eq('id', editingBrand.id);
       if (error) return alert('Erreur lors de la modification');
@@ -92,7 +92,7 @@ export default function AdminVehicles() {
       const { error } = await supabase.from('brands').insert([formData]);
       if (error) return alert('Erreur lors de l\'ajout');
     }
-    
+
     setIsModalOpen(false);
     loadBrands();
   };

@@ -1,14 +1,14 @@
-import { Phone, Mail, MapPin, Clock, Facebook, Instagram, Linkedin, Send } from 'lucide-react';
+import { Phone, Mail, MapPin, Clock, Facebook, Instagram, Linkedin } from 'lucide-react';
 import { useRouter } from '@/context/RouterContext';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 
 export default function Footer() {
   const { navigate } = useRouter();
-  const [settings, setSettings] = useState({ 
-    email: 'contact@acilretro.com', 
-    phone: '+216 71 000 000', 
-    address: 'Zone Industrielle, Tunis' 
+  const [settings, setSettings] = useState({
+    email: 'contact@acilretro.com',
+    phone: '+216 71 000 000',
+    address: 'Zone Industrielle, Tunis'
   });
 
   useEffect(() => {
@@ -21,12 +21,20 @@ export default function Footer() {
     <footer className="bg-brand-950 text-brand-100 mt-20">
       <div className="container-x py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+
+          {/* Logo display */}
+          <div className="flex items-center justify-center">
+            <div className="w-full max-w-[200px] aspect-square rounded-2xl overflow-hidden shadow-2xl ring-2 ring-white/10">
+              <img
+                src="/images/acil_logo.png"
+                alt="ACIL RETRO"
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </div>
           {/* Brand */}
           <div>
             <div className="flex items-center gap-2.5 mb-4">
-              <div className="w-10 h-10 rounded-xl bg-brand-gradient flex items-center justify-center">
-                <span className="text-white font-display font-extrabold text-lg">A</span>
-              </div>
               <div>
                 <div className="font-display font-extrabold text-lg text-white">ACIL RETRO</div>
                 <div className="text-[10px] text-brand-300 uppercase tracking-wide">Pièces Auto Premium</div>
@@ -75,25 +83,11 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Newsletter */}
-          <div>
-            <h4 className="font-display font-bold text-white mb-4">Newsletter</h4>
-            <p className="text-sm text-brand-300 mb-4">Recevez nos offres exclusives et nouveautés</p>
-            <form onSubmit={(e) => e.preventDefault()} className="flex gap-2">
-              <input
-                type="email"
-                placeholder="Votre email"
-                className="flex-1 px-4 py-2.5 rounded-xl bg-white/10 border border-white/10 text-white placeholder:text-brand-300 text-sm focus:border-brand-500 outline-none"
-              />
-              <button className="p-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 transition-colors">
-                <Send className="w-4 h-4" />
-              </button>
-            </form>
-          </div>
+
         </div>
 
         <div className="border-t border-white/10 mt-12 pt-6 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-brand-400">
-          <p>© 2024 ACIL RETRO. Tous droits réservés.</p>
+          <p>© 2026 ACIL RETRO. Tous droits réservés.</p>
           <div className="flex gap-4">
             <button onClick={() => navigate('/mentions-legales')} className="hover:text-white transition-colors">Mentions légales</button>
             <button onClick={() => navigate('/cgv')} className="hover:text-white transition-colors">CGV</button>
