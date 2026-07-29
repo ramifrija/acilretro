@@ -553,7 +553,7 @@ function downloadAsText(order: OrderWithItems, type: 'invoice' | 'quote') {
 const statusLabels: Record<string, string> = {
   pending: 'En attente',
   accepted: 'Accepté',
-  paid: 'Payé',
+  paid: 'Payée',
   cancelled: 'Annulé',
   rejected: 'Rejeté',
   quote: 'Devis',
@@ -568,5 +568,5 @@ function StatusBadge({ status }: { status: string }) {
     rejected: 'bg-error-500/10 text-error-500',
     quote: 'bg-amber-500/10 text-amber-600',
   };
-  return <span className={`px-2.5 py-1 rounded-lg text-xs font-semibold ${colors[status] || 'bg-slate-500/10 text-slate-500'}`}>{statusLabels[status] || status}</span>;
+  return <span className={`px-2.5 py-1 rounded-lg text-xs font-semibold whitespace-nowrap ${colors[status] || 'bg-slate-500/10 text-slate-500'}`}>{statusLabels[status] || status}</span>;
 }

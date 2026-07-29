@@ -90,7 +90,7 @@ export default function LandingPage() {
           <div className="absolute bottom-0 left-1/2 w-96 h-96 bg-brand-700/30 rounded-full blur-3xl animate-float" style={{ animationDelay: '4s' }} />
         </div>
 
-        <div className="container-x relative">
+        <div className="container-x relative z-20">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="text-center lg:text-left">
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass mb-6 animate-fade-in">
@@ -289,7 +289,7 @@ export default function LandingPage() {
             />
             <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10">
               <a
-                href="https://www.google.com/maps/place/DREI-Drira+Rebobinage/@36.7630283,10.2252861,17z"
+                href="https://www.google.com/maps/search/?api=1&query=36.7630283,10.2252861"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-primary shadow-xl shadow-brand-500/20 whitespace-nowrap"

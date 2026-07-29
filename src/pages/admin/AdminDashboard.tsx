@@ -18,7 +18,7 @@ type Stats = {
 export default function AdminDashboard() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [recentOrders, setRecentOrders] = useState<(Order & { order_items: { product_name: string; quantity: number }[] })[]>([]);
-  const [topProducts, setTopProducts] = useState<{ product_name: string; sum: number }[]>([]);
+  const [topProducts, setTopProducts] = useState<{ product_name: string; count: number; sum: number }[]>([]);
   const [lowStock, setLowStock] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [chartView, setChartView] = useState<'week' | 'month'>('week');
@@ -88,18 +88,26 @@ export default function AdminDashboard() {
         .from('orders')
         .select('*, order_items(product_name, quantity)')
         .order('created_at', { ascending: false })
-        .limit(5);
+        .limit(4);
       setRecentOrders(recent || []);
 
       const { data: top } = await supabase
         .from('order_items')
-        .select('product_name, quantity, unit_price')
-        .limit(50);
-      const productMap = new Map<string, number>();
+        .select('product_name, quantity, unit_price, orders!inner(status)')
+        .eq('orders.status', 'paid');
+      const productMap = new Map<string, { count: number; sum: number }>();
       (top || []).forEach((t) => {
-        productMap.set(t.product_name, (productMap.get(t.product_name) || 0) + t.quantity * Number(t.unit_price));
+        const existing = productMap.get(t.product_name) || { count: 0, sum: 0 };
+        existing.count += t.quantity;
+        existing.sum += t.quantity * Number(t.unit_price);
+        productMap.set(t.product_name, existing);
       });
-      setTopProducts([...productMap.entries()].map(([product_name, sum]) => ({ product_name, sum })).sort((a, b) => b.sum - a.sum).slice(0, 5));
+      setTopProducts(
+        [...productMap.entries()]
+          .map(([product_name, { count, sum }]) => ({ product_name, count, sum }))
+          .sort((a, b) => b.count - a.count)
+          .slice(0, 5)
+      );
 
       setLowStock((products || []).filter((p) => p.stock <= p.min_stock).slice(0, 5));
       setLoading(false);
@@ -197,9 +205,12 @@ export default function AdminDashboard() {
             ) : (
               topProducts.map((p, i) => (
                 <div key={i} className="flex items-center gap-3">
-                  <span className="w-6 h-6 rounded-lg bg-brand-100 dark:bg-brand-800/40 flex items-center justify-center text-xs font-bold text-brand-600 dark:text-brand-300">{i + 1}</span>
-                  <span className="text-sm text-slate-700 dark:text-slate-200 truncate flex-1">{p.product_name}</span>
-                  <span className="text-sm font-semibold text-slate-900 dark:text-white">{formatPrice(p.sum)}</span>
+                  <span className="w-6 h-6 shrink-0 rounded-lg bg-brand-100 dark:bg-brand-800/40 flex items-center justify-center text-xs font-bold text-brand-600 dark:text-brand-300">{i + 1}</span>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm text-slate-700 dark:text-slate-200 truncate">{p.product_name}</div>
+                    <div className="text-xs text-slate-500">{p.count} vendu(s)</div>
+                  </div>
+                  <span className="text-sm font-semibold text-slate-900 dark:text-white shrink-0">{formatPrice(p.sum)}</span>
                 </div>
               ))
             )}
@@ -291,16 +302,17 @@ export default function AdminDashboard() {
 function StatusBadge({ status }: { status: string }) {
   const colors: Record<string, string> = {
     pending: 'bg-amber-500/10 text-amber-600',
-    accepted: 'bg-success-500/10 text-success-600',
+    accepted: 'bg-brand-500/10 text-brand-600',
     rejected: 'bg-error-500/10 text-error-500',
-    cancelled: 'bg-slate-500/10 text-slate-500',
+    cancelled: 'bg-error-500/10 text-error-500',
     preparing: 'bg-brand-500/10 text-brand-600',
     delivered: 'bg-success-500/10 text-success-600',
     completed: 'bg-success-500/10 text-success-600',
+    paid: 'bg-success-500/10 text-success-600',
   };
   const labels: Record<string, string> = {
     pending: 'En attente', accepted: 'Accepté', rejected: 'Rejeté', cancelled: 'Annulé',
-    preparing: 'Préparation', delivered: 'Livré', completed: 'Terminé',
+    preparing: 'Préparation', delivered: 'Livré', completed: 'Terminé', paid: 'Payée'
   };
-  return <span className={`px-2.5 py-1 rounded-lg text-xs font-semibold ${colors[status] || 'bg-slate-500/10 text-slate-500'}`}>{labels[status] || status}</span>;
+  return <span className={`px-2.5 py-1 rounded-lg text-xs font-semibold whitespace-nowrap ${colors[status] || 'bg-slate-500/10 text-slate-500'}`}>{labels[status] || status}</span>;
 }
