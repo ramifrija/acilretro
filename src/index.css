@@ -1,0 +1,56 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { scroll-behavior: smooth; }
+  body {
+    @apply font-sans antialiased bg-slate-50 text-slate-900 dark:bg-brand-950 dark:text-slate-100;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, h4 { @apply font-display; }
+}
+
+@layer components {
+  .glass {
+    @apply bg-white/70 dark:bg-white/5 backdrop-blur-xl border border-white/40 dark:border-white/10;
+  }
+  .glass-card {
+    @apply glass rounded-2xl shadow-glass;
+  }
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-semibold shadow-lg shadow-brand-600/30 transition-all duration-300 hover:shadow-brand-500/40 hover:-translate-y-0.5 active:translate-y-0;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl glass font-semibold text-brand-800 dark:text-brand-100 hover:bg-white/90 dark:hover:bg-white/10 transition-all duration-300;
+  }
+  .input-field {
+    @apply w-full px-4 py-3 rounded-xl bg-white dark:bg-brand-900/40 border border-slate-200 dark:border-white/10 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30 outline-none transition-all duration-200 text-slate-900 dark:text-white placeholder:text-slate-400;
+  }
+  .section-pad { @apply py-20 lg:py-28; }
+  .container-x { @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8; }
+  .text-gradient {
+    @apply bg-gradient-to-r from-brand-200 via-accent-400 to-brand-300 bg-clip-text text-transparent;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { @apply bg-transparent; }
+::-webkit-scrollbar-thumb { @apply bg-brand-300/40 rounded-full; }
+::-webkit-scrollbar-thumb:hover { @apply bg-brand-400/60; }
+
+/* Hide scrollbar utility */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Print styles for invoices and quotes */
+@media print {
+  body * { visibility: hidden; }
+  #printable-document, #printable-document * { visibility: visible; }
+  #printable-document { position: absolute; left: 0; top: 0; width: 100%; padding: 20px; }
+  .print\:hidden { display: none !important; }
+  @page { margin: 1cm; }
+}
