@@ -17,7 +17,7 @@ export default function AdminLayout({ children, section }: { children: ReactNode
     { id: 'inventory', label: 'Inventaire', icon: Warehouse, path: '/admin/inventory' },
     { id: 'customers', label: 'Clients', icon: Users, path: '/admin/customers' },
     { id: 'pos', label: 'Point de vente', icon: Store, path: '/admin/pos' },
-    { id: 'reports', label: 'Rapports', icon: BarChart3, path: '/admin/reports' },
+    { id: 'users', label: 'Utilisateurs', icon: Users, path: '/admin/users' },
     { id: 'settings', label: 'Paramètres', icon: Settings, path: '/admin/settings' },
   ];
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Plus, Pencil, Trash2, Car, Search, X, Upload } from 'lucide-react';
+import { Plus, Pencil, Trash2, Car, Search, X, Upload, ChevronLeft, ChevronRight } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import type { Brand } from '@/types/database';
 
@@ -9,6 +9,8 @@ export default function AdminVehicles() {
   const [search, setSearch] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingBrand, setEditingBrand] = useState<Brand | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 10;
 
   const [formData, setFormData] = useState({
     name: '',
@@ -105,6 +107,8 @@ export default function AdminVehicles() {
   };
 
   const filteredBrands = brands.filter(b => b.name.toLowerCase().includes(search.toLowerCase()));
+  const totalPages = Math.ceil(filteredBrands.length / ITEMS_PER_PAGE);
+  const paginatedBrands = filteredBrands.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
   return (
     <div className="space-y-6">
@@ -128,7 +132,7 @@ export default function AdminVehicles() {
               type="text"
               placeholder="Rechercher une marque..."
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }}
               className="input-field pl-9"
             />
           </div>
@@ -149,12 +153,12 @@ export default function AdminVehicles() {
                 <tr>
                   <td colSpan={3} className="px-6 py-8 text-center text-slate-500">Chargement...</td>
                 </tr>
-              ) : filteredBrands.length === 0 ? (
+              ) : paginatedBrands.length === 0 ? (
                 <tr>
-                  <td colSpan={3} className="px-6 py-8 text-center text-slate-500">Aucune marque trouvée.</td>
+                  <td colSpan={4} className="px-6 py-8 text-center text-slate-500">Aucune marque trouvée.</td>
                 </tr>
               ) : (
-                filteredBrands.map((brand) => (
+                paginatedBrands.map((brand) => (
                   <tr key={brand.id} className="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
                     <td className="px-6 py-4">
                       {brand.logo_url ? (
@@ -193,6 +197,59 @@ export default function AdminVehicles() {
             </tbody>
           </table>
         </div>
+
+        {/* Pagination UI */}
+        {totalPages > 1 && (
+          <div className="p-4 border-t border-slate-100 dark:border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="text-sm text-slate-500">
+              Affichage de {((currentPage - 1) * ITEMS_PER_PAGE) + 1} à {Math.min(currentPage * ITEMS_PER_PAGE, filteredBrands.length)} sur {filteredBrands.length}
+            </div>
+            <div className="flex gap-1">
+              <button
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="p-1.5 rounded-lg border border-slate-200 dark:border-white/10 text-slate-500 hover:bg-slate-50 dark:hover:bg-white/5 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              {Array.from({ length: totalPages }).map((_, i) => {
+                // Pour éviter d'avoir trop de pages affichées si on a beaucoup de données
+                if (
+                  totalPages > 7 &&
+                  i !== 0 &&
+                  i !== totalPages - 1 &&
+                  Math.abs(i + 1 - currentPage) > 1
+                ) {
+                  if (Math.abs(i + 1 - currentPage) === 2) {
+                    return <span key={i} className="px-2 text-slate-400">...</span>;
+                  }
+                  return null;
+                }
+                
+                return (
+                  <button
+                    key={i}
+                    onClick={() => setCurrentPage(i + 1)}
+                    className={`w-8 h-8 flex items-center justify-center rounded-lg text-sm font-medium transition-colors ${
+                      currentPage === i + 1
+                        ? 'bg-brand-500 text-white shadow-sm'
+                        : 'border border-slate-200 dark:border-white/10 text-slate-500 hover:bg-slate-50 dark:hover:bg-white/5'
+                    }`}
+                  >
+                    {i + 1}
+                  </button>
+                );
+              })}
+              <button
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                className="p-1.5 rounded-lg border border-slate-200 dark:border-white/10 text-slate-500 hover:bg-slate-50 dark:hover:bg-white/5 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {isModalOpen && (

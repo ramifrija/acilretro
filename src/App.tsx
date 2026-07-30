@@ -20,7 +20,7 @@ import AdminOrders from '@/pages/admin/AdminOrders';
 import AdminInventory from '@/pages/admin/AdminInventory';
 import AdminPOS from '@/pages/admin/AdminPOS';
 import AdminVehicles from '@/pages/admin/AdminVehicles';
-import { AdminCustomers, AdminReports, AdminSettings } from '@/pages/admin/AdminMisc';
+import { AdminCustomers, AdminUsers, AdminSettings } from '@/pages/admin/AdminMisc';
 import AdminLogin from '@/pages/admin/AdminLogin';
 import AdminRegister from '@/pages/admin/AdminRegister';
 import { Loader2 } from 'lucide-react';
@@ -90,9 +90,9 @@ function Routes() {
     } else if (path.startsWith('/admin/pos')) {
       section = 'pos';
       content = <AdminPOS />;
-    } else if (path.startsWith('/admin/reports')) {
-      section = 'reports';
-      content = <AdminReports />;
+    } else if (path.startsWith('/admin/users')) {
+      section = 'users';
+      content = <AdminUsers />;
     } else if (path.startsWith('/admin/settings')) {
       section = 'settings';
       content = <AdminSettings />;

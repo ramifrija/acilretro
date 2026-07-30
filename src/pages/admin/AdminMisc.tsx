@@ -1,7 +1,8 @@
-import { Users, Settings, BarChart3, TrendingUp, ShoppingCart, Package, DollarSign, Calendar } from 'lucide-react';
+import { Users, Settings, BarChart3, TrendingUp, ShoppingCart, Package, DollarSign, Calendar, Lock, Trash2, Edit2, X } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { formatPrice } from '@/lib/format';
 import { useEffect, useState } from 'react';
+import { useAuth } from '@/context/AuthContext';
 
 export function AdminCustomers() {
   const [customers, setCustomers] = useState<any[]>([]);
@@ -53,53 +54,202 @@ export function AdminCustomers() {
   );
 }
 
-export function AdminReports() {
-  const [stats, setStats] = useState({ revenue: 0, orders: 0, avgOrder: 0, products: 0 });
+export function AdminUsers() {
+  const [admins, setAdmins] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editName, setEditName] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newAdmin, setNewAdmin] = useState({ fullName: '', email: '', password: '' });
 
   useEffect(() => {
-    (async () => {
-      const { data: orders } = await supabase.from('orders').select('*').eq('type', 'order');
-      const { count: products } = await supabase.from('products').select('*', { count: 'exact', head: true });
-      const confirmed = (orders || []).filter((o) => ['accepted', 'delivered', 'completed'].includes(o.status));
-      const revenue = confirmed.reduce((s, o) => s + Number(o.total), 0);
-      setStats({ revenue, orders: (orders || []).length, avgOrder: confirmed.length ? revenue / confirmed.length : 0, products: products || 0 });
-      setLoading(false);
-    })();
+    fetchAdmins();
   }, []);
+
+  const fetchAdmins = async () => {
+    setLoading(true);
+    const { data } = await supabase.from('customers').select('*').eq('type', 'admin').order('created_at', { ascending: false });
+    setAdmins(data || []);
+    setLoading(false);
+  };
+
+  const handleEdit = (a: any) => {
+    setEditingId(a.id);
+    setEditName(a.full_name || '');
+  };
+
+  const handleSave = async (id: string) => {
+    setSaving(true);
+    const { error } = await supabase.from('customers').update({ full_name: editName }).eq('id', id);
+    if (!error) {
+      setAdmins(admins.map(a => a.id === id ? { ...a, full_name: editName } : a));
+    } else {
+      alert('Erreur lors de la modification');
+    }
+    setSaving(false);
+    setEditingId(null);
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Voulez-vous vraiment supprimer cet administrateur ? Il perdra ses droits.')) return;
+    const { error } = await supabase.from('customers').delete().eq('id', id);
+    if (error) {
+      alert('Erreur: ' + error.message);
+    } else {
+      setAdmins(admins.filter(a => a.id !== id));
+    }
+  };
+
+  const handleAddAdmin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+    const { error: signUpError } = await supabase.auth.signUp({
+      email: newAdmin.email,
+      password: newAdmin.password,
+      options: {
+        data: {
+          full_name: newAdmin.fullName,
+          account_type: 'admin'
+        }
+      }
+    });
+
+    if (signUpError) {
+      alert("Erreur: " + signUpError.message);
+    } else {
+      alert("Administrateur ajouté avec succès.\nAttention : Supabase vous a connecté sur ce nouveau compte. Veuillez vous reconnecter à votre compte principal si nécessaire.");
+      setShowAddModal(false);
+      setNewAdmin({ fullName: '', email: '', password: '' });
+      fetchAdmins();
+    }
+    setSaving(false);
+  };
 
   if (loading) return <div className="glass-card h-64 animate-shimmer" />;
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {[
-          { label: 'CA total', value: formatPrice(stats.revenue), icon: DollarSign, color: 'from-brand-600 to-brand-500' },
-          { label: 'Commandes', value: stats.orders, icon: ShoppingCart, color: 'from-accent-500 to-accent-400' },
-          { label: 'Panier moyen', value: formatPrice(stats.avgOrder), icon: TrendingUp, color: 'from-success-600 to-success-500' },
-          { label: 'Produits actifs', value: stats.products, icon: Package, color: 'from-amber-500 to-amber-400' },
-        ].map((s, i) => (
-          <div key={i} className="glass-card p-5">
-            <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${s.color} flex items-center justify-center mb-3 shadow-lg`}>
-              <s.icon className="w-5 h-5 text-white" />
-            </div>
-            <div className="font-display font-extrabold text-xl text-slate-900 dark:text-white">{s.value}</div>
-            <div className="text-xs text-slate-500 mt-0.5">{s.label}</div>
+    <div className="space-y-6 animate-fade-in relative">
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h2 className="font-display font-bold text-2xl text-slate-900 dark:text-white">Comptes Administrateurs</h2>
+          <p className="text-sm text-slate-500">Gérez les accès à l'interface d'administration</p>
+        </div>
+        <button onClick={() => setShowAddModal(true)} className="btn-primary flex items-center gap-2">
+          <Users className="w-4 h-4" />
+          Ajouter un admin
+        </button>
+      </div>
+
+      <div className="glass-card p-0 overflow-hidden">
+        {admins.length === 0 ? (
+          <div className="text-center py-12 text-slate-400">
+            <Users className="w-12 h-12 mx-auto mb-3" />
+            <p>Aucun administrateur trouvé</p>
           </div>
-        ))}
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead><tr className="text-left text-xs text-slate-500 uppercase bg-slate-50/50 dark:bg-white/5 border-b border-slate-100 dark:border-white/10">
+                <th className="p-4 font-semibold">Nom</th>
+                <th className="p-4 font-semibold">Email</th>
+                <th className="p-4 font-semibold">Création</th>
+                <th className="p-4 font-semibold text-right">Actions</th>
+              </tr></thead>
+              <tbody>
+                {admins.map((a) => (
+                  <tr key={a.id} className="border-b border-slate-50 dark:border-white/5 last:border-0 hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors">
+                    <td className="p-4 font-medium text-slate-900 dark:text-white">
+                      {editingId === a.id ? (
+                        <input 
+                          type="text" 
+                          value={editName} 
+                          onChange={(e) => setEditName(e.target.value)}
+                          className="input-field py-1 px-2 text-sm max-w-[200px]"
+                        />
+                      ) : (
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-full bg-brand-gradient flex items-center justify-center text-white font-bold text-xs shrink-0">
+                            {a.full_name?.[0] || a.email?.[0] || 'A'}
+                          </div>
+                          <span className="truncate">{a.full_name || 'Admin'}</span>
+                        </div>
+                      )}
+                    </td>
+                    <td className="p-4 text-slate-600 dark:text-slate-300">{a.email}</td>
+                    <td className="p-4 text-slate-600 dark:text-slate-300">{new Date(a.created_at).toLocaleDateString('fr-FR')}</td>
+                    <td className="p-4 text-right">
+                      {editingId === a.id ? (
+                        <div className="flex items-center justify-end gap-2">
+                          <button onClick={() => setEditingId(null)} className="p-1.5 text-slate-400 hover:text-slate-600 transition-colors">
+                            <X className="w-4 h-4" />
+                          </button>
+                          <button onClick={() => handleSave(a.id)} disabled={saving} className="p-1.5 text-success-500 hover:text-success-600 transition-colors">
+                            <Lock className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-end gap-2">
+                          <button onClick={() => handleEdit(a)} className="p-1.5 text-brand-500 hover:text-brand-400 transition-colors" title="Modifier le nom">
+                            <Edit2 className="w-4 h-4" />
+                          </button>
+                          <button onClick={() => handleDelete(a.id)} className="p-1.5 text-red-500 hover:text-red-400 transition-colors" title="Supprimer l'accès admin">
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
-      <div className="glass-card p-6">
-        <h3 className="font-display font-bold text-lg text-slate-900 dark:text-white mb-4 flex items-center gap-2"><BarChart3 className="w-5 h-5" /> Analyse des ventes</h3>
-        <p className="text-sm text-slate-500">Rapports détaillés disponibles avec données historiques. Connectez une source de données pour générer des rapports mensuels, trimestriels et annuels.</p>
-      </div>
+
+      {showAddModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-md shadow-xl border border-slate-200 dark:border-white/10 overflow-hidden animate-scale-in">
+            <div className="px-6 py-4 border-b border-slate-100 dark:border-white/5 flex items-center justify-between">
+              <h3 className="font-display font-bold text-lg text-slate-900 dark:text-white">Nouvel Administrateur</h3>
+              <button onClick={() => setShowAddModal(false)} className="p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 rounded-full transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <form onSubmit={handleAddAdmin} className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Nom complet</label>
+                <input required type="text" value={newAdmin.fullName} onChange={e => setNewAdmin({...newAdmin, fullName: e.target.value})} className="input-field" placeholder="Ex: Jean Dupont" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Email de connexion</label>
+                <input required type="email" value={newAdmin.email} onChange={e => setNewAdmin({...newAdmin, email: e.target.value})} className="input-field" placeholder="Ex: admin@acil-retro.com" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Mot de passe provisoire</label>
+                <input required type="password" value={newAdmin.password} onChange={e => setNewAdmin({...newAdmin, password: e.target.value})} className="input-field" placeholder="••••••••" minLength={6} />
+              </div>
+              <div className="pt-4 flex gap-3">
+                <button type="button" onClick={() => setShowAddModal(false)} className="btn-secondary flex-1">Annuler</button>
+                <button type="submit" disabled={saving} className="btn-primary flex-1">{saving ? 'Création...' : 'Créer le compte'}</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
 export function AdminSettings() {
+  const { user } = useAuth();
   const [settings, setSettings] = useState({ email: '', phone: '', address: '' });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+
+  const [accountEmail, setAccountEmail] = useState('');
+  const [accountPassword, setAccountPassword] = useState('');
+  const [savingAccount, setSavingAccount] = useState(false);
 
   useEffect(() => {
     supabase.from('site_settings').select('*').limit(1).then(({ data }) => {
@@ -110,24 +260,40 @@ export function AdminSettings() {
     });
   }, []);
 
+  useEffect(() => {
+    if (user?.email) {
+      setAccountEmail(user.email);
+    }
+  }, [user]);
+
   const handleSave = async () => {
     setSaving(true);
-    // Since there's only one row, we can just update the one that exists
-    await supabase.from('site_settings').update({ 
-      email: settings.email, 
-      phone: settings.phone, 
-      address: settings.address 
-    }).neq('id', '00000000-0000-0000-0000-000000000000'); // hacky way to update all or just eq the single ID
-    // Better yet, update where email is not null (updates all rows, which is 1)
     await supabase.from('site_settings').update({
       email: settings.email,
       phone: settings.phone,
       address: settings.address
     }).not('id', 'is', null);
     
-    // toast or alert
     alert('Paramètres sauvegardés avec succès');
     setSaving(false);
+  };
+
+  const handleSaveAccount = async () => {
+    setSavingAccount(true);
+    const updates: any = {};
+    if (accountEmail && accountEmail !== user?.email) updates.email = accountEmail;
+    if (accountPassword) updates.password = accountPassword;
+    
+    if (Object.keys(updates).length > 0) {
+      const { error } = await supabase.auth.updateUser(updates);
+      if (error) {
+        alert('Erreur: ' + error.message);
+      } else {
+        alert('Compte mis à jour avec succès !');
+        setAccountPassword('');
+      }
+    }
+    setSavingAccount(false);
   };
 
   if (loading) return <div className="glass-card h-64 animate-shimmer" />;
@@ -140,12 +306,32 @@ export function AdminSettings() {
           <h3 className="font-display font-bold text-lg text-slate-900 dark:text-white">Paramètres de l'entreprise</h3>
         </div>
         <div className="grid sm:grid-cols-2 gap-4">
-          <div><label className="text-xs font-semibold text-slate-500 uppercase mb-1.5 block">Email</label><input value={settings.email} onChange={(e) => setSettings({...settings, email: e.target.value})} className="input-field" /></div>
+          <div><label className="text-xs font-semibold text-slate-500 uppercase mb-1.5 block">Email de contact</label><input value={settings.email} onChange={(e) => setSettings({...settings, email: e.target.value})} className="input-field" /></div>
           <div><label className="text-xs font-semibold text-slate-500 uppercase mb-1.5 block">Téléphone</label><input value={settings.phone} onChange={(e) => setSettings({...settings, phone: e.target.value})} className="input-field" /></div>
           <div className="sm:col-span-2"><label className="text-xs font-semibold text-slate-500 uppercase mb-1.5 block">Adresse</label><input value={settings.address} onChange={(e) => setSettings({...settings, address: e.target.value})} className="input-field" /></div>
         </div>
         <button onClick={handleSave} disabled={saving} className="btn-primary mt-6">
           {saving ? 'Sauvegarde...' : 'Sauvegarder'}
+        </button>
+      </div>
+
+      <div className="glass-card p-6 border border-brand-500/20">
+        <div className="flex items-center gap-2 mb-4">
+          <Lock className="w-5 h-5 text-brand-500" />
+          <h3 className="font-display font-bold text-lg text-slate-900 dark:text-white">Sécurité du compte (Admin)</h3>
+        </div>
+        <div className="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label className="text-xs font-semibold text-slate-500 uppercase mb-1.5 block">Email de connexion</label>
+            <input type="email" value={accountEmail} disabled className="input-field opacity-60 cursor-not-allowed bg-slate-50 dark:bg-slate-800/50" />
+          </div>
+          <div>
+            <label className="text-xs font-semibold text-slate-500 uppercase mb-1.5 block">Nouveau mot de passe</label>
+            <input type="password" placeholder="Laisser vide pour ne pas modifier" value={accountPassword} onChange={(e) => setAccountPassword(e.target.value)} className="input-field" />
+          </div>
+        </div>
+        <button onClick={handleSaveAccount} disabled={savingAccount} className="btn-primary mt-6">
+          {savingAccount ? 'Mise à jour...' : 'Mettre à jour le compte'}
         </button>
       </div>
     </div>
