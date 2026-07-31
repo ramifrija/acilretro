@@ -46,11 +46,35 @@
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+  display: flex;
+  width: max-content;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
 /* Print styles for invoices and quotes */
 @media print {
   body * { visibility: hidden; }
   #printable-document, #printable-document * { visibility: visible; }
-  #printable-document { position: absolute; left: 0; top: 0; width: 100%; padding: 20px; }
+  #printable-document { 
+    position: absolute; 
+    left: 0; 
+    top: 0; 
+    width: 100%; 
+    padding: 0;
+    margin: 0;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
   .print\:hidden { display: none !important; }
   @page { margin: 1cm; }
 }

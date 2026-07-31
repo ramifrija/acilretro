@@ -5,19 +5,13 @@ type ThemeContextType = { dark: boolean; toggle: () => void };
 const ThemeContext = createContext<ThemeContextType | null>(null);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [dark, setDark] = useState(() => {
-    const stored = localStorage.getItem('acil-theme');
-    if (stored) return stored === 'dark';
-    return window.matchMedia('(prefers-color-scheme: dark)').matches;
-  });
-
   useEffect(() => {
-    document.documentElement.classList.toggle('dark', dark);
-    localStorage.setItem('acil-theme', dark ? 'dark' : 'light');
-  }, [dark]);
+    document.documentElement.classList.remove('dark');
+    localStorage.setItem('acil-theme', 'light');
+  }, []);
 
   return (
-    <ThemeContext.Provider value={{ dark, toggle: () => setDark((d) => !d) }}>
+    <ThemeContext.Provider value={{ dark: false, toggle: () => {} }}>
       {children}
     </ThemeContext.Provider>
   );

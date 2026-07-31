@@ -6,6 +6,11 @@ import ProductCard from '@/components/ProductCard';
 import VehicleSelector from '@/components/VehicleSelector';
 import { useRouter } from '@/context/RouterContext';
 
+const getLogoUrl = (brand: Brand) => {
+  const slug = brand.slug.replace(/[-_ ]/g, '').toLowerCase();
+  return `/logos/${slug}.png`;
+};
+
 export default function CatalogPage() {
   const { query } = useRouter();
   const [products, setProducts] = useState<Product[]>([]);
@@ -104,17 +109,51 @@ export default function CatalogPage() {
               <a
                 key={b.id}
                 href={`#/catalog?brand=${b.slug}`}
-                className={`flex-shrink-0 flex flex-col items-center justify-center p-4 glass-card hover:border-brand-500/50 transition-all min-w-[100px] ${
-                  brandFilter === b.slug ? 'border-brand-500 ring-2 ring-brand-500/20 bg-brand-50/50 dark:bg-brand-900/20' : ''
+                className={`flex-shrink-0 flex flex-col items-center justify-center p-4 rounded-xl border border-slate-200/50 hover:border-brand-500/50 transition-all min-w-[100px] ${
+                  brandFilter === b.slug ? 'border-brand-500 ring-2 ring-brand-500/20 bg-brand-50/50 dark:bg-brand-900/20' : 'bg-white/40 dark:bg-slate-900/40'
                 }`}
               >
-                {b.logo_url ? (
-                  <img src={b.logo_url} alt={b.name} className="w-12 h-12 object-contain mb-2" />
+                {getLogoUrl(b) ? (
+                  <img 
+                    src={getLogoUrl(b)!} 
+                    alt={b.name} 
+                    onError={(e) => {
+                      if (b.logo_url && e.currentTarget.src !== b.logo_url) {
+                        e.currentTarget.src = b.logo_url;
+                      } else {
+                        e.currentTarget.style.display = 'none';
+                        e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                      }
+                    }}
+                    className={`w-12 h-12 object-contain mb-2 mix-blend-multiply dark:mix-blend-screen dark:invert opacity-80 group-hover:opacity-100 transition-all ${
+                      ['chrysler', 'ds'].includes(b.name.toLowerCase()) ? 'scale-[2.25]' : 
+                      ['ford', 'nissan', 'saab', 'skoda', 'smart', 'dodge', 'suzuki', 'subaru', 'volvo'].includes(b.name.toLowerCase()) ? 'scale-[1.75]' : 
+                      ['peugeot'].includes(b.name.toLowerCase()) ? 'scale-125' : ''
+                    } ${
+                      ['peugeot', 'subaru', 'suzuki'].includes(b.name.toLowerCase()) ? 'contrast-200 brightness-110 grayscale' : ''
+                    }`} 
+                  />
+                ) : b.logo_url ? (
+                  <img 
+                    src={b.logo_url} 
+                    alt={b.name} 
+                    className={`w-12 h-12 object-contain mb-2 mix-blend-multiply dark:mix-blend-screen dark:invert opacity-80 group-hover:opacity-100 transition-all ${
+                      ['chrysler', 'ds'].includes(b.name.toLowerCase()) ? 'scale-[2.25]' : 
+                      ['ford', 'nissan', 'saab', 'skoda', 'smart', 'dodge', 'suzuki', 'subaru', 'volvo'].includes(b.name.toLowerCase()) ? 'scale-[1.75]' : 
+                      ['peugeot'].includes(b.name.toLowerCase()) ? 'scale-125' : ''
+                    } ${
+                      ['peugeot', 'subaru', 'suzuki'].includes(b.name.toLowerCase()) ? 'contrast-200 brightness-110 grayscale' : ''
+                    }`} 
+                  />
                 ) : (
                   <div className="w-12 h-12 flex items-center justify-center bg-slate-100 dark:bg-slate-800 rounded-full mb-2">
                     <span className="font-bold text-slate-400 text-lg">{b.name.charAt(0)}</span>
                   </div>
                 )}
+                {/* Fallback container if image fails completely */}
+                <div className="w-12 h-12 hidden items-center justify-center bg-slate-100 dark:bg-slate-800 rounded-full mb-2">
+                  <span className="font-bold text-slate-400 text-lg">{b.name.charAt(0)}</span>
+                </div>
                 <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">{b.name}</span>
               </a>
             ))}
@@ -134,53 +173,12 @@ export default function CatalogPage() {
       )}
 
       <div className="flex gap-6">
-        {/* Sidebar filters (desktop) */}
-        <aside className="hidden lg:block w-56 shrink-0">
-          <div className="glass-card p-5 sticky top-24">
-            <h3 className="font-bold text-sm text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-              <SlidersHorizontal className="w-4 h-4" /> Filtres
-            </h3>
-            <div className="space-y-5">
-              <div>
-                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Prix (TND)</label>
-                <div className="flex items-center gap-2 mt-2">
-                  <input type="number" value={priceRange[0]} onChange={(e) => setPriceRange([+e.target.value, priceRange[1]])} className="input-field text-sm py-2" placeholder="Min" />
-                  <span className="text-slate-400">-</span>
-                  <input type="number" value={priceRange[1]} onChange={(e) => setPriceRange([priceRange[0], +e.target.value])} className="input-field text-sm py-2" placeholder="Max" />
-                </div>
-              </div>
-              <div>
-                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Catégories</label>
-                <div className="mt-2 space-y-1.5 max-h-48 overflow-y-auto">
-                  {categories.map((c) => (
-                    <a key={c.id} href={`#/catalog?category=${c.slug}`} className="block text-sm text-slate-600 dark:text-slate-300 hover:text-brand-500 transition-colors py-1">
-                      {c.name}
-                    </a>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Marques</label>
-                <div className="mt-2 space-y-1.5 max-h-48 overflow-y-auto">
-                  {brands.map((b) => (
-                    <a key={b.id} href={`#/catalog?brand=${b.slug}`} className="block text-sm text-slate-600 dark:text-slate-300 hover:text-brand-500 transition-colors py-1">
-                      {b.name}
-                    </a>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </aside>
+
 
         {/* Main */}
         <div className="flex-1">
           {/* Toolbar */}
-          <div className="flex items-center justify-between gap-4 mb-6">
-            <button onClick={() => setShowFilters(true)} className="lg:hidden btn-ghost text-sm py-2 px-4">
-              <SlidersHorizontal className="w-4 h-4" /> Filtres
-            </button>
-            <div className="hidden lg:block" />
+          <div className="flex items-center justify-end gap-4 mb-6">
             <div className="flex items-center gap-2">
               <span className="text-sm text-slate-500 hidden sm:block">Trier par:</span>
               <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="input-field text-sm py-2 w-auto">
@@ -213,48 +211,7 @@ export default function CatalogPage() {
         </div>
       </div>
 
-      {/* Mobile filters drawer */}
-      {showFilters && (
-        <div className="fixed inset-0 z-[60] lg:hidden">
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowFilters(false)} />
-          <div className="absolute left-0 top-0 bottom-0 w-80 max-w-[85%] bg-white dark:bg-brand-950 shadow-2xl p-6 overflow-y-auto">
-            <div className="flex items-center justify-between mb-6">
-              <span className="font-display font-bold text-lg">Filtres</span>
-              <button onClick={() => setShowFilters(false)} className="p-2 rounded-lg glass"><X className="w-5 h-5" /></button>
-            </div>
-            <div className="space-y-5">
-              <div>
-                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Prix (TND)</label>
-                <div className="flex items-center gap-2 mt-2">
-                  <input type="number" value={priceRange[0]} onChange={(e) => setPriceRange([+e.target.value, priceRange[1]])} className="input-field text-sm py-2" />
-                  <span>-</span>
-                  <input type="number" value={priceRange[1]} onChange={(e) => setPriceRange([priceRange[0], +e.target.value])} className="input-field text-sm py-2" />
-                </div>
-              </div>
-              <div>
-                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Catégories</label>
-                <div className="mt-2 space-y-1.5">
-                  {categories.map((c) => (
-                    <a key={c.id} href={`#/catalog?category=${c.slug}`} onClick={() => setShowFilters(false)} className="block text-sm text-slate-600 dark:text-slate-300 hover:text-brand-500 py-1">
-                      {c.name}
-                    </a>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Marques</label>
-                <div className="mt-2 space-y-1.5 max-h-48 overflow-y-auto">
-                  {brands.map((b) => (
-                    <a key={b.id} href={`#/catalog?brand=${b.slug}`} onClick={() => setShowFilters(false)} className="block text-sm text-slate-600 dark:text-slate-300 hover:text-brand-500 py-1">
-                      {b.name}
-                    </a>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+
     </div>
   );
 }

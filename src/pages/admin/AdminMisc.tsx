@@ -4,56 +4,6 @@ import { formatPrice } from '@/lib/format';
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 
-export function AdminCustomers() {
-  const [customers, setCustomers] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    supabase.from('customers').select('*').order('created_at', { ascending: false }).then(({ data }) => {
-      setCustomers(data || []);
-      setLoading(false);
-    });
-  }, []);
-
-  return (
-    <div className="space-y-6 animate-fade-in">
-      <div className="glass-card p-5">
-        <div className="flex items-center gap-3 mb-4">
-          <Users className="w-5 h-5 text-brand-500" />
-          <h3 className="font-display font-bold text-lg text-slate-900 dark:text-white">Clients ({customers.length})</h3>
-        </div>
-        {loading ? (
-          <p className="text-slate-400 text-sm">Chargement...</p>
-        ) : customers.length === 0 ? (
-          <div className="text-center py-12 text-slate-400">
-            <Users className="w-12 h-12 mx-auto mb-3" />
-            <p>Aucun client enregistré pour le moment</p>
-            <p className="text-xs mt-1">Les clients apparaîtront ici après création de compte</p>
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead><tr className="text-left text-xs text-slate-500 uppercase">
-                <th className="pb-3">Nom</th><th className="pb-3">Type</th><th className="pb-3">Email</th><th className="pb-3">Téléphone</th>
-              </tr></thead>
-              <tbody>
-                {customers.map((c) => (
-                  <tr key={c.id} className="border-t border-slate-50 dark:border-white/5">
-                    <td className="py-3 font-medium text-slate-900 dark:text-white">{c.full_name || c.company_name}</td>
-                    <td className="py-3">{c.type === 'company' ? 'Entreprise' : 'Particulier'}</td>
-                    <td className="py-3 text-slate-600 dark:text-slate-300">{c.email}</td>
-                    <td className="py-3 text-slate-600 dark:text-slate-300">{c.phone}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
 export function AdminUsers() {
   const [admins, setAdmins] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -69,7 +19,7 @@ export function AdminUsers() {
 
   const fetchAdmins = async () => {
     setLoading(true);
-    const { data } = await supabase.from('customers').select('*').eq('type', 'admin').order('created_at', { ascending: false });
+    const { data } = await supabase.from('customers').select('*').order('created_at', { ascending: false });
     setAdmins(data || []);
     setLoading(false);
   };
@@ -132,8 +82,8 @@ export function AdminUsers() {
     <div className="space-y-6 animate-fade-in relative">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h2 className="font-display font-bold text-2xl text-slate-900 dark:text-white">Comptes Administrateurs</h2>
-          <p className="text-sm text-slate-500">Gérez les accès à l'interface d'administration</p>
+          <h2 className="font-display font-bold text-2xl text-slate-900 dark:text-white">Comptes Utilisateurs</h2>
+          <p className="text-sm text-slate-500">Gérez tous les comptes utilisateurs du système</p>
         </div>
         <button onClick={() => setShowAddModal(true)} className="btn-primary flex items-center gap-2">
           <Users className="w-4 h-4" />
@@ -145,7 +95,7 @@ export function AdminUsers() {
         {admins.length === 0 ? (
           <div className="text-center py-12 text-slate-400">
             <Users className="w-12 h-12 mx-auto mb-3" />
-            <p>Aucun administrateur trouvé</p>
+            <p>Aucun utilisateur trouvé</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -153,6 +103,7 @@ export function AdminUsers() {
               <thead><tr className="text-left text-xs text-slate-500 uppercase bg-slate-50/50 dark:bg-white/5 border-b border-slate-100 dark:border-white/10">
                 <th className="p-4 font-semibold">Nom</th>
                 <th className="p-4 font-semibold">Email</th>
+                <th className="p-4 font-semibold">Type</th>
                 <th className="p-4 font-semibold">Création</th>
                 <th className="p-4 font-semibold text-right">Actions</th>
               </tr></thead>
@@ -177,6 +128,13 @@ export function AdminUsers() {
                       )}
                     </td>
                     <td className="p-4 text-slate-600 dark:text-slate-300">{a.email}</td>
+                    <td className="p-4">
+                      {a.type === 'admin' ? (
+                        <span className="px-2 py-1 bg-brand-500/10 text-brand-600 text-[10px] font-bold rounded-lg uppercase">Admin</span>
+                      ) : (
+                        <span className="px-2 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[10px] font-bold rounded-lg uppercase">{a.type === 'company' ? 'Entreprise' : 'Particulier'}</span>
+                      )}
+                    </td>
                     <td className="p-4 text-slate-600 dark:text-slate-300">{new Date(a.created_at).toLocaleDateString('fr-FR')}</td>
                     <td className="p-4 text-right">
                       {editingId === a.id ? (

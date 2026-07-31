@@ -29,8 +29,9 @@ export default function CartPage() {
   const discount = appliedPromo ? subtotal * appliedPromo : 0;
   const afterDiscount = subtotal - discount;
   const vat = afterDiscount * VAT_RATE;
-  const shipping = subtotal > 0 ? SHIPPING : 0;
-  const total = afterDiscount + vat + shipping;
+  const timbre = subtotal > 0 ? 1 : 0;
+  const ras = (afterDiscount + vat + timbre) * 0.01;
+  const total = afterDiscount + vat + timbre + ras;
 
   if (count === 0) {
     return (
@@ -133,9 +134,16 @@ export default function CartPage() {
               <div className="flex justify-between text-slate-600 dark:text-slate-300">
                 <span>TVA (19%)</span><span className="font-semibold text-slate-900 dark:text-white">{formatPrice(vat)}</span>
               </div>
-              <div className="flex justify-between text-slate-600 dark:text-slate-300">
-                <span>Livraison</span><span className="font-semibold text-slate-900 dark:text-white">{formatPrice(shipping)}</span>
-              </div>
+              {subtotal > 0 && (
+                <>
+                  <div className="flex justify-between text-slate-600 dark:text-slate-300">
+                    <span>Timbre fiscal</span><span className="font-semibold text-slate-900 dark:text-white">{formatPrice(timbre)}</span>
+                  </div>
+                  <div className="flex justify-between text-slate-600 dark:text-slate-300">
+                    <span>RAS (1%)</span><span className="font-semibold text-slate-900 dark:text-white">+{formatPrice(ras)}</span>
+                  </div>
+                </>
+              )}
             </div>
 
             <div className="flex justify-between items-baseline border-t border-slate-100 dark:border-white/10 pt-4 mt-4">

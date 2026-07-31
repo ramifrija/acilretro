@@ -44,11 +44,15 @@ export default function Footer() {
               Spécialiste tunisien des rétroviseurs et pièces détachées automobiles. Qualité OEM, expertise technique, livraison rapide.
             </p>
             <div className="flex gap-3">
-              {[Facebook, Instagram, Linkedin].map((Icon, i) => (
-                <a key={i} href="#" className="w-9 h-9 rounded-lg glass flex items-center justify-center hover:bg-brand-600 transition-all">
-                  <Icon className="w-4 h-4" />
-                </a>
-              ))}
+              <a href="#" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-[#1877F2] hover:border-[#1877F2] hover:-translate-y-1 hover:shadow-lg hover:shadow-[#1877F2]/20 transition-all duration-300">
+                <Facebook className="w-4 h-4" />
+              </a>
+              <a href="#" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-[#E4405F] hover:border-[#E4405F] hover:-translate-y-1 hover:shadow-lg hover:shadow-[#E4405F]/20 transition-all duration-300">
+                <Instagram className="w-4 h-4" />
+              </a>
+              <a href="#" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-[#0A66C2] hover:border-[#0A66C2] hover:-translate-y-1 hover:shadow-lg hover:shadow-[#0A66C2]/20 transition-all duration-300">
+                <Linkedin className="w-4 h-4" />
+              </a>
             </div>
           </div>
 

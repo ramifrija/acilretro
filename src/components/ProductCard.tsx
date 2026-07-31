@@ -69,11 +69,7 @@ export default function ProductCard({ product }: { product: Product }) {
       </div>
 
       <div className="p-3 flex flex-col flex-1">
-        <div className="flex items-center justify-between mb-1">
-          <div className="flex items-center gap-1">
-            <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
-            <span className="text-[10px] text-slate-500">{product.rating.toFixed(1)}</span>
-          </div>
+        <div className="flex items-center justify-end mb-1">
           {product.stock > 0 ? (
             <span className="text-[10px] font-medium text-success-600 flex items-center gap-0.5">
               <Zap className="w-3 h-3" /> En stock

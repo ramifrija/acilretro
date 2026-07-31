@@ -1,15 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Search, ShoppingCart, Moon, Sun, Menu, X, Phone, Mail, MapPin, ChevronDown } from 'lucide-react';
+import { Search, ShoppingCart, Menu, X, Phone, Mail, MapPin, ChevronDown } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { useRouter } from '@/context/RouterContext';
-import { useTheme } from '@/context/ThemeContext';
 import { supabase } from '@/lib/supabase';
 import type { Brand } from '@/types/database';
 
 export default function Header() {
   const { count } = useCart();
   const { navigate, path } = useRouter();
-  const { dark, toggle } = useTheme();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [brands, setBrands] = useState<Brand[]>([]);
@@ -45,13 +43,13 @@ export default function Header() {
     <button
       onClick={() => navigate(to)}
       className={`text-sm font-semibold transition-colors relative group py-2 ${path === to
-          ? 'text-brand-600 dark:text-brand-400'
-          : 'text-slate-600 dark:text-slate-300 hover:text-brand-500 dark:hover:text-brand-400'
+        ? 'text-white'
+        : 'text-brand-300 hover:text-white'
         }`}
     >
       {label}
       {path === to && (
-        <span className="absolute bottom-0 left-0 w-full h-0.5 bg-brand-500 dark:bg-brand-400 rounded-full" />
+        <span className="absolute bottom-0 left-0 w-full h-0.5 bg-brand-400 rounded-full" />
       )}
     </button>
   );
@@ -75,20 +73,17 @@ export default function Header() {
         </div>
       </div>
 
-      <header
-        className={`sticky top-0 z-50 transition-all duration-300 ${scrolled ? 'glass shadow-glass' : 'bg-transparent'
-          }`}
-      >
+      <header className={`sticky top-0 z-50 transition-all duration-300 bg-brand-950 ${scrolled ? 'shadow-md border-b border-brand-800' : ''}`}>
         <div className="container-x">
           <div className="flex items-center justify-between gap-4 py-3">
             {/* Logo */}
             <button onClick={() => navigate('/')} className="flex items-center gap-2.5 shrink-0">
-              <div className="w-10 h-10 rounded-xl overflow-hidden shrink-0 shadow-md">
+              <div className="w-20 h-20 rounded-xl overflow-hidden shrink-0 shadow-md">
                 <img src="/images/acil_logo.png" alt="ACIL RETRO Logo" className="w-full h-full object-cover" />
               </div>
               <div className="text-left leading-none">
-                <div className="font-display font-extrabold text-lg text-brand-900 dark:text-white tracking-tight">ACIL RETRO</div>
-                <div className="text-[10px] text-slate-500 dark:text-slate-400 font-medium tracking-wide uppercase">Pièces Auto Premium</div>
+                <div className="font-display font-extrabold text-2xl text-white tracking-tight">ACIL RETRO</div>
+                <div className="text-xs text-brand-400 font-medium tracking-wide uppercase mt-1">Pièces Auto Premium</div>
               </div>
             </button>
 
@@ -101,18 +96,11 @@ export default function Header() {
             {/* Actions */}
             <div className="flex items-center gap-2 shrink-0">
               <button
-                onClick={toggle}
-                className="p-2.5 rounded-xl glass hover:bg-white/90 dark:hover:bg-white/10 transition-all"
-                aria-label="Toggle theme"
-              >
-                {dark ? <Sun className="w-5 h-5 text-amber-400" /> : <Moon className="w-5 h-5 text-brand-700" />}
-              </button>
-              <button
                 onClick={() => navigate('/cart')}
-                className="relative p-2.5 rounded-xl glass hover:bg-white/90 dark:hover:bg-white/10 transition-all"
+                className="relative p-2.5 rounded-xl hover:bg-white/10 transition-all"
                 aria-label="Cart"
               >
-                <ShoppingCart className="w-5 h-5 text-brand-700 dark:text-brand-200" />
+                <ShoppingCart className="w-5 h-5 text-brand-100" />
                 {count > 0 && (
                   <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-accent-500 text-white text-[10px] font-bold flex items-center justify-center animate-scale-in">
                     {count}
@@ -121,10 +109,10 @@ export default function Header() {
               </button>
               <button
                 onClick={() => setMobileOpen(true)}
-                className="md:hidden p-2.5 rounded-xl glass"
+                className="md:hidden p-2.5 rounded-xl hover:bg-white/10 transition-all"
                 aria-label="Menu"
               >
-                <Menu className="w-5 h-5" />
+                <Menu className="w-5 h-5 text-brand-100" />
               </button>
             </div>
           </div>

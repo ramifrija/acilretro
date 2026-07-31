@@ -3,11 +3,10 @@ import { Truck, ShieldCheck, Phone, Search, Wrench, Layers, Maximize, ArrowRight
 import VehicleSelector from '@/components/VehicleSelector';
 import { useRouter } from '@/context/RouterContext';
 
-export default function LandingPage() {
+export default function TestLandingPage() {
   const { navigate } = useRouter();
 
   const [activePromo, setActivePromo] = useState(0);
-  const [activeTopBarIndex, setActiveTopBarIndex] = useState(0);
   const promos = [
     "/images/1.png",
     "/images/2.png",
@@ -15,17 +14,11 @@ export default function LandingPage() {
   ];
 
   useEffect(() => {
-    const promoTimer = setInterval(() => {
+    const timer = setInterval(() => {
       setActivePromo(prev => (prev + 1) % promos.length);
     }, 5000);
-    const topBarTimer = setInterval(() => {
-      setActiveTopBarIndex(prev => (prev + 1) % 3);
-    }, 4000);
-    return () => {
-      clearInterval(promoTimer);
-      clearInterval(topBarTimer);
-    };
-  }, [promos.length]);
+    return () => clearInterval(timer);
+  }, []);
 
   const categories = [
     {
@@ -78,35 +71,17 @@ export default function LandingPage() {
   return (
     <div className="bg-slate-50 text-slate-800 min-h-screen font-sans">
       
-      {/* Top Banner (Reassurance) - Marquee */}
-      <div className="bg-brand-600 text-white text-[13px] font-medium overflow-hidden whitespace-nowrap">
-        <div className="animate-marquee inline-block py-2">
-          {/* We duplicate the content twice to make the loop seamless */}
-          {[1, 2].map((i) => (
-            <span key={i} className="inline-flex items-center">
-              <span className="inline-flex items-center gap-2 mx-6">
-                <Truck className="w-4 h-4" />
-                Livraison 24/48h sur toute la Tunisie
-              </span>
-              <span className="opacity-50">|</span>
-              <span className="inline-flex items-center gap-2 mx-6">
-                <ShieldCheck className="w-4 h-4" />
-                Satisfait ou remboursé
-              </span>
-              <span className="opacity-50">|</span>
-              <a 
-                href="https://wa.me/21627804642" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 mx-6 hover:text-brand-200 transition-colors cursor-pointer"
-              >
-                <Phone className="w-4 h-4" />
-                Besoin d'aide ? 27 804 642
-              </a>
-              {/* Space before next duplicate starts */}
-              <span className="mx-6"></span>
-            </span>
-          ))}
+      {/* Top Banner (Reassurance) */}
+      <div className="bg-brand-600 text-white text-sm py-2">
+        <div className="container-x flex flex-col md:flex-row justify-between items-center gap-2">
+          <div className="flex items-center gap-4">
+            <span className="flex items-center gap-2 font-medium"><Truck className="w-4 h-4" /> Livraison 24/48h sur toute la Tunisie</span>
+            <span className="hidden md:flex items-center gap-2 font-medium opacity-80">|</span>
+            <span className="hidden md:flex items-center gap-2 font-medium"><ShieldCheck className="w-4 h-4" /> Satisfait ou remboursé</span>
+          </div>
+          <div className="flex items-center gap-2 font-bold">
+            <Phone className="w-4 h-4" /> Besoin d'aide ? 71 999 000
+          </div>
         </div>
       </div>
 

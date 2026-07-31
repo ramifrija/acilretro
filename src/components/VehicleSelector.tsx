@@ -61,15 +61,15 @@ export default function VehicleSelector({ variant = 'hero', onClose }: Props) {
   };
 
   const selectClass = variant === 'hero'
-    ? 'w-full px-4 py-3 rounded-xl bg-white/90 dark:bg-brand-900/60 border border-white/30 dark:border-white/10 text-slate-800 dark:text-white text-sm focus:ring-2 focus:ring-brand-500/40 outline-none transition-all appearance-none cursor-pointer'
+    ? 'w-full px-4 py-3.5 rounded-lg bg-[#273a78]/80 border border-[#3b4b86] text-white text-sm focus:ring-2 focus:ring-[#38bdf8]/40 outline-none transition-all appearance-none cursor-pointer hover:bg-[#273a78]'
     : 'input-field';
 
   return (
-    <div className={variant === 'hero' ? 'glass-card p-6' : 'glass-card p-4'}>
+    <div className={variant === 'hero' ? 'bg-[#1c2a5e]/70 backdrop-blur-md border border-[#3b4b86] rounded-2xl p-6 md:p-8 shadow-2xl shadow-blue-900/20' : 'glass-card p-4'}>
       {variant === 'hero' && (
-        <div className="flex items-center gap-2 mb-4">
-          <Car className="w-5 h-5 text-brand-500" />
-          <h3 className="font-display font-bold text-brand-900 dark:text-white">Trouvez votre pièce</h3>
+        <div className="flex items-center gap-3 mb-6">
+          <Car className="w-5 h-5 text-brand-300" />
+          <h3 className="font-bold text-white text-base">Trouvez votre pièce</h3>
         </div>
       )}
       <div className="grid grid-cols-1 gap-3">
@@ -87,7 +87,7 @@ export default function VehicleSelector({ variant = 'hero', onClose }: Props) {
                   <span className="truncate font-medium">{brands.find(b => b.slug === brand)?.name}</span>
                 </>
               ) : (
-                <span className="text-slate-500">Marque de la pièce</span>
+                <span className={variant === 'hero' ? 'text-brand-300' : 'text-slate-500'}>Marque de la pièce</span>
               )}
             </div>
             <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${isBrandOpen ? 'rotate-180' : ''}`} />
@@ -140,8 +140,13 @@ export default function VehicleSelector({ variant = 'hero', onClose }: Props) {
           )}
         </div>
       </div>
-      <div className="flex gap-3 mt-4">
-        <button onClick={search} className="btn-primary flex-1 sm:flex-none">
+      <div className={`flex gap-3 mt-5 ${variant === 'hero' ? 'justify-start' : ''}`}>
+        <button 
+          onClick={search} 
+          className={variant === 'hero' 
+            ? "bg-[#2563eb] hover:bg-blue-600 text-white px-6 py-2.5 rounded-lg font-medium text-sm flex items-center justify-center gap-2 transition-colors w-auto shadow-md shadow-blue-900/30" 
+            : "btn-primary flex-1 sm:flex-none"}
+        >
           <Search className="w-4 h-4" /> Rechercher
         </button>
         {onClose && (

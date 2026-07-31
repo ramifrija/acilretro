@@ -39,6 +39,12 @@ export default function AdminPOS() {
   const [isLoading, setIsLoading] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
 
+  // Clients CRM
+  const [clients, setClients] = useState<any[]>([]);
+  const [selectedClientForOrder, setSelectedClientForOrder] = useState<any | null>(null);
+  const [showClientDD, setShowClientDD] = useState(false);
+  const clientRef = useRef<HTMLDivElement>(null);
+
   // Brand filter
   const [brands, setBrands] = useState<Brand[]>([]);
   const [selectedBrand, setSelectedBrand] = useState<Brand | null>(null);
@@ -64,12 +70,14 @@ export default function AdminPOS() {
       .then(({ data }) => setProducts(data || []));
 
     supabase.from('brands').select('*').order('name').then(({ data }) => setBrands(data || []));
+    supabase.from('client').select('*').order('nom').then(({ data }) => setClients(data || []));
   }, []);
 
   // Close brand dropdown on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (brandRef.current && !brandRef.current.contains(e.target as Node)) setShowBrandDD(false);
+      if (clientRef.current && !clientRef.current.contains(e.target as Node)) setShowClientDD(false);
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
@@ -147,7 +155,9 @@ export default function AdminPOS() {
 
   const subtotal = cart.reduce((s, i) => s + i.unitPrice * i.quantity, 0);
   const vat = subtotal * (vatRate / 100);
-  const total = subtotal + vat;
+  const timbre = subtotal > 0 ? 1 : 0;
+  const ras = (subtotal + vat + timbre) * 0.01;
+  const total = subtotal + vat + timbre + ras;
 
   const checkout = async () => {
     setIsLoading(true);
@@ -158,7 +168,12 @@ export default function AdminPOS() {
       customer_type: 'individual', status: 'paid', type: 'order',
       subtotal, vat, shipping: 0, total,
       notes: 'Vente directe au point de vente',
-      customer_info: { fullName: finalCustomerName }
+      client_id: selectedClientForOrder?.id || null,
+      customer_info: { 
+        fullName: finalCustomerName,
+        email: selectedClientForOrder?.email,
+        phone: selectedClientForOrder?.num_tel
+      }
     }).select().single();
 
     if (order && cart.length) {
@@ -184,6 +199,7 @@ export default function AdminPOS() {
     }
     setCart([]);
     setCustomerName('');
+    setSelectedClientForOrder(null);
     setIsLoading(false);
   };
 
@@ -529,16 +545,56 @@ export default function AdminPOS() {
           {cart.length > 0 && (
             <div className="shrink-0 border-t border-slate-100 dark:border-white/10 p-4 space-y-4">
 
-              {/* Customer Name */}
-              <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+              {/* Customer Selection */}
+              <div className="relative" ref={clientRef}>
+                <User className="absolute left-3 top-2.5 w-4 h-4 text-slate-400 pointer-events-none z-10" />
                 <input
                   type="text"
                   value={customerName}
-                  onChange={(e) => setCustomerName(e.target.value)}
+                  onChange={(e) => {
+                    setCustomerName(e.target.value);
+                    setSelectedClientForOrder(null);
+                    setShowClientDD(true);
+                  }}
+                  onFocus={() => setShowClientDD(true)}
                   placeholder="Nom du client (optionnel)"
-                  className="w-full pl-9 pr-3 py-2.5 rounded-xl text-sm bg-slate-50 dark:bg-brand-900/40 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-brand-500/30 transition-all"
+                  className="w-full pl-9 pr-8 py-2.5 rounded-xl text-sm bg-slate-50 dark:bg-brand-900/40 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-brand-500/30 transition-all relative z-0"
                 />
+                {selectedClientForOrder && (
+                  <button
+                    onClick={() => {
+                      setSelectedClientForOrder(null);
+                      setCustomerName('');
+                    }}
+                    className="absolute right-3 top-2.5 text-slate-400 hover:text-error-500 transition-colors z-10"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
+
+                {/* Dropdown for client search */}
+                {showClientDD && clients.length > 0 && (
+                  <div className="absolute bottom-full left-0 right-0 mb-1 bg-white dark:bg-brand-900 border border-slate-200 dark:border-white/10 rounded-xl shadow-xl z-20 max-h-48 overflow-y-auto">
+                    {clients
+                      .filter(c => (c.nom + ' ' + c.prenom).toLowerCase().includes(customerName.toLowerCase()))
+                      .map(c => (
+                        <button
+                          key={c.id}
+                          onClick={() => {
+                            setSelectedClientForOrder(c);
+                            setCustomerName(`${c.prenom} ${c.nom}`);
+                            setShowClientDD(false);
+                          }}
+                          className="w-full text-left px-4 py-2 text-sm hover:bg-slate-50 dark:hover:bg-white/5 transition-colors border-b border-slate-50 dark:border-white/5 last:border-0"
+                        >
+                          <div className="font-semibold text-slate-900 dark:text-white">{c.prenom} {c.nom}</div>
+                          {(c.num_tel || c.email) && (
+                            <div className="text-xs text-slate-500">{c.num_tel} {c.email ? `• ${c.email}` : ''}</div>
+                          )}
+                        </button>
+                      ))}
+                  </div>
+                )}
               </div>
 
               {/* VAT Selector */}
@@ -583,6 +639,18 @@ export default function AdminPOS() {
                   <span>TVA ({vatRate}%)</span>
                   <span className="font-medium text-slate-700 dark:text-slate-300">{formatPrice(vat)}</span>
                 </div>
+                {subtotal > 0 && (
+                  <>
+                    <div className="flex justify-between text-sm text-slate-500">
+                      <span>Timbre fiscal</span>
+                      <span className="font-medium text-slate-700 dark:text-slate-300">{formatPrice(timbre)}</span>
+                    </div>
+                    <div className="flex justify-between text-sm text-slate-500">
+                      <span>RAS (1%)</span>
+                      <span className="font-medium text-brand-600 dark:text-brand-400">+{formatPrice(ras)}</span>
+                    </div>
+                  </>
+                )}
                 <div className="flex justify-between font-extrabold text-lg text-slate-900 dark:text-white border-t border-slate-200 dark:border-white/10 pt-2 mt-1">
                   <span>Total TTC</span>
                   <span className="text-brand-600 dark:text-brand-400">{formatPrice(total)}</span>
@@ -729,6 +797,14 @@ export default function AdminPOS() {
               <div className="flex justify-between text-sm">
                 <span className="text-slate-500">TVA ({vatRate}%)</span>
                 <span className="font-semibold text-slate-900 dark:text-white">{formatPrice(vat)}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-500">Timbre</span>
+                <span className="font-semibold text-slate-900 dark:text-white">{formatPrice(timbre)}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-500">RAS (1%)</span>
+                <span className="font-semibold text-brand-600 dark:text-brand-400">+{formatPrice(ras)}</span>
               </div>
             </div>
 

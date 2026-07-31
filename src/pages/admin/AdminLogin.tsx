@@ -42,27 +42,27 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-brand-950 flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
+    <div className="min-h-screen bg-[#050f33] flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
       {/* Background decorations */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-brand-600/20 blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-blue-600/10 blur-[120px] rounded-full pointer-events-none" />
       
       <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10">
         <div className="flex justify-center">
-          <div className="h-14 w-14 bg-brand-gradient rounded-2xl flex items-center justify-center shadow-lg shadow-brand-900/50 border border-white/10">
-            <Lock className="h-7 w-7 text-white" />
+          <div className="h-12 w-12 bg-gradient-to-b from-[#142c6e] to-[#071440] rounded-xl flex items-center justify-center shadow-lg shadow-blue-900/20 border border-[#1d3b8b]">
+            <Lock className="h-5 w-5 text-white" />
           </div>
         </div>
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-white font-display">
+        <h2 className="mt-5 text-center text-3xl font-extrabold text-white font-display">
           Espace Pro
         </h2>
-        <p className="mt-2 text-center text-sm text-brand-300">
+        <p className="mt-3 text-center text-[13px] text-blue-200/70">
           Connectez-vous pour accéder à l'administration
         </p>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md relative z-10">
-        <div className="bg-brand-900/40 backdrop-blur-xl py-8 px-4 shadow-glass-lg sm:rounded-2xl sm:px-10 border border-brand-800/50">
-          <form className="space-y-6" onSubmit={handleLogin}>
+        <div className="bg-[#071440] py-8 px-4 sm:rounded-2xl sm:px-10 border border-[#182f6b]">
+          <form className="space-y-5" onSubmit={handleLogin}>
             {error && (
               <div className="bg-error-500/10 border border-error-500/50 rounded-xl p-4 flex items-start gap-3">
                 <AlertCircle className="h-5 w-5 text-error-500 shrink-0 mt-0.5" />
@@ -71,12 +71,12 @@ export default function AdminLogin() {
             )}
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-brand-100">
+              <label htmlFor="email" className="block text-xs font-semibold text-white mb-2">
                 Adresse email
               </label>
-              <div className="mt-1.5 relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-brand-400" />
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                  <Mail className="h-4 w-4 text-[#3B82F6]" />
                 </div>
                 <input
                   id="email"
@@ -86,19 +86,19 @@ export default function AdminLogin() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="appearance-none block w-full pl-10 px-4 py-2.5 border border-brand-700/50 rounded-xl shadow-sm placeholder-brand-500 bg-brand-950/50 text-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 sm:text-sm transition-shadow"
+                  className="appearance-none block w-full pl-10 px-4 py-3 border border-[#182f6b] rounded-xl shadow-sm placeholder-[#1f47e6]/50 bg-[#091a55] text-[#1f47e6] focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-all"
                   placeholder="admin@acil-retro.com"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-brand-100">
+              <label htmlFor="password" className="block text-xs font-semibold text-white mb-2">
                 Mot de passe
               </label>
-              <div className="mt-1.5 relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-brand-400" />
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                  <Lock className="h-4 w-4 text-[#3B82F6]" />
                 </div>
                 <input
                   id="password"
@@ -108,17 +108,17 @@ export default function AdminLogin() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="appearance-none block w-full pl-10 px-4 py-2.5 border border-brand-700/50 rounded-xl shadow-sm placeholder-brand-500 bg-brand-950/50 text-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 sm:text-sm transition-shadow"
+                  className="appearance-none block w-full pl-10 px-4 py-3 border border-[#182f6b] rounded-xl shadow-sm placeholder-[#1f47e6]/50 bg-[#091a55] text-[#1f47e6] focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-all"
                   placeholder="••••••••"
                 />
               </div>
             </div>
 
-            <div>
+            <div className="pt-2">
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-xl shadow-lg shadow-brand-600/20 text-sm font-bold text-white bg-brand-600 hover:bg-brand-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-brand-950 focus:ring-brand-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-lg shadow-blue-600/20 text-sm font-bold text-white bg-[#1f47e6] hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#050f33] focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
                 {loading ? (
                   <Loader2 className="h-5 w-5 animate-spin" />
@@ -129,22 +129,13 @@ export default function AdminLogin() {
             </div>
           </form>
           
-          <div className="mt-6 text-center">
-            <p className="text-sm text-brand-300">
-              Pas encore de compte admin ?{' '}
-              <button
-                onClick={() => navigate('/admin/register')}
-                className="text-brand-400 hover:text-brand-300 font-semibold transition-colors"
-              >
-                S'inscrire
-              </button>
-            </p>
-            <p className="mt-4 text-xs">
+          <div className="mt-8 text-center space-y-4">
+            <p className="text-[12px]">
               <button
                 onClick={() => navigate('/')}
-                className="text-brand-500 hover:text-brand-400 transition-colors flex items-center justify-center gap-1 mx-auto"
+                className="text-[#1f47e6] hover:text-blue-400 transition-colors flex items-center justify-center gap-1 mx-auto"
               >
-                &larr; Retour au site
+                — Retour au site
               </button>
             </p>
           </div>

@@ -435,8 +435,17 @@ export default function AdminOrders({ quotesOnly = false }: { quotesOnly?: boole
             <div className="glass p-4 rounded-xl space-y-2">
               <div className="flex justify-between text-sm text-slate-600 dark:text-slate-300"><span>Sous-total</span><span>{formatPrice(Number(selected.subtotal))}</span></div>
               <div className="flex justify-between text-sm text-slate-600 dark:text-slate-300"><span>TVA</span><span>{formatPrice(Number(selected.vat))}</span></div>
-              <div className="flex justify-between text-sm text-slate-600 dark:text-slate-300"><span>Livraison</span><span>{formatPrice(Number(selected.shipping))}</span></div>
-              <div className="flex justify-between font-bold text-lg text-slate-900 dark:text-white border-t border-slate-100 dark:border-white/10 pt-2"><span>Total</span><span>{formatPrice(Number(selected.total))}</span></div>
+              {Number(selected.subtotal) > 0 && (
+                <div className="flex justify-between text-sm text-slate-600 dark:text-slate-300"><span>Timbre fiscal</span><span>{formatPrice(1)}</span></div>
+              )}
+              <div className="flex justify-between text-sm text-slate-600 dark:text-slate-300">
+                <span>RAS (1%)</span>
+                <span className="text-brand-600 dark:text-brand-400">+{formatPrice((Number(selected.subtotal) + Number(selected.vat) + 1) * 0.01)}</span>
+              </div>
+              <div className="flex justify-between font-bold text-lg text-slate-900 dark:text-white border-t border-slate-100 dark:border-white/10 pt-2">
+                <span>Total</span>
+                <span>{formatPrice(Number(selected.total))}</span>
+              </div>
             </div>
 
             {/* Actions */}
@@ -534,7 +543,9 @@ function downloadAsText(order: OrderWithItems, type: 'invoice' | 'quote') {
   lines.push(``);
   lines.push(`Sous-total HT:  ${formatPrice(Number(order.subtotal))}`);
   lines.push(`TVA (19%):      ${formatPrice(Number(order.vat))}`);
-  lines.push(`Livraison:      ${formatPrice(Number(order.shipping))}`);
+  if (Number(order.subtotal) > 0) lines.push(`Timbre fiscal:  ${formatPrice(1)}`);
+  lines.push(`RAS (1%):       +${formatPrice((Number(order.subtotal) + Number(order.vat) + 1) * 0.01)}`);
+  lines.push(`--------------------------------`);
   lines.push(`TOTAL TTC:      ${formatPrice(Number(order.total))}`);
   lines.push(``);
   if (order.notes) { lines.push(`Notes: ${order.notes}`); lines.push(``); }

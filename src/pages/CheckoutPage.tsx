@@ -4,15 +4,32 @@ import { useCart } from '@/context/CartContext';
 import { useRouter } from '@/context/RouterContext';
 import { supabase } from '@/lib/supabase';
 import { formatPrice } from '@/lib/format';
+import { toast } from 'react-hot-toast';
 
 const SHIPPING = 7;
 const VAT_RATE = 0.19;
+
+const t = {
+  fr: {
+    fullName: "Nom complet", phone: "Téléphone", email: "Email", address: "Adresse", city: "Ville", postalCode: "Code postal", country: "Pays", notes: "Notes (optionnel)",
+    companyName: "Raison sociale", taxId: "Matricule fiscal", vatNumber: "TVA", rcNumber: "Registre commerce", contactPerson: "Personne à contacter",
+    phFullName: "Karim Ben Salah", phPhone: "+216 22 000 000", phEmail: "email@exemple.com", phAddress: "Rue, numéro", phCity: "Tunis", phPostalCode: "1000",
+    phCompanyName: "Société XYZ SARL", phTaxId: "0000000A", phVatNumber: "0000000", phRcNumber: "B0000000", phContactPerson: "Nom du contact", phNotes: "Instructions de livraison..."
+  },
+  ar: {
+    fullName: "الاسم الكامل", phone: "رقم الهاتف", email: "البريد الإلكتروني", address: "العنوان", city: "المدينة", postalCode: "الرمز البريدي", country: "البلد", notes: "ملاحظات (اختياري)",
+    companyName: "اسم الشركة", taxId: "المعرف الجبائي", vatNumber: "الأداء على القيمة المضافة", rcNumber: "السجل التجاري", contactPerson: "جهة الاتصال",
+    phFullName: "كريم بن صالح", phPhone: "+216 22 000 000", phEmail: "email@exemple.com", phAddress: "الشارع، الرقم", phCity: "تونس", phPostalCode: "1000",
+    phCompanyName: "شركة XYZ", phTaxId: "0000000A", phVatNumber: "0000000", phRcNumber: "B0000000", phContactPerson: "اسم المسؤول", phNotes: "تعليمات التوصيل، معلومات إضافية..."
+  }
+};
 
 export default function CheckoutPage() {
   const { items, subtotal, clear, count } = useCart();
   const { query, navigate } = useRouter();
   const [type, setType] = useState<'order' | 'quote'>(query.get('type') === 'quote' ? 'quote' : 'order');
   const [customerType, setCustomerType] = useState<'individual' | 'company'>('individual');
+  const [lang, setLang] = useState<'fr' | 'ar'>('fr');
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [orderId, setOrderId] = useState<string>('');
@@ -25,10 +42,26 @@ export default function CheckoutPage() {
   const set = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
   const vat = subtotal * VAT_RATE;
-  const shipping = subtotal > 0 ? SHIPPING : 0;
-  const total = subtotal + vat + shipping;
+  const timbre = subtotal > 0 ? 1 : 0; // 1 DT
+  
+  let baseTotal = subtotal + vat + timbre;
+  const ras = baseTotal * 0.01; // 1% of TTC
+  const total = baseTotal + ras;
 
   const handleSubmit = async () => {
+    // Basic validation
+    if (customerType === 'individual') {
+      if (!form.fullName || !form.phone || !form.address || !form.city) {
+        toast.error(lang === 'fr' ? 'Veuillez remplir tous les champs obligatoires' : 'الرجاء ملء جميع الحقول الإجبارية');
+        return;
+      }
+    } else {
+      if (!form.companyName || !form.taxId || !form.phone || !form.address || !form.city) {
+        toast.error(lang === 'fr' ? 'Veuillez remplir tous les champs obligatoires' : 'الرجاء ملء جميع الحقول الإجبارية');
+        return;
+      }
+    }
+
     setSubmitting(true);
     const orderData = {
       customer_type: customerType,
@@ -36,7 +69,7 @@ export default function CheckoutPage() {
       type,
       subtotal,
       vat,
-      shipping,
+      shipping: 0,
       total,
       notes: form.notes || null,
       customer_info: form,
@@ -107,28 +140,7 @@ export default function CheckoutPage() {
 
       <div className="grid lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
-          {/* Order type toggle */}
-          <div className="glass-card p-5">
-            <h3 className="font-bold text-sm text-slate-900 dark:text-white mb-3">Type de demande</h3>
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                onClick={() => setType('order')}
-                className={`p-4 rounded-xl border-2 transition-all text-left ${type === 'order' ? 'border-brand-500 bg-brand-50 dark:bg-brand-800/40' : 'border-slate-200 dark:border-white/10 glass'}`}
-              >
-                <ShoppingBag className={`w-5 h-5 mb-2 ${type === 'order' ? 'text-brand-500' : 'text-slate-400'}`} />
-                <div className="font-semibold text-sm text-slate-900 dark:text-white">Commande</div>
-                <div className="text-xs text-slate-500 mt-0.5">Achat immédiat</div>
-              </button>
-              <button
-                onClick={() => setType('quote')}
-                className={`p-4 rounded-xl border-2 transition-all text-left ${type === 'quote' ? 'border-brand-500 bg-brand-50 dark:bg-brand-800/40' : 'border-slate-200 dark:border-white/10 glass'}`}
-              >
-                <FileText className={`w-5 h-5 mb-2 ${type === 'quote' ? 'text-brand-500' : 'text-slate-400'}`} />
-                <div className="font-semibold text-sm text-slate-900 dark:text-white">Devis</div>
-                <div className="text-xs text-slate-500 mt-0.5">Demander un prix</div>
-              </button>
-            </div>
-          </div>
+
 
           {/* Customer type toggle */}
           <div className="glass-card p-5">
@@ -153,50 +165,141 @@ export default function CheckoutPage() {
 
           {/* Form */}
           <div className="glass-card p-6 space-y-4 animate-fade-in" key={customerType}>
-            {customerType === 'individual' ? (
-              <>
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <Field label="Nom complet" value={form.fullName} onChange={(v) => set('fullName', v)} placeholder="Karim Ben Salah" />
-                  <Field label="Téléphone" value={form.phone} onChange={(v) => set('phone', v)} placeholder="+216 22 000 000" />
+            <div className="flex justify-end mb-4">
+              <div className="inline-flex bg-slate-100 dark:bg-brand-900/40 rounded-lg p-1">
+                <button
+                  onClick={() => setLang('fr')}
+                  className={`px-4 py-1.5 text-sm font-semibold rounded-md transition-colors ${lang === 'fr' ? 'bg-white dark:bg-brand-700 shadow-sm text-brand-600 dark:text-white' : 'text-slate-500'}`}
+                >
+                  Français
+                </button>
+                <button
+                  onClick={() => setLang('ar')}
+                  className={`px-4 py-1.5 text-sm font-semibold rounded-md transition-colors ${lang === 'ar' ? 'bg-white dark:bg-brand-700 shadow-sm text-brand-600 dark:text-white' : 'text-slate-500'}`}
+                >
+                  العربية
+                </button>
+              </div>
+            </div>
+
+            <div dir={lang === 'ar' ? 'rtl' : 'ltr'} className={lang === 'ar' ? 'text-right font-arabic' : ''}>
+              {customerType === 'individual' ? (
+                <>
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <Field label={t[lang].fullName} value={form.fullName} onChange={(v) => set('fullName', v)} placeholder={t[lang].phFullName} rtl={lang === 'ar'} />
+                    <Field label={t[lang].phone} value={form.phone} onChange={(v) => set('phone', v)} placeholder={t[lang].phPhone} rtl={lang === 'ar'} />
+                  </div>
+                  <Field label={t[lang].email} value={form.email} onChange={(v) => set('email', v)} placeholder={t[lang].phEmail} type="email" rtl={lang === 'ar'} />
+                  <Field label={t[lang].address} value={form.address} onChange={(v) => set('address', v)} placeholder={t[lang].phAddress} rtl={lang === 'ar'} />
+                  <div className="grid sm:grid-cols-3 gap-4">
+                    <Field label={t[lang].city} value={form.city} onChange={(v) => set('city', v)} placeholder={t[lang].phCity} rtl={lang === 'ar'} />
+                    <Field label={t[lang].postalCode} value={form.postalCode} onChange={(v) => set('postalCode', v)} placeholder={t[lang].phPostalCode} rtl={lang === 'ar'} />
+                    <Field label={t[lang].country} value={form.country} onChange={(v) => set('country', v)} rtl={lang === 'ar'} />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <Field label={t[lang].companyName} value={form.companyName} onChange={(v) => set('companyName', v)} placeholder={t[lang].phCompanyName} rtl={lang === 'ar'} />
+                  <div className="grid sm:grid-cols-3 gap-4">
+                    <Field label={t[lang].taxId} value={form.taxId} onChange={(v) => set('taxId', v)} placeholder={t[lang].phTaxId} rtl={lang === 'ar'} />
+                    <Field label={t[lang].vatNumber} value={form.vatNumber} onChange={(v) => set('vatNumber', v)} placeholder={t[lang].phVatNumber} rtl={lang === 'ar'} />
+                    <Field label={t[lang].rcNumber} value={form.rcNumber} onChange={(v) => set('rcNumber', v)} placeholder={t[lang].phRcNumber} rtl={lang === 'ar'} />
+                  </div>
+                  <Field label={t[lang].address} value={form.address} onChange={(v) => set('address', v)} placeholder={t[lang].phAddress} rtl={lang === 'ar'} />
+                  <div className="grid sm:grid-cols-3 gap-4">
+                    <Field label={t[lang].city} value={form.city} onChange={(v) => set('city', v)} placeholder={t[lang].phCity} rtl={lang === 'ar'} />
+                    <Field label={t[lang].postalCode} value={form.postalCode} onChange={(v) => set('postalCode', v)} placeholder={t[lang].phPostalCode} rtl={lang === 'ar'} />
+                    <Field label={t[lang].country} value={form.country} onChange={(v) => set('country', v)} rtl={lang === 'ar'} />
+                  </div>
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <Field label={t[lang].contactPerson} value={form.contactPerson} onChange={(v) => set('contactPerson', v)} placeholder={t[lang].phContactPerson} rtl={lang === 'ar'} />
+                    <Field label={t[lang].phone} value={form.phone} onChange={(v) => set('phone', v)} placeholder={t[lang].phPhone} rtl={lang === 'ar'} />
+                  </div>
+                  <Field label={t[lang].email} value={form.email} onChange={(v) => set('email', v)} placeholder={t[lang].phEmail} type="email" rtl={lang === 'ar'} />
+                </>
+              )}
+              <div className="mt-4">
+                <label className={`text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5 block ${lang === 'ar' ? 'text-right' : ''}`}>{t[lang].notes}</label>
+                <textarea
+                  value={form.notes}
+                  onChange={(e) => set('notes', e.target.value)}
+                  rows={3}
+                  placeholder={t[lang].phNotes}
+                  className={`input-field resize-none ${lang === 'ar' ? 'text-right placeholder:text-right' : ''}`}
+                />
+              </div>
+
+              {/* Order Type Radio - Modern Style */}
+              <div className={`mt-8 pt-6 border-t border-slate-100 dark:border-white/10 ${lang === 'ar' ? 'text-right' : ''}`}>
+                <label className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wide mb-4 block">
+                  {lang === 'fr' ? 'Type de demande' : 'نوع الطلب'}
+                </label>
+                <div className={`grid grid-cols-1 sm:grid-cols-2 gap-4 ${lang === 'ar' ? 'sm:flex-row-reverse' : ''}`}>
+                  
+                  {/* Option: Commande */}
+                  <label className="cursor-pointer group relative">
+                    <input 
+                      type="radio" 
+                      name="orderType" 
+                      value="order" 
+                      checked={type === 'order'} 
+                      onChange={() => setType('order')} 
+                      className="sr-only" 
+                    />
+                    <div className={`p-4 rounded-2xl border-2 transition-all flex items-center gap-4 ${lang === 'ar' ? 'flex-row-reverse' : ''} ${
+                      type === 'order' 
+                        ? 'border-brand-500 bg-brand-50/50 dark:bg-brand-900/30 shadow-md shadow-brand-500/10' 
+                        : 'border-slate-200 dark:border-white/10 bg-white dark:bg-transparent hover:border-brand-300 dark:hover:border-brand-700 hover:bg-slate-50 dark:hover:bg-white/5'
+                    }`}>
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 transition-colors ${
+                        type === 'order' ? 'bg-brand-500 text-white' : 'bg-slate-100 dark:bg-brand-900/40 text-slate-500'
+                      }`}>
+                        <ShoppingBag className="w-5 h-5" />
+                      </div>
+                      <div className={lang === 'ar' ? 'text-right' : 'text-left'}>
+                        <div className={`font-bold text-sm ${type === 'order' ? 'text-brand-700 dark:text-brand-300' : 'text-slate-700 dark:text-slate-300'}`}>
+                          {lang === 'fr' ? 'Commande' : 'طلب شراء'}
+                        </div>
+                        <div className={`text-xs mt-0.5 ${type === 'order' ? 'text-brand-600/80 dark:text-brand-400/80' : 'text-slate-500'}`}>
+                          {lang === 'fr' ? 'Achat immédiat' : 'شراء فوري'}
+                        </div>
+                      </div>
+                    </div>
+                  </label>
+
+                  {/* Option: Devis */}
+                  <label className="cursor-pointer group relative">
+                    <input 
+                      type="radio" 
+                      name="orderType" 
+                      value="quote" 
+                      checked={type === 'quote'} 
+                      onChange={() => setType('quote')} 
+                      className="sr-only" 
+                    />
+                    <div className={`p-4 rounded-2xl border-2 transition-all flex items-center gap-4 ${lang === 'ar' ? 'flex-row-reverse' : ''} ${
+                      type === 'quote' 
+                        ? 'border-brand-500 bg-brand-50/50 dark:bg-brand-900/30 shadow-md shadow-brand-500/10' 
+                        : 'border-slate-200 dark:border-white/10 bg-white dark:bg-transparent hover:border-brand-300 dark:hover:border-brand-700 hover:bg-slate-50 dark:hover:bg-white/5'
+                    }`}>
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 transition-colors ${
+                        type === 'quote' ? 'bg-brand-500 text-white' : 'bg-slate-100 dark:bg-brand-900/40 text-slate-500'
+                      }`}>
+                        <FileText className="w-5 h-5" />
+                      </div>
+                      <div className={lang === 'ar' ? 'text-right' : 'text-left'}>
+                        <div className={`font-bold text-sm ${type === 'quote' ? 'text-brand-700 dark:text-brand-300' : 'text-slate-700 dark:text-slate-300'}`}>
+                          {lang === 'fr' ? 'Devis' : 'عرض سعر'}
+                        </div>
+                        <div className={`text-xs mt-0.5 ${type === 'quote' ? 'text-brand-600/80 dark:text-brand-400/80' : 'text-slate-500'}`}>
+                          {lang === 'fr' ? 'Demander un prix' : 'طلب تسعيرة'}
+                        </div>
+                      </div>
+                    </div>
+                  </label>
+
                 </div>
-                <Field label="Email" value={form.email} onChange={(v) => set('email', v)} placeholder="email@exemple.com" type="email" />
-                <Field label="Adresse" value={form.address} onChange={(v) => set('address', v)} placeholder="Rue, numéro" />
-                <div className="grid sm:grid-cols-3 gap-4">
-                  <Field label="Ville" value={form.city} onChange={(v) => set('city', v)} placeholder="Tunis" />
-                  <Field label="Code postal" value={form.postalCode} onChange={(v) => set('postalCode', v)} placeholder="1000" />
-                  <Field label="Pays" value={form.country} onChange={(v) => set('country', v)} />
-                </div>
-              </>
-            ) : (
-              <>
-                <Field label="Raison sociale" value={form.companyName} onChange={(v) => set('companyName', v)} placeholder="Société XYZ SARL" />
-                <div className="grid sm:grid-cols-3 gap-4">
-                  <Field label="Matricule fiscal" value={form.taxId} onChange={(v) => set('taxId', v)} placeholder="0000000A" />
-                  <Field label="TVA" value={form.vatNumber} onChange={(v) => set('vatNumber', v)} placeholder="0000000" />
-                  <Field label="Registre commerce" value={form.rcNumber} onChange={(v) => set('rcNumber', v)} placeholder="B0000000" />
-                </div>
-                <Field label="Adresse" value={form.address} onChange={(v) => set('address', v)} placeholder="Adresse de l'entreprise" />
-                <div className="grid sm:grid-cols-3 gap-4">
-                  <Field label="Ville" value={form.city} onChange={(v) => set('city', v)} placeholder="Tunis" />
-                  <Field label="Code postal" value={form.postalCode} onChange={(v) => set('postalCode', v)} placeholder="1000" />
-                  <Field label="Pays" value={form.country} onChange={(v) => set('country', v)} />
-                </div>
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <Field label="Personne à contacter" value={form.contactPerson} onChange={(v) => set('contactPerson', v)} placeholder="Nom du contact" />
-                  <Field label="Téléphone" value={form.phone} onChange={(v) => set('phone', v)} placeholder="+216 22 000 000" />
-                </div>
-                <Field label="Email" value={form.email} onChange={(v) => set('email', v)} placeholder="contact@societe.com" type="email" />
-              </>
-            )}
-            <div>
-              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5 block">Notes (optionnel)</label>
-              <textarea
-                value={form.notes}
-                onChange={(e) => set('notes', e.target.value)}
-                rows={3}
-                placeholder="Instructions de livraison, informations complémentaires..."
-                className="input-field resize-none"
-              />
+              </div>
             </div>
           </div>
         </div>
@@ -222,11 +325,18 @@ export default function CheckoutPage() {
             <div className="space-y-2 text-sm border-t border-slate-100 dark:border-white/10 pt-4">
               <div className="flex justify-between text-slate-600 dark:text-slate-300"><span>Sous-total</span><span className="font-semibold">{formatPrice(subtotal)}</span></div>
               <div className="flex justify-between text-slate-600 dark:text-slate-300"><span>TVA (19%)</span><span className="font-semibold">{formatPrice(vat)}</span></div>
-              <div className="flex justify-between text-slate-600 dark:text-slate-300"><span>Livraison</span><span className="font-semibold">{formatPrice(shipping)}</span></div>
+              {subtotal > 0 && (
+                <>
+                  <div className="flex justify-between text-slate-600 dark:text-slate-300"><span>Timbre fiscal</span><span className="font-semibold">{formatPrice(timbre)}</span></div>
+                  <div className="flex justify-between text-slate-600 dark:text-slate-300"><span>RAS (1%)</span><span className="font-semibold text-brand-600 dark:text-brand-400">+{formatPrice(ras)}</span></div>
+                </>
+              )}
             </div>
             <div className="flex justify-between items-baseline border-t border-slate-100 dark:border-white/10 pt-4 mt-4">
               <span className="font-display font-bold text-lg">Total</span>
-              <span className="font-display font-extrabold text-2xl text-brand-700 dark:text-brand-200">{formatPrice(total)}</span>
+              <span className="font-display font-extrabold text-2xl text-brand-700 dark:text-brand-200">
+                {formatPrice(total)}
+              </span>
             </div>
             <button onClick={handleSubmit} disabled={submitting} className="btn-primary w-full mt-6">
               {submitting ? 'Envoi en cours...' : (
@@ -242,11 +352,11 @@ export default function CheckoutPage() {
   );
 }
 
-function Field({ label, value, onChange, placeholder, type = 'text' }: { label: string; value: string; onChange: (v: string) => void; placeholder?: string; type?: string }) {
+function Field({ label, value, onChange, placeholder, type = 'text', rtl = false }: { label: string; value: string; onChange: (v: string) => void; placeholder?: string; type?: string; rtl?: boolean }) {
   return (
-    <div>
-      <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5 block">{label}</label>
-      <input type={type} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className="input-field" />
+    <div className="mb-4">
+      <label className={`text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5 block ${rtl ? 'text-right' : ''}`}>{label}</label>
+      <input type={type} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className={`input-field ${rtl ? 'text-right placeholder:text-right' : ''}`} />
     </div>
   );
 }

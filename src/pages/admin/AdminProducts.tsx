@@ -340,6 +340,19 @@ function ProductForm({ product, categories, onClose, onSaved }: { product: Produ
         <div className="p-6 overflow-y-auto flex-1">
           {activeTab === 'info' && (
             <div className="grid sm:grid-cols-2 gap-4">
+              <div className="sm:col-span-2">
+                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5 block">Marque de voiture compatible</label>
+                <select 
+                  value={form.brand_id} 
+                  onChange={(e) => set('brand_id', e.target.value)} 
+                  className="input-field"
+                >
+                  <option value="">Sélectionner une marque...</option>
+                  {brands.map(b => (
+                    <option key={b.id} value={b.id}>{b.name}</option>
+                  ))}
+                </select>
+              </div>
               <Input label="Nom du produit" value={form.name} onChange={(v) => set('name', v)} />
               <Input label="Référence" value={form.sku} onChange={(v) => set('sku', v)} />
               <div className="sm:col-span-2">
@@ -351,8 +364,6 @@ function ProductForm({ product, categories, onClose, onSaved }: { product: Produ
                 <Input label="Prix promo (TND)" value={form.promo_price} onChange={(v) => set('promo_price', v)} type="number" />
               )}
               <Input label="Stock" value={form.stock} onChange={(v) => set('stock', v)} type="number" />
-              <Input label="Garantie" value={form.warranty} onChange={(v) => set('warranty', v)} />
-              <Input label="Dimensions" value={form.dimensions} onChange={(v) => set('dimensions', v)} />
               <div className="sm:col-span-2 mt-2">
                 <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5 block">Badge / Mise en avant</label>
                 <div className="flex gap-4">
@@ -399,32 +410,6 @@ function ProductForm({ product, categories, onClose, onSaved }: { product: Produ
                     <span className="text-xs font-semibold">{uploading ? 'Envoi...' : 'Ajouter'}</span>
                     <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" disabled={uploading} />
                   </label>
-                </div>
-              </div>
-
-              <div className="sm:col-span-2 mt-6 pt-6 border-t border-slate-100 dark:border-white/5">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <h3 className="font-semibold text-slate-900 dark:text-white">Marque de voiture compatible</h3>
-                    <p className="text-xs text-slate-500">Sélectionnez la marque de voiture pour ce produit.</p>
-                  </div>
-                </div>
-                
-                <div className="space-y-3">
-                  <div className="flex gap-3 items-center glass p-3 rounded-xl">
-                    <div className="flex-1">
-                      <select 
-                        value={form.brand_id} 
-                        onChange={(e) => set('brand_id', e.target.value)} 
-                        className="input-field"
-                      >
-                        <option value="">Sélectionner une marque...</option>
-                        {brands.map(b => (
-                          <option key={b.id} value={b.id}>{b.name}</option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>

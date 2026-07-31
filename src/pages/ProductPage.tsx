@@ -234,7 +234,6 @@ export default function ProductPage() {
             )}
           </div>
 
-          <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-6">{product.description}</p>
 
           {/* Options */}
           {options.map((o) => (
@@ -295,27 +294,15 @@ export default function ProductPage() {
         </div>
       </div>
 
-      {/* Technical specs */}
-      <div className="mt-12 glass-card p-6">
-        <h2 className="font-display font-bold text-xl text-slate-900 dark:text-white mb-4">Spécifications techniques</h2>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[
-            ['Poids', product.weight],
-            ['Dimensions', product.dimensions],
-            ['Garantie', product.warranty],
-            ['Délai de livraison', product.delivery_time],
-            ['Référence OEM', product.oem_ref],
-            ['Référence fabricant', product.manufacturer_ref],
-            ['Référence interne', product.sku],
-            ['Emplacement entrepôt', product.warehouse_location],
-          ].filter(([, v]) => v).map(([label, value], i) => (
-            <div key={i} className="flex justify-between py-2 border-b border-slate-100 dark:border-white/5">
-              <span className="text-sm text-slate-500">{label}</span>
-              <span className="text-sm font-semibold text-slate-900 dark:text-white">{value}</span>
-            </div>
-          ))}
+      {/* Product Description Card */}
+      {product.description && (
+        <div className="mt-12 glass-card p-6">
+          <h2 className="font-display font-bold text-xl text-slate-900 dark:text-white mb-4">Description du produit</h2>
+          <div className="text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-wrap">
+            {product.description}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Compatibility */}
       {compat.length > 0 && (

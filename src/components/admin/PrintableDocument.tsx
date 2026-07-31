@@ -12,150 +12,206 @@ const COMPANY = {
   address: 'Zone Industrielle, Rue 12, Tunis, Tunisie',
   phone: '+216 71 000 000',
   email: 'contact@acilretro.com',
+  website: 'www.acilretro.tn',
   taxId: '0000000A',
   rc: 'B0000000',
   vatNumber: '0000000',
+  bank: 'BNA',
+  rib: '12 345 678 901 234 567 89 01',
+  iban: 'TN59 1234 5678 9012 3456 7890 1234'
 };
 
 export default function PrintableDocument({ order, documentType }: Props) {
   const isInvoice = documentType === 'invoice';
   const docNumber = order.id.slice(0, 8).toUpperCase();
-  const docLabel = isInvoice ? 'FACTURE' : 'DEVIS';
-  const docPrefix = isInvoice ? 'FAC' : 'DEV';
+  const docLabel = isInvoice ? 'Facture' : 'Devis';
+  
+  const customerInfo = order.customer_info as any || {};
+  const customerName = customerInfo.fullName || (order.customer_type === 'company' ? 'Entreprise' : 'Client Passager');
+  
+  const ras = (Number(order.subtotal) + Number(order.vat) + 1) * 0.01;
 
   return (
-    <div id="printable-document" className="bg-white text-slate-900 p-8 lg:p-12 max-w-4xl mx-auto" style={{ fontFamily: 'system-ui, sans-serif' }}>
-      {/* Header */}
-      <div className="flex items-start justify-between mb-10 pb-6 border-b-2 border-brand-900">
-        <div className="flex items-center gap-3">
-          <div className="w-16 h-16 rounded-2xl overflow-hidden shrink-0 shadow-lg border border-slate-100">
-            <img src="/images/acil_logo.png" alt="ACIL RETRO Logo" className="w-full h-full object-cover" />
+    <div id="printable-document" className="bg-white text-slate-900 p-8 lg:p-12 max-w-4xl mx-auto text-[15px]" style={{ fontFamily: 'Arial, sans-serif' }}>
+      
+      {/* Top Header */}
+      <div className="flex justify-between items-start mb-8">
+        <div>
+          <div className="flex items-center gap-4 mb-3">
+            <div className="w-20 h-20">
+              <img src="/images/acil_logo.png" alt="Logo" className="w-full h-full object-contain" />
+            </div>
+            <div className="font-extrabold text-2xl text-brand-900">{COMPANY.name}</div>
           </div>
-          <div>
-            <div className="font-extrabold text-2xl text-brand-950">{COMPANY.name}</div>
-            <div className="text-xs text-slate-500 uppercase tracking-wide">{COMPANY.tagline}</div>
+          <div className="text-slate-600 leading-snug">
+            {COMPANY.address.split(',').map((line, i) => (
+              <div key={i}>{line.trim()}</div>
+            ))}
           </div>
         </div>
         <div className="text-right">
-          <div className="inline-block px-4 py-1.5 rounded-lg text-white font-bold text-lg" style={{ background: isInvoice ? '#0a1f5c' : '#d97706' }}>
-            {docLabel}
-          </div>
-          <div className="text-sm text-slate-600 mt-2">N° {docPrefix}-{docNumber}</div>
-          <div className="text-xs text-slate-500 mt-1">Date: {formatDate(order.created_at)}</div>
-          {isInvoice ? (
-            <div className="text-xs text-slate-500">Échéance: {formatDate(new Date(Date.now() + 15 * 86400000).toISOString())}</div>
-          ) : (
-            order.expires_at && <div className="text-xs text-slate-500">Valable jusqu'au: {formatDate(order.expires_at)}</div>
-          )}
+          <h1 className="font-bold text-2xl text-slate-900">{docLabel} No. {docNumber}</h1>
         </div>
       </div>
 
-      {/* From / To */}
-      <div className="grid grid-cols-2 gap-6 mb-10">
-        <div>
-          <div className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">Émetteur</div>
-          <div className="text-sm font-bold text-slate-900">{COMPANY.name}</div>
-          <div className="text-xs text-slate-600 mt-1 leading-relaxed">
-            {COMPANY.address}<br />
-            Tél: {COMPANY.phone}<br />
-            Email: {COMPANY.email}
+      {/* Middle Information Section */}
+      <div className="flex gap-8 mb-8">
+        {/* Info Box */}
+        <div className="w-1/2 bg-slate-100 p-4 rounded text-slate-800">
+          <div className="grid grid-cols-[140px_1fr] gap-y-1">
+            <div className="font-semibold text-right pr-4">Date de la {docLabel.toLowerCase()}</div>
+            <div>{formatDate(order.created_at)}</div>
+            
+            <div className="font-semibold text-right pr-4">Référence</div>
+            <div>{docNumber}</div>
+            
+            <div className="font-semibold text-right pr-4">Numéro de client</div>
+            <div>{order.client_id ? order.client_id.slice(0, 8).toUpperCase() : '-'}</div>
+            
+            {isInvoice && (
+              <>
+                <div className="font-semibold text-right pr-4">Paiement dû</div>
+                <div>{formatDate(new Date(Date.now() + 15 * 86400000).toISOString())}</div>
+                <div className="font-semibold text-right pr-4">Modalité de paiement</div>
+                <div>15 jours</div>
+              </>
+            )}
+            
+            <div className="font-semibold text-right pr-4">Emis par</div>
+            <div>{COMPANY.name}</div>
+            
+            <div className="font-semibold text-right pr-4">Contact client</div>
+            <div>{customerInfo.phone || '-'}</div>
+            
+            <div className="font-semibold text-right pr-4">Date de vente</div>
+            <div>{formatDate(order.created_at)}</div>
           </div>
         </div>
-        <div>
-          <div className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">Client</div>
-          <div className="text-sm font-bold text-slate-900">
-            {order.customer_type === 'company' ? 'Entreprise' : 'Particulier'}
-          </div>
-          <div className="text-xs text-slate-600 mt-1 leading-relaxed">
-            Type: {order.customer_type === 'company' ? 'Entreprise (B2B)' : 'Particulier (B2C)'}<br />
-            {order.notes && <span className="block mt-1">Note: {order.notes}</span>}
+
+        {/* Destinataire */}
+        <div className="w-1/2 pt-2">
+          <div className="font-bold text-sm mb-1 text-slate-900">Destinataire :</div>
+          <div className="text-slate-800 leading-relaxed">
+            {customerInfo.companyName && <div className="font-semibold">{customerInfo.companyName}</div>}
+            <div>{customerName}</div>
+            {customerInfo.address && <div>{customerInfo.address}</div>}
+            {customerInfo.city && <div>{customerInfo.postalCode} {customerInfo.city}</div>}
+            {customerInfo.country && <div>{customerInfo.country}</div>}
+            {customerInfo.taxId && <div>MF: {customerInfo.taxId}</div>}
           </div>
         </div>
       </div>
 
-      {/* Items table */}
-      <table className="w-full text-sm mb-8" style={{ borderCollapse: 'collapse' }}>
+      {/* Infos additionnelles */}
+      <div className="mb-6">
+        <div className="font-bold text-sm text-slate-900 mb-1">Infos additionnelles</div>
+        <div className="text-slate-700">
+          Merci d'avoir choisi {COMPANY.name} pour vos pièces automobiles.
+          {order.notes && <div className="mt-1">Note: {order.notes}</div>}
+          {!isInvoice && <div className="mt-1 text-amber-700">Ce devis est valable 30 jours à compter de sa date d'émission.</div>}
+        </div>
+      </div>
+
+      {/* Table */}
+      <table className="w-full text-center border-collapse mb-8 border border-slate-300">
         <thead>
-          <tr style={{ background: '#0a1f5c', color: 'white' }}>
-            <th className="text-left py-3 px-4 font-semibold text-xs uppercase tracking-wide rounded-l-lg">Désignation</th>
-            <th className="text-center py-3 px-4 font-semibold text-xs uppercase tracking-wide">Qté</th>
-            <th className="text-right py-3 px-4 font-semibold text-xs uppercase tracking-wide">P.U. HT</th>
-            <th className="text-right py-3 px-4 font-semibold text-xs uppercase tracking-wide rounded-r-lg">Total HT</th>
+          <tr className="bg-brand-50 text-brand-900 border-b border-slate-300 text-xs font-bold uppercase tracking-wider">
+            <th className="py-2 px-2 text-left border-r border-slate-300">Description</th>
+            <th className="py-2 px-2 border-r border-slate-300 w-20">Quantités</th>
+            <th className="py-2 px-2 border-r border-slate-300 w-16">Unités</th>
+            <th className="py-2 px-2 border-r border-slate-300 w-28">Prix unitaire HT</th>
+            <th className="py-2 px-2 border-r border-slate-300 w-16">% TVA</th>
+            <th className="py-2 px-2 border-r border-slate-300 w-24">TVA</th>
+            <th className="py-2 px-2 w-28">TOTAL TTC</th>
           </tr>
         </thead>
-        <tbody>
-          {order.order_items.map((item, idx) => (
-            <tr key={item.id} style={{ borderBottom: '1px solid #e2e8f0' }}>
-              <td className="py-3 px-4">
-                <div className="font-medium text-slate-900">{item.product_name}</div>
-                {item.options_snapshot && Array.isArray(item.options_snapshot) && item.options_snapshot.length > 0 && (
-                  <div className="text-xs text-slate-500 mt-1">
-                    {item.options_snapshot.map((o) => `${o.option}: ${o.value}`).join(' · ')}
-                  </div>
-                )}
-              </td>
-              <td className="py-3 px-4 text-center text-slate-700">{item.quantity}</td>
-              <td className="py-3 px-4 text-right text-slate-700">{formatPrice(Number(item.unit_price))}</td>
-              <td className="py-3 px-4 text-right font-semibold text-slate-900">{formatPrice(Number(item.unit_price) * item.quantity)}</td>
-            </tr>
-          ))}
+        <tbody className="text-slate-700 border-b border-slate-300">
+          {order.order_items.map((item, idx) => {
+            const unitPrice = Number(item.unit_price);
+            const vatAmt = unitPrice * 0.19;
+            const rowTTC = (unitPrice + vatAmt) * item.quantity;
+            return (
+              <tr key={item.id} className="border-b border-slate-200 last:border-0 align-top">
+                <td className="py-2 px-2 text-left border-r border-slate-300">
+                  <div className="font-medium text-slate-900">{item.product_name}</div>
+                  {item.options_snapshot && Array.isArray(item.options_snapshot) && item.options_snapshot.length > 0 && (
+                    <div className="text-xs text-slate-500 mt-0.5">
+                      {item.options_snapshot.map((o: any) => `${o.option}: ${o.value}`).join(' · ')}
+                    </div>
+                  )}
+                </td>
+                <td className="py-2 px-2 border-r border-slate-300">{item.quantity}</td>
+                <td className="py-2 px-2 border-r border-slate-300">pce.</td>
+                <td className="py-2 px-2 border-r border-slate-300 text-right">{formatPrice(unitPrice)}</td>
+                <td className="py-2 px-2 border-r border-slate-300">19%</td>
+                <td className="py-2 px-2 border-r border-slate-300 text-right">{formatPrice(vatAmt * item.quantity)}</td>
+                <td className="py-2 px-2 text-right">{formatPrice(rowTTC)}</td>
+              </tr>
+            );
+          })}
+          {/* Add empty rows to make the table look full if needed, or just let it be */}
         </tbody>
       </table>
 
-      {/* Totals */}
-      <div className="flex justify-end mb-10">
-        <div className="w-72 space-y-2">
-          <div className="flex justify-between text-sm text-slate-600 py-1">
-            <span>Sous-total HT</span>
-            <span className="font-medium">{formatPrice(Number(order.subtotal))}</span>
+      {/* Totals Box */}
+      <div className="flex justify-end mb-12">
+        <div className="w-72 border-t-2 border-slate-800 pt-2 text-slate-900 text-sm">
+          <div className="flex justify-between py-1">
+            <span className="font-bold">Total HT</span>
+            <span>{formatPrice(Number(order.subtotal))}</span>
           </div>
-          <div className="flex justify-between text-sm text-slate-600 py-1">
-            <span>TVA (19%)</span>
-            <span className="font-medium">{formatPrice(Number(order.vat))}</span>
+          <div className="flex justify-between py-1 border-b border-slate-300">
+            <span className="font-bold">TVA</span>
+            <span>{formatPrice(Number(order.vat))}</span>
           </div>
-          <div className="flex justify-between text-sm text-slate-600 py-1">
-            <span>Livraison</span>
-            <span className="font-medium">{formatPrice(Number(order.shipping))}</span>
-          </div>
-          <div className="flex justify-between py-3 px-4 rounded-lg text-white font-bold" style={{ background: '#0a1f5c' }}>
+          {Number(order.subtotal) > 0 && (
+            <>
+              <div className="flex justify-between py-1">
+                <span>Timbre fiscal</span>
+                <span>{formatPrice(1)}</span>
+              </div>
+              <div className="flex justify-between py-1 border-b border-slate-300">
+                <span>RAS (1%)</span>
+                <span>+{formatPrice(ras)}</span>
+              </div>
+            </>
+          )}
+          <div className="flex justify-between py-2 font-bold text-[15px] border-b-2 border-slate-800">
             <span>Total TTC</span>
             <span>{formatPrice(Number(order.total))}</span>
           </div>
         </div>
       </div>
 
-      {/* Payment info */}
-      {isInvoice && (
-        <div className="mb-8 p-4 rounded-xl" style={{ background: '#f1f5f9' }}>
-          <div className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Informations de paiement</div>
-          <div className="text-xs text-slate-600 leading-relaxed">
-            Virement bancaire: ACIL RETRO - Banque: BNA - RIB: 12 345 678 901 234 567 890 123<br />
-            Chèque à l'ordre de: ACIL RETRO<br />
-            Paiement en espèces à notre siège<br />
-            <span className="block mt-2 text-slate-500">Règlement sous 15 jours. Passé ce délai, des pénalités de retard de 1% par mois seront appliquées.</span>
-          </div>
-        </div>
-      )}
-
-      {!isInvoice && (
-        <div className="mb-8 p-4 rounded-xl" style={{ background: '#fffbeb' }}>
-          <div className="text-xs font-bold text-amber-700 uppercase tracking-wide mb-2">Conditions du devis</div>
-          <div className="text-xs text-amber-700 leading-relaxed">
-            Ce devis est valable 30 jours à compter de la date d'émission.<br />
-            Les prix indiqués sont en TND (Dinar Tunisien) et incluent la TVA.<br />
-            <span className="block mt-2">Pour accepter ce devis, veuillez nous contacter par téléphone ou email. La commande sera confirmée après validation.</span>
-          </div>
-        </div>
-      )}
-
       {/* Footer */}
-      <div className="pt-6 border-t-2 border-slate-100 text-center">
-        <div className="text-sm font-bold text-slate-900 mb-1">{COMPANY.name}</div>
-        <div className="text-xs text-slate-500">
-          {COMPANY.address} · Tél: {COMPANY.phone} · {COMPANY.email}<br />
-          <span className="block mt-2 text-slate-400">Merci de votre confiance</span>
+      <div className="pt-6 border-t border-slate-300 text-[12px] text-slate-600 flex justify-between leading-relaxed">
+        <div className="w-1/3 pr-4">
+          <div className="font-bold text-slate-800">{COMPANY.name}</div>
+          <div>{COMPANY.address}</div>
+          <div className="mt-2">Matricule Fiscal : {COMPANY.taxId}</div>
+          <div>RC : {COMPANY.rc}</div>
+        </div>
+        
+        <div className="w-1/3 pr-4">
+          <div className="font-bold text-slate-800">Contact</div>
+          <div>Téléphone : {COMPANY.phone}</div>
+          <div>Email : {COMPANY.email}</div>
+          <div>{COMPANY.website}</div>
+        </div>
+        
+        <div className="w-1/3">
+          <div className="font-bold text-slate-800">Détails bancaires</div>
+          <div className="grid grid-cols-[80px_1fr]">
+            <div>Banque</div>
+            <div>{COMPANY.bank}</div>
+            <div>RIB</div>
+            <div>{COMPANY.rib}</div>
+            <div>IBAN</div>
+            <div>{COMPANY.iban}</div>
+          </div>
         </div>
       </div>
+
     </div>
   );
 }

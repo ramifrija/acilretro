@@ -82,6 +82,31 @@ export default function ContactPage() {
           </form>
         </div>
       </div>
+
+      {/* Map Section */}
+      <div className="mt-12 glass-card p-2 md:p-4 animate-fade-in">
+        <div className="w-full aspect-video md:aspect-[21/9] rounded-xl overflow-hidden mb-6 relative bg-slate-100 dark:bg-brand-900/50">
+          <iframe 
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d508.96286200890046!2d10.225212463933072!3d36.76257611933546!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x12fd371baeb8f655%3A0x1cec81003322a2ae!2sACIL%20Retro!5e1!3m2!1sfr!2stn!4v1785456779339!5m2!1sfr!2stn" 
+            className="absolute inset-0 w-full h-full" 
+            style={{ border: 0 }} 
+            allowFullScreen 
+            loading="lazy" 
+            referrerPolicy="strict-origin-when-cross-origin"
+          />
+        </div>
+        <div className="flex justify-center mb-4">
+          <a 
+            href="https://www.google.com/maps/place/ACIL+Retro/@36.7625761,10.2252125,18z/" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="btn-primary px-8 py-3.5 shadow-xl shadow-brand-500/20 hover:-translate-y-1 transition-transform"
+          >
+            <MapPin className="w-5 h-5 mr-2" />
+            Ouvrir dans Google Maps
+          </a>
+        </div>
+      </div>
     </div>
   );
 }
