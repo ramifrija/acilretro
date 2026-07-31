@@ -188,11 +188,13 @@ export default function AdminPOS() {
 
       const { data: insertedItems } = await supabase.from('order_items').insert(itemsToInsert).select();
 
-      for (const item of cart) {
-        await supabase.from('products').update({ stock: item.product.stock - item.quantity }).eq('id', item.product.id);
-        await supabase.from('inventory_movements').insert({
-          product_id: item.product.id, movement_type: 'sale', quantity: -item.quantity, reason: 'Vente POS',
-        });
+      const { error: rpcError } = await supabase.rpc('reduce_stock_for_order', {
+        p_order_id: order.id,
+        p_reason_prefix: 'Vente POS'
+      });
+
+      if (rpcError) {
+        console.error('Error reducing stock via RPC:', rpcError);
       }
 
       setPrintDoc({ order: { ...order, order_items: insertedItems || [] } as OrderWithItems, type: 'invoice' });

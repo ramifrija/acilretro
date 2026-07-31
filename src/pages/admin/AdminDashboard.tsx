@@ -27,52 +27,10 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     (async () => {
-      const { data: orders } = await supabase.from('orders').select('*');
-      const { data: products } = await supabase.from('products').select('*');
-      const { count: customersCount } = await supabase.from('customers').select('*', { count: 'exact', head: true });
-
-      const confirmedOrders = (orders || []).filter((o) => o.status === 'paid');
-      const revenue = confirmedOrders.reduce((s, o) => s + Number(o.total), 0);
-      const invValue = (products || []).reduce((s, p) => s + Number(p.base_price) * p.stock, 0);
-
-      setStats({
-        totalRevenue: revenue,
-        totalOrders: (orders || []).filter((o) => o.type === 'order').length,
-        pendingQuotes: (orders || []).filter((o) => o.type === 'quote' && o.status === 'pending').length,
-        pendingOrders: (orders || []).filter((o) => o.type === 'order' && o.status === 'pending').length,
-        totalProducts: products?.length || 0,
-        lowStockCount: (products || []).filter((p) => p.stock <= p.min_stock).length,
-        totalCustomers: customersCount || 0,
-        inventoryValue: invValue,
-      });
-
-      const currentYear = new Date().getFullYear();
-      const monthTotals = new Array(12).fill(0);
-      
-      const weekTotals = new Array(7).fill(0);
+      // Générer les labels dynamiques pour les 7 derniers jours
       const today = new Date();
-      today.setHours(23, 59, 59, 999);
       const sevenDaysAgo = new Date(today);
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
-      sevenDaysAgo.setHours(0, 0, 0, 0);
-
-      confirmedOrders.forEach(o => {
-        const d = new Date(o.created_at);
-        const amount = Number(o.total) || 0;
-        
-        if (d.getFullYear() === currentYear) {
-          monthTotals[d.getMonth()] += amount;
-        }
-
-        if (d >= sevenDaysAgo && d <= today) {
-          const diffTime = Math.abs(today.getTime() - d.getTime());
-          const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-          const index = 6 - diffDays;
-          if (index >= 0 && index < 7) {
-            weekTotals[index] += amount;
-          }
-        }
-      });
 
       const daysList = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
       const dynamicWeekLabels = Array.from({ length: 7 }).map((_, i) => {
@@ -80,10 +38,33 @@ export default function AdminDashboard() {
         d.setDate(d.getDate() + i);
         return daysList[d.getDay()];
       });
-
-      setChartData({ week: weekTotals, month: monthTotals });
       setWeekLabels(dynamicWeekLabels);
 
+      // Récupérer toutes les statistiques pré-calculées depuis PostgreSQL
+      const { data: statsData, error } = await supabase.rpc('get_admin_dashboard_stats');
+      
+      if (!error && statsData) {
+        setStats({
+          totalRevenue: Number(statsData.totalRevenue) || 0,
+          totalOrders: Number(statsData.totalOrders) || 0,
+          pendingQuotes: Number(statsData.pendingQuotes) || 0,
+          pendingOrders: Number(statsData.pendingOrders) || 0,
+          totalProducts: Number(statsData.totalProducts) || 0,
+          lowStockCount: Number(statsData.lowStockCount) || 0,
+          totalCustomers: Number(statsData.totalCustomers) || 0,
+          inventoryValue: Number(statsData.inventoryValue) || 0,
+        });
+
+        setChartData({
+          week: statsData.chartData?.week || new Array(7).fill(0),
+          month: statsData.chartData?.month || new Array(12).fill(0)
+        });
+
+        setTopProducts(statsData.topProducts || []);
+        setLowStock(statsData.lowStockProducts || []);
+      }
+
+      // Seules les 4 dernières commandes sont chargées avec les items
       const { data: recent } = await supabase
         .from('orders')
         .select('*, order_items(product_name, quantity)')
@@ -91,25 +72,6 @@ export default function AdminDashboard() {
         .limit(4);
       setRecentOrders(recent || []);
 
-      const { data: top } = await supabase
-        .from('order_items')
-        .select('product_name, quantity, unit_price, orders!inner(status)')
-        .eq('orders.status', 'paid');
-      const productMap = new Map<string, { count: number; sum: number }>();
-      (top || []).forEach((t) => {
-        const existing = productMap.get(t.product_name) || { count: 0, sum: 0 };
-        existing.count += t.quantity;
-        existing.sum += t.quantity * Number(t.unit_price);
-        productMap.set(t.product_name, existing);
-      });
-      setTopProducts(
-        [...productMap.entries()]
-          .map(([product_name, { count, sum }]) => ({ product_name, count, sum }))
-          .sort((a, b) => b.count - a.count)
-          .slice(0, 5)
-      );
-
-      setLowStock((products || []).filter((p) => p.stock <= p.min_stock).slice(0, 5));
       setLoading(false);
     })();
   }, []);

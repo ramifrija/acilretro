@@ -1,8 +1,10 @@
 import { Users, Settings, BarChart3, TrendingUp, ShoppingCart, Package, DollarSign, Calendar, Lock, Trash2, Edit2, X } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { createClient } from '@supabase/supabase-js';
 import { formatPrice } from '@/lib/format';
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { customAlert, customConfirm } from '@/lib/dialogs';
 
 export function AdminUsers() {
   const [admins, setAdmins] = useState<any[]>([]);
@@ -35,17 +37,17 @@ export function AdminUsers() {
     if (!error) {
       setAdmins(admins.map(a => a.id === id ? { ...a, full_name: editName } : a));
     } else {
-      alert('Erreur lors de la modification');
+      customAlert('Erreur lors de la modification');
     }
     setSaving(false);
     setEditingId(null);
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Voulez-vous vraiment supprimer cet administrateur ? Il perdra ses droits.')) return;
+    if (!(await customConfirm('Voulez-vous vraiment supprimer cet administrateur ? Il perdra ses droits.'))) return;
     const { error } = await supabase.from('customers').delete().eq('id', id);
     if (error) {
-      alert('Erreur: ' + error.message);
+      customAlert('Erreur: ' + error.message);
     } else {
       setAdmins(admins.filter(a => a.id !== id));
     }
@@ -54,24 +56,48 @@ export function AdminUsers() {
   const handleAddAdmin = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
-    const { error: signUpError } = await supabase.auth.signUp({
+    
+    // Create a temporary client that doesn't persist the session,
+    // so the current admin doesn't get logged out
+    const tempSupabase = createClient(
+      import.meta.env.VITE_SUPABASE_URL,
+      import.meta.env.VITE_SUPABASE_ANON_KEY,
+      {
+        auth: {
+          persistSession: false,
+          autoRefreshToken: false,
+        }
+      }
+    );
+
+    const { data: signUpData, error: signUpError } = await tempSupabase.auth.signUp({
       email: newAdmin.email,
       password: newAdmin.password,
       options: {
         data: {
           full_name: newAdmin.fullName,
-          account_type: 'admin'
+          account_type: 'individual'
         }
       }
     });
 
     if (signUpError) {
-      alert("Erreur: " + signUpError.message);
-    } else {
-      alert("Administrateur ajouté avec succès.\nAttention : Supabase vous a connecté sur ce nouveau compte. Veuillez vous reconnecter à votre compte principal si nécessaire.");
-      setShowAddModal(false);
-      setNewAdmin({ fullName: '', email: '', password: '' });
-      fetchAdmins();
+      customAlert("Erreur: " + signUpError.message);
+    } else if (signUpData?.user) {
+      // Promote to admin using the currently authenticated admin session
+      const { error: updateError } = await supabase
+        .from('customers')
+        .update({ type: 'admin' })
+        .eq('id', signUpData.user.id);
+
+      if (updateError) {
+        customAlert("Erreur lors de la promotion admin: " + updateError.message);
+      } else {
+        customAlert("Administrateur ajouté avec succès.", 'success');
+        setShowAddModal(false);
+        setNewAdmin({ fullName: '', email: '', password: '' });
+        fetchAdmins();
+      }
     }
     setSaving(false);
   };
@@ -232,7 +258,7 @@ export function AdminSettings() {
       address: settings.address
     }).not('id', 'is', null);
     
-    alert('Paramètres sauvegardés avec succès');
+    customAlert('Paramètres sauvegardés avec succès', 'success');
     setSaving(false);
   };
 
@@ -245,9 +271,9 @@ export function AdminSettings() {
     if (Object.keys(updates).length > 0) {
       const { error } = await supabase.auth.updateUser(updates);
       if (error) {
-        alert('Erreur: ' + error.message);
+        customAlert('Erreur: ' + error.message);
       } else {
-        alert('Compte mis à jour avec succès !');
+        customAlert('Compte mis à jour avec succès !', 'success');
         setAccountPassword('');
       }
     }

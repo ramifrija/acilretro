@@ -19,7 +19,7 @@ export default function ProductPage() {
   const [loading, setLoading] = useState(true);
   const [activeImage, setActiveImage] = useState(0);
   const [zoom, setZoom] = useState(false);
-  const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
+  const [selectedOptions, setSelectedOptions] = useState<Record<string, string | undefined>>({});
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
 

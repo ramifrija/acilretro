@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Truck, ShieldCheck, Phone, Search, Wrench, Layers, Maximize, ArrowRight, CheckCircle2, ChevronRight, Zap } from 'lucide-react';
 import VehicleSelector from '@/components/VehicleSelector';
 import { useRouter } from '@/context/RouterContext';
+import { brandLogos } from '@/data/brands';
 
 export default function LandingPage() {
   const { navigate } = useRouter();
@@ -54,26 +55,6 @@ export default function LandingPage() {
     }
   ];
 
-  const brandLogos = [
-    { name: 'Renault', logo: 'https://cdn.simpleicons.org/renault/000000' },
-    { name: 'Peugeot', logo: 'https://cdn.simpleicons.org/peugeot/000000' },
-    { name: 'Volkswagen', logo: 'https://cdn.simpleicons.org/volkswagen/000000' },
-    { name: 'Citroën', logo: 'https://cdn.simpleicons.org/citroen/000000' },
-    { name: 'Fiat', logo: 'https://cdn.simpleicons.org/fiat/000000' },
-    { name: 'Kia', logo: 'https://cdn.simpleicons.org/kia/000000' },
-    { name: 'Dacia', logo: 'https://cdn.simpleicons.org/dacia/000000' },
-    { name: 'Chrysler', logo: 'https://cdn.simpleicons.org/chrysler/000000' },
-    { name: 'Ford', logo: 'https://cdn.simpleicons.org/ford/000000' },
-    { name: 'Toyota', logo: 'https://cdn.simpleicons.org/toyota/000000' },
-    { name: 'Hyundai', logo: 'https://cdn.simpleicons.org/hyundai/000000' },
-    { name: 'BMW', logo: 'https://cdn.simpleicons.org/bmw/000000' },
-    { name: 'Volvo', logo: 'https://cdn.simpleicons.org/volvo/000000' },
-    { name: 'Audi', logo: 'https://cdn.simpleicons.org/audi/000000' },
-    { name: 'Nissan', logo: 'https://cdn.simpleicons.org/nissan/000000' },
-    { name: 'Honda', logo: 'https://cdn.simpleicons.org/honda/000000' },
-    { name: 'Seat', logo: 'https://cdn.simpleicons.org/seat/000000' },
-    { name: 'Skoda', logo: 'https://cdn.simpleicons.org/skoda/000000' }
-  ];
 
   return (
     <div className="bg-slate-50 text-slate-800 min-h-screen font-sans">
@@ -127,7 +108,7 @@ export default function LandingPage() {
                 <div className="w-1.5 h-1.5 rounded-full bg-green-500" /> N°1 du rétroviseur en Tunisie
               </div>
               
-              <h1 className="text-5xl md:text-6xl lg:text-[76px] font-black text-white leading-[1.05] mb-6 tracking-tighter drop-shadow-xl">
+              <h1 className="font-display font-extrabold text-4xl md:text-5xl lg:text-[76px] leading-[1.05] tracking-tight text-white mb-6 drop-shadow-sm">
                 Les bonnes<br/>
                 pièces.<br/>
                 <span className="text-[#38bdf8]">Pour la bonne<br/>voiture.</span>
@@ -140,10 +121,10 @@ export default function LandingPage() {
               
               {/* Features List / Buttons */}
               <div className="flex flex-wrap items-center gap-4">
-                <button className="flex items-center gap-2 bg-[#2563eb] hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium text-sm transition-colors shadow-lg shadow-blue-900/20">
+                <button onClick={() => navigate('/catalog')} className="flex items-center gap-2 bg-[#2563eb] hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium text-sm transition-colors shadow-lg shadow-blue-900/20">
                   Explorer le catalogue <ArrowRight className="w-4 h-4" />
                 </button>
-                <button className="bg-[#273568]/60 hover:bg-[#273568]/80 text-white border border-[#3b4b86] px-6 py-3 rounded-lg font-medium text-sm transition-colors backdrop-blur-sm">
+                <button onClick={() => navigate('/contact')} className="bg-[#273568]/60 hover:bg-[#273568]/80 text-white border border-[#3b4b86] px-6 py-3 rounded-lg font-medium text-sm transition-colors backdrop-blur-sm">
                   Demander un devis
                 </button>
               </div>
@@ -237,7 +218,7 @@ export default function LandingPage() {
           </div>
           
           <div className="text-center mt-10">
-            <button onClick={() => navigate('/catalog')} className="px-8 py-3 bg-white border-2 border-slate-200 text-slate-700 font-bold rounded-xl hover:border-slate-300 transition-colors">
+            <button onClick={() => navigate('/brands')} className="px-8 py-3 bg-white border-2 border-slate-200 text-slate-700 font-bold rounded-xl hover:border-slate-300 transition-colors">
               Voir toutes les marques
             </button>
           </div>

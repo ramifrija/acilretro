@@ -3,6 +3,7 @@ import { Plus, Search, Edit, Trash2, X, Package, AlertTriangle, Upload, Image as
 import { supabase } from '@/lib/supabase';
 import { formatPrice } from '@/lib/format';
 import type { Product, Category, Brand, Model } from '@/types/database';
+import { customAlert, customConfirm } from '@/lib/dialogs';
 
 export default function AdminProducts() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -33,7 +34,7 @@ export default function AdminProducts() {
   );
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Supprimer ce produit?')) return;
+    if (!(await customConfirm('Supprimer ce produit?'))) return;
     await supabase.from('products').delete().eq('id', id);
     load();
   };
@@ -200,7 +201,7 @@ function ProductForm({ product, categories, onClose, onSaved }: { product: Produ
         .upload(filePath, webpBlob, { contentType: 'image/webp' });
 
       if (uploadError) {
-        alert("Erreur lors de l'upload de l'image. Le bucket product-images existe-t-il?");
+        customAlert("Erreur lors de l'upload de l'image. Le bucket product-images existe-t-il?");
         setUploading(false);
         return;
       }
@@ -209,7 +210,7 @@ function ProductForm({ product, categories, onClose, onSaved }: { product: Produ
       setImages([...images, publicUrl]);
     } catch (err) {
       console.error(err);
-      alert("Erreur lors de la conversion ou de l'upload de l'image.");
+      customAlert("Erreur lors de la conversion ou de l'upload de l'image.");
     } finally {
       setUploading(false);
     }
@@ -239,7 +240,7 @@ function ProductForm({ product, categories, onClose, onSaved }: { product: Produ
 
   const save = async () => {
     if (!form.name || !form.base_price) {
-      alert('Veuillez remplir les champs obligatoires (Nom, Prix)');
+      customAlert('Veuillez remplir les champs obligatoires (Nom, Prix)');
       return;
     }
 
@@ -384,7 +385,7 @@ function ProductForm({ product, categories, onClose, onSaved }: { product: Produ
                             is_promo: b.id === 'is_promo',
                             new_arrival: b.id === 'new_arrival',
                             best_seller: b.id === 'best_seller',
-                            ...(b.id !== 'is_promo' ? { promo_price: null } : {})
+                            ...(b.id !== 'is_promo' ? { promo_price: '' } : {})
                           }));
                         }}
                         className="accent-brand-600 w-4 h-4"
@@ -471,7 +472,7 @@ function ProductForm({ product, categories, onClose, onSaved }: { product: Produ
                                   updateOptionValue(optIdx, valIdx, 'image_url', publicUrl);
                                 } catch(err) {
                                   console.error(err);
-                                  alert("Erreur upload image accessoire");
+                                  customAlert("Erreur upload image accessoire");
                                 } finally {
                                   setUploading(false);
                                 }

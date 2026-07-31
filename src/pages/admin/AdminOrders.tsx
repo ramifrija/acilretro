@@ -5,6 +5,7 @@ import { formatPrice, formatDate } from '@/lib/format';
 import type { Order, OrderItem, Product } from '@/types/database';
 import PrintableDocument from '@/components/admin/PrintableDocument';
 import toast from 'react-hot-toast';
+import { customConfirm, customAlert } from '@/lib/dialogs';
 
 type OrderWithItems = Order & { order_items: OrderItem[] };
 
@@ -16,6 +17,13 @@ export default function AdminOrders({ quotesOnly = false }: { quotesOnly?: boole
   const [printDoc, setPrintDoc] = useState<{ order: OrderWithItems; type: 'invoice' | 'quote' } | null>(null);
   const [rejecting, setRejecting] = useState<OrderWithItems | null>(null);
   const [rejectReason, setRejectReason] = useState('');
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [statusFilter]);
 
   const load = async () => {
     setLoading(true);
@@ -45,20 +53,13 @@ export default function AdminOrders({ quotesOnly = false }: { quotesOnly?: boole
 
   // Accept order: generate invoice + reduce stock
   const acceptOrder = async (order: OrderWithItems) => {
-    // Reduce stock for each item
-    for (const item of order.order_items) {
-      if (!item.product_id) continue;
-      const { data: product } = await supabase.from('products').select('*').eq('id', item.product_id).maybeSingle();
-      if (product) {
-        const newStock = Math.max(0, (product as Product).stock - item.quantity);
-        await supabase.from('products').update({ stock: newStock }).eq('id', item.product_id);
-        await supabase.from('inventory_movements').insert({
-          product_id: item.product_id,
-          movement_type: 'sale',
-          quantity: -item.quantity,
-          reason: `Vente - Commande #${order.id.slice(0, 8).toUpperCase()}`,
-        });
-      }
+    const { error: rpcError } = await supabase.rpc('reduce_stock_for_order', {
+      p_order_id: order.id,
+      p_reason_prefix: 'Vente - Commande'
+    });
+    if (rpcError) {
+      customAlert("Erreur lors de la réduction de stock: " + rpcError.message);
+      return;
     }
     await supabase.from('orders').update({ status: 'accepted' }).eq('id', order.id);
     load();
@@ -70,16 +71,13 @@ export default function AdminOrders({ quotesOnly = false }: { quotesOnly?: boole
   const rejectOrder = async (order: OrderWithItems, reason: string) => {
     // If it was accepted/paid, refund stock
     if (order.status === 'accepted' || order.status === 'paid' || order.status === 'completed' || order.status === 'delivered') {
-      for (const item of order.order_items) {
-        if (!item.product_id) continue;
-        const { data: product } = await supabase.from('products').select('*').eq('id', item.product_id).maybeSingle();
-        if (product) {
-          await supabase.from('products').update({ stock: product.stock + item.quantity }).eq('id', item.product_id);
-          await supabase.from('inventory_movements').insert({
-            product_id: item.product_id, movement_type: 'return', quantity: item.quantity,
-            reason: `Rejet - Commande #${order.id.slice(0, 8).toUpperCase()}`,
-          });
-        }
+      const { error: rpcError } = await supabase.rpc('restore_stock_for_order', {
+        p_order_id: order.id,
+        p_reason_prefix: 'Rejet - Commande'
+      });
+      if (rpcError) {
+        customAlert("Erreur lors de la restauration de stock: " + rpcError.message);
+        return;
       }
     }
     await supabase.from('orders').update({ status: 'rejected', notes: `${order.notes || ''}\n[Motif de refus: ${reason}]`.trim() }).eq('id', order.id);
@@ -89,18 +87,15 @@ export default function AdminOrders({ quotesOnly = false }: { quotesOnly?: boole
   };
 
   const cancelOrder = async (order: OrderWithItems) => {
-    if (!confirm('Annuler cette commande? Le stock sera restauré.')) return;
+    if (!(await customConfirm('Annuler cette commande? Le stock sera restauré.'))) return;
     if (order.status === 'accepted' || order.status === 'paid' || order.status === 'completed' || order.status === 'delivered') {
-      for (const item of order.order_items) {
-        if (!item.product_id) continue;
-        const { data: product } = await supabase.from('products').select('*').eq('id', item.product_id).maybeSingle();
-        if (product) {
-          await supabase.from('products').update({ stock: product.stock + item.quantity }).eq('id', item.product_id);
-          await supabase.from('inventory_movements').insert({
-            product_id: item.product_id, movement_type: 'return', quantity: item.quantity,
-            reason: `Annulation - Commande #${order.id.slice(0, 8).toUpperCase()}`,
-          });
-        }
+      const { error: rpcError } = await supabase.rpc('restore_stock_for_order', {
+        p_order_id: order.id,
+        p_reason_prefix: 'Annulation - Commande'
+      });
+      if (rpcError) {
+        customAlert("Erreur lors de la restauration de stock: " + rpcError.message);
+        return;
       }
     }
     await supabase.from('orders').update({ status: 'cancelled' }).eq('id', order.id);
@@ -108,21 +103,14 @@ export default function AdminOrders({ quotesOnly = false }: { quotesOnly?: boole
   };
 
   const convertQuote = async (order: OrderWithItems) => {
-    if (!confirm('Convertir ce devis en commande confirmée? Le stock sera réduit.')) return;
-    // Reduce stock
-    for (const item of order.order_items) {
-      if (!item.product_id) continue;
-      const { data: product } = await supabase.from('products').select('*').eq('id', item.product_id).maybeSingle();
-      if (product) {
-        const newStock = Math.max(0, (product as Product).stock - item.quantity);
-        await supabase.from('products').update({ stock: newStock }).eq('id', item.product_id);
-        await supabase.from('inventory_movements').insert({
-          product_id: item.product_id,
-          movement_type: 'sale',
-          quantity: -item.quantity,
-          reason: `Vente - Devis converti #${order.id.slice(0, 8).toUpperCase()}`,
-        });
-      }
+    if (!(await customConfirm('Convertir ce devis en commande confirmée? Le stock sera réduit.'))) return;
+    const { error: rpcError } = await supabase.rpc('reduce_stock_for_order', {
+      p_order_id: order.id,
+      p_reason_prefix: 'Vente - Devis converti'
+    });
+    if (rpcError) {
+      customAlert("Erreur lors de la réduction de stock: " + rpcError.message);
+      return;
     }
     await supabase.from('orders').update({ status: 'accepted', type: 'order' }).eq('id', order.id);
     load();
@@ -159,30 +147,23 @@ export default function AdminOrders({ quotesOnly = false }: { quotesOnly?: boole
 
     if (wasStockReduced && !willStockReduce && order.type === 'order') {
       // Refund stock
-      for (const item of order.order_items) {
-        if (!item.product_id) continue;
-        const { data: product } = await supabase.from('products').select('*').eq('id', item.product_id).maybeSingle();
-        if (product) {
-          await supabase.from('products').update({ stock: product.stock + item.quantity }).eq('id', item.product_id);
-          await supabase.from('inventory_movements').insert({
-            product_id: item.product_id, movement_type: 'return', quantity: item.quantity,
-            reason: `Annulation - #${order.id.slice(0, 8).toUpperCase()}`,
-          });
-        }
+      const { error: rpcError } = await supabase.rpc('restore_stock_for_order', {
+        p_order_id: order.id,
+        p_reason_prefix: 'Annulation'
+      });
+      if (rpcError) {
+        customAlert("Erreur de stock: " + rpcError.message);
+        return;
       }
     } else if (!wasStockReduced && willStockReduce) {
       // Reduce stock
-      for (const item of order.order_items) {
-        if (!item.product_id) continue;
-        const { data: product } = await supabase.from('products').select('*').eq('id', item.product_id).maybeSingle();
-        if (product) {
-          const newStock = Math.max(0, product.stock - item.quantity);
-          await supabase.from('products').update({ stock: newStock }).eq('id', item.product_id);
-          await supabase.from('inventory_movements').insert({
-            product_id: item.product_id, movement_type: 'sale', quantity: -item.quantity,
-            reason: `Vente - #${order.id.slice(0, 8).toUpperCase()}`,
-          });
-        }
+      const { error: rpcError } = await supabase.rpc('reduce_stock_for_order', {
+        p_order_id: order.id,
+        p_reason_prefix: 'Vente'
+      });
+      if (rpcError) {
+        customAlert("Erreur de stock: " + rpcError.message);
+        return;
       }
     }
 
@@ -194,6 +175,9 @@ export default function AdminOrders({ quotesOnly = false }: { quotesOnly?: boole
   };
 
   const filtered = statusFilter === 'all' ? orders : orders.filter((o) => o.status === statusFilter);
+
+  const totalPages = Math.ceil(filtered.length / itemsPerPage);
+  const paginated = filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   // Simplified statuses per user request: accepté, en attente, annulé, devis
   const statuses = quotesOnly
@@ -231,7 +215,7 @@ export default function AdminOrders({ quotesOnly = false }: { quotesOnly?: boole
             <p className="text-slate-500">Aucune {quotesOnly ? 'demande de devis' : 'commande'}</p>
           </div>
         ) : (
-          filtered.map((o) => (
+          paginated.map((o) => (
             <div key={o.id} className="glass-card p-5">
               <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
@@ -311,9 +295,6 @@ export default function AdminOrders({ quotesOnly = false }: { quotesOnly?: boole
                       </button>
                     )}
 
-                    <button onClick={() => duplicate(o)} className="p-2 rounded-lg glass hover:bg-brand-50 dark:hover:bg-white/10 transition-all" title="Dupliquer">
-                      <Copy className="w-4 h-4" />
-                    </button>
                   </div>
                 </div>
               </div>
@@ -321,6 +302,30 @@ export default function AdminOrders({ quotesOnly = false }: { quotesOnly?: boole
           ))
         )}
       </div>
+
+      {totalPages > 1 && (
+        <div className="p-4 flex items-center justify-between">
+          <span className="text-sm text-slate-500">
+            Page {currentPage} sur {totalPages}
+          </span>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="px-3 py-1.5 text-sm font-medium rounded-lg border border-slate-200 dark:border-white/10 disabled:opacity-50 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+            >
+              Précédent
+            </button>
+            <button
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="px-3 py-1.5 text-sm font-medium rounded-lg border border-slate-200 dark:border-white/10 disabled:opacity-50 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+            >
+              Suivant
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Detail modal */}
       {selected && (

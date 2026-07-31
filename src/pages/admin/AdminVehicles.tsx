@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Plus, Pencil, Trash2, Car, Search, X, Upload, ChevronLeft, ChevronRight } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import type { Brand } from '@/types/database';
+import { customAlert, customConfirm } from '@/lib/dialogs';
 
 export default function AdminVehicles() {
   const [brands, setBrands] = useState<Brand[]>([]);
@@ -47,7 +48,7 @@ export default function AdminVehicles() {
         .upload(filePath, webpBlob, { contentType: 'image/webp' });
 
       if (uploadError) {
-        alert("Erreur lors de l'upload de l'image.");
+        customAlert("Erreur lors de l'upload de l'image.");
         setUploading(false);
         return;
       }
@@ -56,7 +57,7 @@ export default function AdminVehicles() {
       setFormData({ ...formData, logo_url: publicUrl });
     } catch (err) {
       console.error(err);
-      alert("Erreur lors de la conversion ou de l'upload de l'image.");
+      customAlert("Erreur lors de la conversion ou de l'upload de l'image.");
     } finally {
       setUploading(false);
     }
@@ -85,14 +86,14 @@ export default function AdminVehicles() {
   };
 
   const handleSave = async () => {
-    if (!formData.name || !formData.slug) return alert('Le nom et le slug sont obligatoires');
+    if (!formData.name || !formData.slug) return customAlert('Le nom et le slug sont obligatoires');
 
     if (editingBrand) {
       const { error } = await supabase.from('brands').update(formData).eq('id', editingBrand.id);
-      if (error) return alert('Erreur lors de la modification');
+      if (error) return customAlert('Erreur lors de la modification');
     } else {
       const { error } = await supabase.from('brands').insert([formData]);
-      if (error) return alert('Erreur lors de l\'ajout');
+      if (error) return customAlert('Erreur lors de l\'ajout');
     }
 
     setIsModalOpen(false);
@@ -100,9 +101,9 @@ export default function AdminVehicles() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Voulez-vous vraiment supprimer cette marque ? Cela supprimera également tous les modèles associés.')) return;
+    if (!(await customConfirm('Voulez-vous vraiment supprimer cette marque ? Cela supprimera également tous les modèles associés.'))) return;
     const { error } = await supabase.from('brands').delete().eq('id', id);
-    if (error) alert('Erreur lors de la suppression');
+    if (error) customAlert('Erreur lors de la suppression');
     else loadBrands();
   };
 

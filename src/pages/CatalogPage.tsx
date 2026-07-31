@@ -29,9 +29,19 @@ export default function CatalogPage() {
   const [sortBy, setSortBy] = useState('relevance');
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 300]);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalProducts, setTotalProducts] = useState(0);
+  const itemsPerPage = 15;
+
+  const totalPages = Math.max(1, Math.ceil(totalProducts / itemsPerPage));
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [q, brandFilter, categoryFilter, filterType, priceRange, sortBy]);
+
   const loadProducts = useCallback(async () => {
     setLoading(true);
-    let pq = supabase.from('products').select('*');
+    let pq = supabase.from('products_with_price').select('*', { count: 'exact' });
 
     if (q) {
       pq = pq.or(`name.ilike.%${q}%,sku.ilike.%${q}%,oem_ref.ilike.%${q}%,manufacturer_ref.ilike.%${q}%`);
@@ -50,28 +60,30 @@ export default function CatalogPage() {
         pq = pq.eq('brand_id', brand.id);
       } else {
         setProducts([]);
+        setTotalProducts(0);
         setLoading(false);
         return;
       }
     }
 
-    const { data } = await pq.order('created_at', { ascending: false });
-    let result = data || [];
+    // Price filter server-side using the view active_price
+    pq = pq.gte('active_price', priceRange[0]).lte('active_price', priceRange[1]);
 
-    // Price filter client-side
-    result = result.filter((p) => {
-      const price = p.promo_price ?? p.base_price;
-      return price >= priceRange[0] && price <= priceRange[1];
-    });
+    // Sort server-side
+    if (sortBy === 'price-asc') pq = pq.order('active_price', { ascending: true });
+    else if (sortBy === 'price-desc') pq = pq.order('active_price', { ascending: false });
+    else if (sortBy === 'rating') pq = pq.order('rating', { ascending: false });
+    else pq = pq.order('created_at', { ascending: false });
 
-    // Sort
-    if (sortBy === 'price-asc') result = [...result].sort((a, b) => (a.promo_price ?? a.base_price) - (b.promo_price ?? b.base_price));
-    if (sortBy === 'price-desc') result = [...result].sort((a, b) => (b.promo_price ?? b.base_price) - (a.promo_price ?? a.base_price));
-    if (sortBy === 'rating') result = [...result].sort((a, b) => b.rating - a.rating);
+    // Pagination server-side
+    const from = (currentPage - 1) * itemsPerPage;
+    const to = from + itemsPerPage - 1;
+    const { data, count } = await pq.range(from, to);
 
-    setProducts(result);
+    setProducts(data || []);
+    setTotalProducts(count || 0);
     setLoading(false);
-  }, [q, brandFilter, modelFilter, categoryFilter, filterType, sortBy, priceRange, brands]);
+  }, [q, brandFilter, modelFilter, categoryFilter, filterType, sortBy, priceRange, brands, currentPage]);
 
   useEffect(() => {
     supabase.from('brands').select('*').order('name').then(({ data }) => data && setBrands(data));
@@ -97,7 +109,7 @@ export default function CatalogPage() {
           {filterType === 'promo' ? 'Promotions' : filterType === 'best' ? 'Meilleures ventes' : filterType === 'new' ? 'Nouveautés' : 'Catalogue'}
         </h1>
         <p className="text-slate-500 dark:text-slate-400 mt-1">
-          {loading ? 'Chargement...' : `${products.length} produit(s) trouvé(s)`}
+          {loading ? 'Chargement...' : `${totalProducts} produit(s) trouvé(s)`}
         </p>
       </div>
 
@@ -206,6 +218,53 @@ export default function CatalogPage() {
           ) : (
             <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3 lg:gap-4">
               {products.map((p) => <ProductCard key={p.id} product={p} />)}
+            </div>
+          )}
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between mt-8 pt-6 border-t border-slate-100 dark:border-white/10">
+              <span className="text-xs text-slate-500">
+                Affichage {(currentPage - 1) * itemsPerPage + 1}–{Math.min(currentPage * itemsPerPage, totalProducts)} sur {totalProducts} produits
+              </span>
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="px-3 py-1.5 rounded-lg text-xs font-semibold border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 disabled:opacity-30 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+                >
+                  ← Préc.
+                </button>
+                {Array.from({ length: totalPages }, (_, i) => i + 1)
+                  .filter(n => n === 1 || n === totalPages || Math.abs(n - currentPage) <= 1)
+                  .reduce<(number | '...')[]>((acc, n, i, arr) => {
+                    if (i > 0 && (n as number) - (arr[i - 1] as number) > 1) acc.push('...');
+                    acc.push(n);
+                    return acc;
+                  }, [])
+                  .map((n, i) =>
+                    n === '...' ? (
+                      <span key={`ellipsis-${i}`} className="px-1 text-slate-400 text-xs">…</span>
+                    ) : (
+                      <button
+                        key={n}
+                        onClick={() => setCurrentPage(n as number)}
+                        className={`w-8 h-8 rounded-lg text-xs font-bold transition-all
+                          ${currentPage === n ? 'bg-brand-gradient text-white shadow-md shadow-brand-500/20' : 'border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5'}`}
+                      >
+                        {n}
+                      </button>
+                    )
+                  )
+                }
+                <button
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-1.5 rounded-lg text-xs font-semibold border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 disabled:opacity-30 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+                >
+                  Suiv. →
+                </button>
+              </div>
             </div>
           )}
         </div>

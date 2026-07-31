@@ -117,6 +117,7 @@ export type Order = {
   created_at: string;
   updated_at: string;
   customer_info?: any;
+  client_id?: string | null;
 };
 
 export type OrderItem = {

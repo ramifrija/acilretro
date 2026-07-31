@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Users, Search, Plus, Trash2, Edit2, ArrowLeft, Package, FileText, X, Phone, Mail, MapPin } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { formatPrice, formatDate } from '@/lib/format';
+import { customAlert, customConfirm } from '@/lib/dialogs';
 
 export default function AdminCustomers() {
   const [clients, setClients] = useState<any[]>([]);
@@ -16,14 +17,39 @@ export default function AdminCustomers() {
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({ nom: '', prenom: '', email: '', num_tel: '' });
 
+  const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalClients, setTotalClients] = useState(0);
+  const itemsPerPage = 10;
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
+
   useEffect(() => {
     fetchClients();
-  }, []);
+  }, [currentPage, searchQuery]);
 
   const fetchClients = async () => {
     setLoading(true);
-    const { data } = await supabase.from('client').select('*').order('created_at', { ascending: false });
-    setClients(data || []);
+    let query = supabase.from('client').select('*', { count: 'exact' });
+    
+    if (searchQuery.trim()) {
+      const s = `%${searchQuery.trim()}%`;
+      query = query.or(`nom.ilike.${s},prenom.ilike.${s},email.ilike.${s},num_tel.ilike.${s}`);
+    }
+    
+    const from = (currentPage - 1) * itemsPerPage;
+    const to = from + itemsPerPage - 1;
+    
+    const { data, count, error } = await query
+      .order('created_at', { ascending: false })
+      .range(from, to);
+      
+    if (!error) {
+      setClients(data || []);
+      setTotalClients(count || 0);
+    }
     setLoading(false);
   };
 
@@ -70,10 +96,10 @@ export default function AdminCustomers() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Voulez-vous vraiment supprimer ce client ?')) return;
+    if (!(await customConfirm('Voulez-vous vraiment supprimer ce client ?'))) return;
     const { error } = await supabase.from('client').delete().eq('id', id);
     if (!error) fetchClients();
-    else alert('Erreur: ' + error.message);
+    else customAlert('Erreur: ' + error.message);
   };
 
   const handleSave = async (e: React.FormEvent) => {
@@ -102,10 +128,12 @@ export default function AdminCustomers() {
         setSelectedClient({ ...selectedClient, ...payload });
       }
     } else {
-      alert('Erreur: ' + error.message);
+      customAlert('Erreur: ' + error.message);
     }
     setSaving(false);
   };
+
+  const totalPages = Math.ceil(totalClients / itemsPerPage);
 
   // --- RENDERS ---
 
@@ -212,9 +240,6 @@ export default function AdminCustomers() {
                 </div>
               </div>
 
-              <div className="mt-8 pt-6 border-t border-slate-100 dark:border-white/10 flex gap-2">
-                <button onClick={() => openEditModal(selectedClient)} className="btn-secondary flex-1 py-2 text-sm">Modifier</button>
-              </div>
             </div>
           </div>
 
@@ -268,15 +293,27 @@ export default function AdminCustomers() {
 
   return (
     <div className="space-y-6 animate-fade-in relative">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div>
           <h2 className="font-display font-bold text-2xl text-slate-900 dark:text-white">Clients</h2>
           <p className="text-sm text-slate-500">Gérez votre base de clients et leurs commandes</p>
         </div>
-        <button onClick={openAddModal} className="btn-primary flex items-center gap-2">
-          <Plus className="w-4 h-4" />
-          Nouveau client
-        </button>
+        <div className="flex items-center gap-3 w-full sm:w-auto">
+          <div className="relative flex-1 sm:w-64">
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Rechercher (nom, email, tel)..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="input-field pl-9 w-full bg-white dark:bg-slate-900"
+            />
+          </div>
+          <button onClick={openAddModal} className="btn-primary flex items-center gap-2 whitespace-nowrap">
+            <Plus className="w-4 h-4" />
+            <span className="hidden sm:inline">Nouveau client</span>
+          </button>
+        </div>
       </div>
 
       <div className="glass-card p-0 overflow-hidden">
@@ -324,6 +361,29 @@ export default function AdminCustomers() {
                 ))}
               </tbody>
             </table>
+          </div>
+        )}
+        {totalPages > 1 && (
+          <div className="p-4 border-t border-slate-100 dark:border-white/10 flex items-center justify-between">
+            <span className="text-sm text-slate-500">
+              Page {currentPage} sur {totalPages}
+            </span>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="px-3 py-1.5 text-sm font-medium rounded-lg border border-slate-200 dark:border-white/10 disabled:opacity-50 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+              >
+                Précédent
+              </button>
+              <button
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                className="px-3 py-1.5 text-sm font-medium rounded-lg border border-slate-200 dark:border-white/10 disabled:opacity-50 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+              >
+                Suivant
+              </button>
+            </div>
           </div>
         )}
       </div>

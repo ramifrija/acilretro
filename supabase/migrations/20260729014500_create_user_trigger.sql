@@ -7,7 +7,10 @@ BEGIN
     NEW.id,
     NEW.email,
     NEW.raw_user_meta_data->>'full_name',
-    COALESCE(NEW.raw_user_meta_data->>'account_type', 'individual')
+    CASE 
+      WHEN NEW.raw_user_meta_data->>'account_type' IN ('individual', 'company') THEN NEW.raw_user_meta_data->>'account_type'
+      ELSE 'individual'
+    END
   );
   RETURN NEW;
 END;

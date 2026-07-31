@@ -132,11 +132,13 @@ export default function Header() {
                 <X className="w-5 h-5" />
               </button>
             </div>
-            {/* Mobile search removed */}
             <div className="flex flex-col gap-1">
               {[
                 ['/', 'Accueil'],
+                ['/catalog', 'Catalogue'],
+                ['/brands', 'Marques'],
                 ['/contact', 'Contact'],
+                ['/admin', 'Espace Pro'],
               ].map(([to, label]) => (
                 <button
                   key={to}

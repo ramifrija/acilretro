@@ -14,6 +14,7 @@ import CheckoutPage from '@/pages/CheckoutPage';
 import ContactPage from '@/pages/ContactPage';
 import LegalPage from '@/pages/LegalPage';
 import NotFoundPage from '@/pages/NotFoundPage';
+import BrandsPage from '@/pages/BrandsPage';
 import AdminLayout from '@/components/admin/AdminLayout';
 import AdminDashboard from '@/pages/admin/AdminDashboard';
 import AdminProducts from '@/pages/admin/AdminProducts';
@@ -115,6 +116,8 @@ function Routes() {
     page = <TestLandingPage />;
   } else if (path === '/catalog') {
     page = <CatalogPage />;
+  } else if (path === '/brands') {
+    page = <BrandsPage />;
   } else if (path.startsWith('/product/')) {
     page = <ProductPage />;
   } else if (path === '/cart') {

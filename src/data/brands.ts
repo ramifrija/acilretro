@@ -1,0 +1,20 @@
+export const brandLogos = [
+  { name: 'Renault', logo: 'https://cdn.simpleicons.org/renault/000000' },
+  { name: 'Peugeot', logo: 'https://cdn.simpleicons.org/peugeot/000000' },
+  { name: 'Volkswagen', logo: 'https://cdn.simpleicons.org/volkswagen/000000' },
+  { name: 'Citroën', logo: 'https://cdn.simpleicons.org/citroen/000000' },
+  { name: 'Fiat', logo: 'https://cdn.simpleicons.org/fiat/000000' },
+  { name: 'Kia', logo: 'https://cdn.simpleicons.org/kia/000000' },
+  { name: 'Dacia', logo: 'https://cdn.simpleicons.org/dacia/000000' },
+  { name: 'Chrysler', logo: 'https://cdn.simpleicons.org/chrysler/000000' },
+  { name: 'Ford', logo: 'https://cdn.simpleicons.org/ford/000000' },
+  { name: 'Toyota', logo: 'https://cdn.simpleicons.org/toyota/000000' },
+  { name: 'Hyundai', logo: 'https://cdn.simpleicons.org/hyundai/000000' },
+  { name: 'BMW', logo: 'https://cdn.simpleicons.org/bmw/000000' },
+  { name: 'Volvo', logo: 'https://cdn.simpleicons.org/volvo/000000' },
+  { name: 'Audi', logo: 'https://cdn.simpleicons.org/audi/000000' },
+  { name: 'Nissan', logo: 'https://cdn.simpleicons.org/nissan/000000' },
+  { name: 'Honda', logo: 'https://cdn.simpleicons.org/honda/000000' },
+  { name: 'Seat', logo: 'https://cdn.simpleicons.org/seat/000000' },
+  { name: 'Skoda', logo: 'https://cdn.simpleicons.org/skoda/000000' }
+];
