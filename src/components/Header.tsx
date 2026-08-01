@@ -90,6 +90,8 @@ export default function Header() {
             {/* Nav (desktop) */}
             <nav className="hidden md:flex flex-1 items-center justify-center gap-8 mx-4">
               {navLink('/', 'Accueil')}
+              {navLink('/catalog', 'Catalogue')}
+              {navLink('/brands', 'Marques')}
               {navLink('/contact', 'Contact')}
             </nav>
 

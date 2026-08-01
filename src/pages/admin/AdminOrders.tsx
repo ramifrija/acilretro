@@ -185,8 +185,9 @@ export default function AdminOrders({ quotesOnly = false }: { quotesOnly?: boole
     : ['pending', 'accepted', 'cancelled'];
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      {/* Status filter */}
+    <div className="space-y-6 animate-fade-in print:space-y-0">
+      <div className="print:hidden space-y-6">
+        {/* Status filter */}
       <div className="flex gap-2 overflow-x-auto no-scrollbar">
         <button
           onClick={() => setStatusFilter('all')}
@@ -489,6 +490,7 @@ export default function AdminOrders({ quotesOnly = false }: { quotesOnly?: boole
           </div>
         </div>
       )}
+      </div>
 
       {/* Print document modal */}
       {printDoc && (

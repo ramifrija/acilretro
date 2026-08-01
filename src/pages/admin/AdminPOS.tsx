@@ -172,7 +172,9 @@ export default function AdminPOS() {
       customer_info: { 
         fullName: finalCustomerName,
         email: selectedClientForOrder?.email,
-        phone: selectedClientForOrder?.num_tel
+        phone: selectedClientForOrder?.num_tel,
+        taxId: selectedClientForOrder?.tax_id,
+        address: selectedClientForOrder?.adresse || ''
       }
     }).select().single();
 

@@ -1,5 +1,6 @@
 import type { Order, OrderItem } from '@/types/database';
-import { formatPrice, formatDate } from '@/lib/format';
+// @ts-ignore
+import writtenNumber from 'written-number';
 
 type Props = {
   order: Order & { order_items: OrderItem[] };
@@ -7,211 +8,166 @@ type Props = {
 };
 
 const COMPANY = {
-  name: 'ACIL RETRO',
-  tagline: 'Pièces Auto Premium',
-  address: 'Zone Industrielle, Rue 12, Tunis, Tunisie',
-  phone: '+216 71 000 000',
-  email: 'contact@acilretro.com',
+  name: 'Ste ACIL "SARL"',
+  tagline: 'FAB Pièces et Accessoires Autos',
+  address: '04, Rue De Syrie Ben Arous Tunisie',
+  phone: '(+216) 24244061',
+  email: 'king-glass@hotmail.com',
+  rc: 'B02199672013',
+  mf: '1321313H/A/M000',
+  taxId: '1321313H/A/M000',
   website: 'www.acilretro.tn',
-  taxId: '0000000A',
-  rc: 'B0000000',
-  vatNumber: '0000000',
   bank: 'BNA',
   rib: '12 345 678 901 234 567 89 01',
   iban: 'TN59 1234 5678 9012 3456 7890 1234'
 };
 
+function formatNumber(num: number) {
+  return new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 3, maximumFractionDigits: 3 }).format(num);
+}
+
+function formatDateString(dateStr: string) {
+  const date = new Date(dateStr);
+  return date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
 export default function PrintableDocument({ order, documentType }: Props) {
   const isInvoice = documentType === 'invoice';
   const docNumber = order.id.slice(0, 8).toUpperCase();
   const docLabel = isInvoice ? 'Facture' : 'Devis';
-  
+
   const customerInfo = order.customer_info as any || {};
-  const customerName = customerInfo.fullName || (order.customer_type === 'company' ? 'Entreprise' : 'Client Passager');
-  
-  const ras = (Number(order.subtotal) + Number(order.vat) + 1) * 0.01;
+  const customerName = customerInfo.fullName || customerInfo.companyName || (order.customer_type === 'company' ? 'Entreprise' : 'Client Passager');
+
+  const totalHT = Number(order.subtotal);
+  const totalTVA = Number(order.vat);
+  const totalTTC = Number(order.total);
+  const timbre = totalHT > 0 ? 1 : 0;
+
+  const finalTotal = totalTTC + timbre;
+  const dinars = Math.floor(finalTotal);
+  const millimes = Math.round((finalTotal - dinars) * 1000);
+
+  const dinarsText = writtenNumber(dinars, { lang: 'fr' });
+  const millimesText = writtenNumber(millimes, { lang: 'fr' });
+
+  const amountInWords = `${dinarsText} Dinars${millimes > 0 ? ` et ${millimesText} Millimes` : ''}`;
+  const amountInWordsCapitalized = amountInWords.charAt(0).toUpperCase() + amountInWords.slice(1);
 
   return (
-    <div id="printable-document" className="bg-white text-slate-900 p-8 lg:p-12 max-w-4xl mx-auto text-[15px]" style={{ fontFamily: 'Arial, sans-serif' }}>
-      
-      {/* Top Header */}
+    <div id="printable-document" className="bg-white text-black p-8 lg:p-12 max-w-4xl mx-auto text-[13px]" style={{ fontFamily: 'Arial, sans-serif' }}>
+      <style>{`
+        @media print {
+          @page { margin: 0; }
+          body { padding: 1cm; }
+        }
+      `}</style>
+
+      {/* Top Header Section */}
       <div className="flex justify-between items-start mb-8">
-        <div>
-          <div className="flex items-center gap-4 mb-3">
-            <div className="w-20 h-20">
-              <img src="/images/acil_logo.png" alt="Logo" className="w-full h-full object-contain" />
+
+        {/* Left Column: Logo & Invoice Details */}
+        <div className="flex flex-col">
+          <div className="w-48 mb-8">
+            <img src="/images/acil_logo.png" alt="Logo" className="w-full h-auto object-contain" />
+          </div>
+          <div className="pt-4">
+            <h1 className="font-bold text-[22px] mb-2">{docLabel} N° : {isInvoice ? 'FV' : 'DV'}{new Date(order.created_at).getFullYear()}/{docNumber}</h1>
+            <div className="font-bold text-[15px]">
+              Le : {formatDateString(order.created_at)}
             </div>
-            <div className="font-extrabold text-2xl text-brand-900">{COMPANY.name}</div>
-          </div>
-          <div className="text-slate-600 leading-snug">
-            {COMPANY.address.split(',').map((line, i) => (
-              <div key={i}>{line.trim()}</div>
-            ))}
-          </div>
-        </div>
-        <div className="text-right">
-          <h1 className="font-bold text-2xl text-slate-900">{docLabel} No. {docNumber}</h1>
-        </div>
-      </div>
-
-      {/* Middle Information Section */}
-      <div className="flex gap-8 mb-8">
-        {/* Info Box */}
-        <div className="w-1/2 bg-slate-100 p-4 rounded text-slate-800">
-          <div className="grid grid-cols-[140px_1fr] gap-y-1">
-            <div className="font-semibold text-right pr-4">Date de la {docLabel.toLowerCase()}</div>
-            <div>{formatDate(order.created_at)}</div>
-            
-            <div className="font-semibold text-right pr-4">Référence</div>
-            <div>{docNumber}</div>
-            
-            <div className="font-semibold text-right pr-4">Numéro de client</div>
-            <div>{order.client_id ? order.client_id.slice(0, 8).toUpperCase() : '-'}</div>
-            
-            {isInvoice && (
-              <>
-                <div className="font-semibold text-right pr-4">Paiement dû</div>
-                <div>{formatDate(new Date(Date.now() + 15 * 86400000).toISOString())}</div>
-                <div className="font-semibold text-right pr-4">Modalité de paiement</div>
-                <div>15 jours</div>
-              </>
-            )}
-            
-            <div className="font-semibold text-right pr-4">Emis par</div>
-            <div>{COMPANY.name}</div>
-            
-            <div className="font-semibold text-right pr-4">Contact client</div>
-            <div>{customerInfo.phone || '-'}</div>
-            
-            <div className="font-semibold text-right pr-4">Date de vente</div>
-            <div>{formatDate(order.created_at)}</div>
           </div>
         </div>
 
-        {/* Destinataire */}
-        <div className="w-1/2 pt-2">
-          <div className="font-bold text-sm mb-1 text-slate-900">Destinataire :</div>
-          <div className="text-slate-800 leading-relaxed">
-            {customerInfo.companyName && <div className="font-semibold">{customerInfo.companyName}</div>}
-            <div>{customerName}</div>
-            {customerInfo.address && <div>{customerInfo.address}</div>}
-            {customerInfo.city && <div>{customerInfo.postalCode} {customerInfo.city}</div>}
-            {customerInfo.country && <div>{customerInfo.country}</div>}
-            {customerInfo.taxId && <div>MF: {customerInfo.taxId}</div>}
+        {/* Right Column: Company Info & Client Info */}
+        <div className="w-[380px] flex flex-col gap-6">
+          {/* Company Info */}
+          <div>
+            <div className="font-bold text-[20px]">{COMPANY.name}</div>
+            <div className="text-[13px] font-bold text-[#173e7c] mb-2">{COMPANY.tagline}</div>
+            <div className="flex"><span className="font-bold w-20 text-[13px]">RC :</span> <span className="text-[13px]">{COMPANY.rc}</span></div>
+            <div className="flex"><span className="font-bold w-20 text-[13px]">MF :</span> <span className="text-[13px]">{COMPANY.mf}</span></div>
+            <div className="flex mt-1"><span className="font-bold w-20 text-[13px]">ADRESSE:</span> <span className="text-[13px] whitespace-pre-wrap leading-tight">{COMPANY.address}</span></div>
+            <div className="flex mt-1"><span className="font-bold w-20 text-[13px]">TÉL:</span> <span className="text-[13px] font-bold">{COMPANY.phone}</span></div>
+            <div className="flex mt-1"><span className="font-bold w-20 text-[13px]">EMAIL:</span> <span className="text-[13px]">{COMPANY.email}</span></div>
           </div>
-        </div>
-      </div>
 
-      {/* Infos additionnelles */}
-      <div className="mb-6">
-        <div className="font-bold text-sm text-slate-900 mb-1">Infos additionnelles</div>
-        <div className="text-slate-700">
-          Merci d'avoir choisi {COMPANY.name} pour vos pièces automobiles.
-          {order.notes && <div className="mt-1">Note: {order.notes}</div>}
-          {!isInvoice && <div className="mt-1 text-amber-700">Ce devis est valable 30 jours à compter de sa date d'émission.</div>}
+          {/* Client Info */}
+          <div className="border-[1.5px] border-black rounded-[12px] p-4 bg-slate-50">
+            <div className="flex mb-1.5"><span className="font-bold w-24 text-[13px]">CLIENT :</span> <span className="font-bold text-[13px] uppercase">{customerName}</span></div>
+            <div className="flex mb-1.5"><span className="font-bold w-24 text-[13px]">ADRESSE :</span> <span className="text-[13px] uppercase">{customerInfo.city ? customerInfo.city : (customerInfo.address || '-')}</span></div>
+            <div className="flex mb-1.5"><span className="font-bold w-24 text-[13px]">TÉL :</span> <span className="font-bold text-[13px]">{customerInfo.phone || '-'}</span></div>
+            <div className="flex"><span className="font-bold w-24 text-[13px]">MF :</span> <span className="font-bold text-[13px]">{customerInfo.taxId || '-'}</span></div>
+          </div>
         </div>
       </div>
 
       {/* Table */}
-      <table className="w-full text-center border-collapse mb-8 border border-slate-300">
+      <table className="w-full border-collapse mb-2 border border-black text-center text-[12px]">
         <thead>
-          <tr className="bg-brand-50 text-brand-900 border-b border-slate-300 text-xs font-bold uppercase tracking-wider">
-            <th className="py-2 px-2 text-left border-r border-slate-300">Description</th>
-            <th className="py-2 px-2 border-r border-slate-300 w-20">Quantités</th>
-            <th className="py-2 px-2 border-r border-slate-300 w-16">Unités</th>
-            <th className="py-2 px-2 border-r border-slate-300 w-28">Prix unitaire HT</th>
-            <th className="py-2 px-2 border-r border-slate-300 w-16">% TVA</th>
-            <th className="py-2 px-2 border-r border-slate-300 w-24">TVA</th>
-            <th className="py-2 px-2 w-28">TOTAL TTC</th>
+          <tr className="bg-[#1e9eb9] text-white">
+            <th className="py-1.5 px-2 border border-black font-bold w-[10%]">Quantité</th>
+            <th className="py-1.5 px-2 border border-black font-bold uppercase">Désignation</th>
+            <th className="py-1.5 px-2 border border-black font-bold w-[15%]">P.U.HT</th>
+            <th className="py-1.5 px-2 border border-black font-bold w-[20%]">Montant</th>
           </tr>
         </thead>
-        <tbody className="text-slate-700 border-b border-slate-300">
-          {order.order_items.map((item, idx) => {
+        <tbody className="border-b border-black">
+          {order.order_items.map((item: any, idx: number) => {
             const unitPrice = Number(item.unit_price);
-            const vatAmt = unitPrice * 0.19;
-            const rowTTC = (unitPrice + vatAmt) * item.quantity;
+            const montantHT = unitPrice * item.quantity;
             return (
-              <tr key={item.id} className="border-b border-slate-200 last:border-0 align-top">
-                <td className="py-2 px-2 text-left border-r border-slate-300">
-                  <div className="font-medium text-slate-900">{item.product_name}</div>
-                  {item.options_snapshot && Array.isArray(item.options_snapshot) && item.options_snapshot.length > 0 && (
-                    <div className="text-xs text-slate-500 mt-0.5">
-                      {item.options_snapshot.map((o: any) => `${o.option}: ${o.value}`).join(' · ')}
-                    </div>
-                  )}
-                </td>
-                <td className="py-2 px-2 border-r border-slate-300">{item.quantity}</td>
-                <td className="py-2 px-2 border-r border-slate-300">pce.</td>
-                <td className="py-2 px-2 border-r border-slate-300 text-right">{formatPrice(unitPrice)}</td>
-                <td className="py-2 px-2 border-r border-slate-300">19%</td>
-                <td className="py-2 px-2 border-r border-slate-300 text-right">{formatPrice(vatAmt * item.quantity)}</td>
-                <td className="py-2 px-2 text-right">{formatPrice(rowTTC)}</td>
+              <tr key={item.id} className="align-top h-8">
+                <td className="py-1 px-2 border border-black">{item.quantity}</td>
+                <td className="py-1 px-2 border border-black text-left">{item.product_name}</td>
+                <td className="py-1 px-2 border border-black text-right">{formatNumber(unitPrice)}</td>
+                <td className="py-1 px-2 border border-black text-right">{formatNumber(montantHT)}</td>
               </tr>
             );
           })}
-          {/* Add empty rows to make the table look full if needed, or just let it be */}
+          {/* Empty spacer row for visual fill */}
+          <tr className="align-top h-24">
+            <td className="border border-black"></td>
+            <td className="border border-black"></td>
+            <td className="border border-black"></td>
+            <td className="border border-black"></td>
+          </tr>
+          
+          {/* Totals Section */}
+          <tr>
+            <td colSpan={2} rowSpan={5} className="border border-black font-bold text-center text-[14px] uppercase align-middle">
+              MERCI POUR VOTRE CONFIANCE
+            </td>
+            <td className="py-1 px-2 border border-black font-bold text-left bg-slate-50">TOTAL HT</td>
+            <td className="py-1 px-2 border border-black font-bold text-right">{formatNumber(totalHT)}</td>
+          </tr>
+          <tr>
+            <td className="py-1 px-2 border border-black font-bold text-left bg-slate-50">FODEC 1%</td>
+            <td className="py-1 px-2 border border-black font-bold text-right">{formatNumber(totalHT * 0.01)}</td>
+          </tr>
+          <tr>
+            <td className="py-1 px-2 border border-black font-bold text-left bg-slate-50">TVA 19%</td>
+            <td className="py-1 px-2 border border-black font-bold text-right">{formatNumber(totalTVA)}</td>
+          </tr>
+          <tr>
+            <td className="py-1 px-2 border border-black font-bold text-left bg-slate-50">TIMBRE</td>
+            <td className="py-1 px-2 border border-black font-bold text-right">{formatNumber(timbre)}</td>
+          </tr>
+          <tr>
+            <td className="py-1 px-2 border border-black font-bold text-left bg-slate-50">TOTAL TTC</td>
+            <td className="py-1 px-2 border border-black font-bold text-right">{formatNumber(totalTTC + timbre)}</td>
+          </tr>
         </tbody>
       </table>
 
-      {/* Totals Box */}
-      <div className="flex justify-end mb-12">
-        <div className="w-72 border-t-2 border-slate-800 pt-2 text-slate-900 text-sm">
-          <div className="flex justify-between py-1">
-            <span className="font-bold">Total HT</span>
-            <span>{formatPrice(Number(order.subtotal))}</span>
-          </div>
-          <div className="flex justify-between py-1 border-b border-slate-300">
-            <span className="font-bold">TVA</span>
-            <span>{formatPrice(Number(order.vat))}</span>
-          </div>
-          {Number(order.subtotal) > 0 && (
-            <>
-              <div className="flex justify-between py-1">
-                <span>Timbre fiscal</span>
-                <span>{formatPrice(1)}</span>
-              </div>
-              <div className="flex justify-between py-1 border-b border-slate-300">
-                <span>RAS (1%)</span>
-                <span>+{formatPrice(ras)}</span>
-              </div>
-            </>
-          )}
-          <div className="flex justify-between py-2 font-bold text-[15px] border-b-2 border-slate-800">
-            <span>Total TTC</span>
-            <span>{formatPrice(Number(order.total))}</span>
-          </div>
+      <div className="mt-6 flex justify-between items-end">
+        <div className="font-bold text-[12px] uppercase">
+          Arrêtée la présente {docLabel.toLowerCase()} à la somme : {amountInWordsCapitalized} TTC
+        </div>
+        <div className="w-20 h-20">
+          <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent('https://acilretro.netlify.app')}`} alt="Site QR Code" className="w-full h-full object-contain" />
         </div>
       </div>
-
-      {/* Footer */}
-      <div className="pt-6 border-t border-slate-300 text-[12px] text-slate-600 flex justify-between leading-relaxed">
-        <div className="w-1/3 pr-4">
-          <div className="font-bold text-slate-800">{COMPANY.name}</div>
-          <div>{COMPANY.address}</div>
-          <div className="mt-2">Matricule Fiscal : {COMPANY.taxId}</div>
-          <div>RC : {COMPANY.rc}</div>
-        </div>
-        
-        <div className="w-1/3 pr-4">
-          <div className="font-bold text-slate-800">Contact</div>
-          <div>Téléphone : {COMPANY.phone}</div>
-          <div>Email : {COMPANY.email}</div>
-          <div>{COMPANY.website}</div>
-        </div>
-        
-        <div className="w-1/3">
-          <div className="font-bold text-slate-800">Détails bancaires</div>
-          <div className="grid grid-cols-[80px_1fr]">
-            <div>Banque</div>
-            <div>{COMPANY.bank}</div>
-            <div>RIB</div>
-            <div>{COMPANY.rib}</div>
-            <div>IBAN</div>
-            <div>{COMPANY.iban}</div>
-          </div>
-        </div>
-      </div>
-
     </div>
   );
 }

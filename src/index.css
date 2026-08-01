@@ -63,18 +63,9 @@
 
 /* Print styles for invoices and quotes */
 @media print {
-  body * { visibility: hidden; }
-  #printable-document, #printable-document * { visibility: visible; }
-  #printable-document { 
-    position: absolute; 
-    left: 0; 
-    top: 0; 
-    width: 100%; 
-    padding: 0;
-    margin: 0;
+  body {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
-  .print\:hidden { display: none !important; }
   @page { margin: 1cm; }
 }

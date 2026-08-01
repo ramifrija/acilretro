@@ -15,7 +15,7 @@ export default function AdminCustomers() {
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
-  const [form, setForm] = useState({ nom: '', prenom: '', email: '', num_tel: '' });
+  const [form, setForm] = useState({ nom: '', prenom: '', email: '', num_tel: '', tax_id: '', adresse: '' });
 
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -79,7 +79,7 @@ export default function AdminCustomers() {
   };
 
   const openAddModal = () => {
-    setForm({ nom: '', prenom: '', email: '', num_tel: '' });
+    setForm({ nom: '', prenom: '', email: '', num_tel: '', tax_id: '', adresse: '' });
     setEditingId(null);
     setShowModal(true);
   };
@@ -89,7 +89,9 @@ export default function AdminCustomers() {
       nom: c.nom || '', 
       prenom: c.prenom || '', 
       email: c.email || '', 
-      num_tel: c.num_tel || ''
+      num_tel: c.num_tel || '',
+      tax_id: c.tax_id || '',
+      adresse: c.adresse || ''
     });
     setEditingId(c.id);
     setShowModal(true);
@@ -109,7 +111,9 @@ export default function AdminCustomers() {
       nom: form.nom,
       prenom: form.prenom,
       email: form.email,
-      num_tel: form.num_tel
+      num_tel: form.num_tel,
+      tax_id: form.tax_id,
+      adresse: form.adresse
     };
 
     let error;
@@ -415,6 +419,14 @@ export default function AdminCustomers() {
               <div>
                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Téléphone</label>
                 <input type="tel" value={form.num_tel} onChange={e => setForm({...form, num_tel: e.target.value})} className="input-field" placeholder="+216 XX XXX XXX" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Matricule Fiscal / RC</label>
+                <input type="text" value={form.tax_id} onChange={e => setForm({...form, tax_id: e.target.value})} className="input-field" placeholder="Ex: 1234567M/A/M000" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Adresse Complète</label>
+                <input type="text" value={form.adresse} onChange={e => setForm({...form, adresse: e.target.value})} className="input-field" placeholder="Adresse du client" />
               </div>
               <div className="pt-4 flex gap-3">
                 <button type="button" onClick={() => setShowModal(false)} className="btn-secondary flex-1">Annuler</button>
