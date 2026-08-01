@@ -173,9 +173,9 @@ export default function LandingPage() {
             {/* Block 2: Image Mirror */}
             <div className="aspect-[4/3] lg:aspect-auto lg:h-[220px] bg-slate-200">
               <img
-                src="https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&q=80&w=600"
+                src="/images/retro-paysage.jpg"
                 className="w-full h-full object-cover"
-                alt="Rétroviseur"
+                alt="Rétroviseur paysage"
               />
             </div>
 
@@ -191,9 +191,9 @@ export default function LandingPage() {
             {/* Block 4: Image Warehouse */}
             <div className="aspect-[4/3] lg:aspect-auto lg:h-[220px] bg-slate-200">
               <img
-                src="https://images.unsplash.com/photo-1586528116311-ad8ed7c800c6?auto=format&fit=crop&q=80&w=600"
+                src="/images/retro-route.jpg"
                 className="w-full h-full object-cover"
-                alt="Entrepôt"
+                alt="Rétroviseur route"
               />
             </div>
 
