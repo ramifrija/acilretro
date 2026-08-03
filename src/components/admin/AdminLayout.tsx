@@ -22,7 +22,7 @@ export default function AdminLayout({ children, section }: { children: ReactNode
   ];
 
   return (
-    <div className="min-h-screen bg-slate-100 dark:bg-brand-950 flex print:bg-white print:min-h-0">
+    <div className="min-h-screen bg-slate-100 dark:bg-brand-950 flex print:bg-white print:min-h-0 print:block">
       {/* Sidebar */}
       <aside
         className={`print:hidden fixed lg:sticky top-0 left-0 h-screen w-64 bg-brand-950 text-brand-100 z-50 transition-transform duration-300 ${
@@ -72,7 +72,7 @@ export default function AdminLayout({ children, section }: { children: ReactNode
       {sidebarOpen && <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={() => setSidebarOpen(false)} />}
 
       {/* Main */}
-      <div className="flex-1 min-w-0 print:w-full">
+      <div className="flex-1 min-w-0 print:w-full print:block">
         {/* Top bar */}
         <header className="print:hidden sticky top-0 z-30 glass border-b border-white/10 px-4 lg:px-8 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">

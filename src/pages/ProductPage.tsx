@@ -212,10 +212,7 @@ export default function ProductPage() {
         {/* Info */}
         <div>
           <div className="flex items-center gap-3 mb-3">
-            <div className="flex items-center gap-1">
-              <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-              <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">{product.rating.toFixed(1)}</span>
-            </div>
+
             {product.stock > 0 ? (
               <span className="text-xs font-semibold text-success-600 flex items-center gap-1 px-2.5 py-1 rounded-lg bg-success-500/10">
                 <Zap className="w-3 h-3" /> En stock ({product.stock} unités)
@@ -279,9 +276,7 @@ export default function ProductPage() {
           {/* Quick info */}
           <div className="glass-card p-5 space-y-3">
             {[
-              { icon: ShieldCheck, label: 'Garantie', value: product.warranty || 'N/A' },
               { icon: Truck, label: 'Délai', value: product.delivery_time || '2-4 jours' },
-              { icon: FileText, label: 'Réf. OEM', value: product.oem_ref || 'N/A' },
               { icon: Package, label: 'Réf. interne', value: product.sku || 'N/A' },
             ].map((row, i) => (
               <div key={i} className="flex items-center gap-3 text-sm">

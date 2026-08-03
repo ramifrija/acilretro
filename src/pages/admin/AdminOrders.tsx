@@ -226,7 +226,7 @@ export default function AdminOrders({ quotesOnly = false }: { quotesOnly?: boole
                   <div>
                     <div className="flex items-center gap-2">
                       <span className="font-mono text-sm font-bold text-slate-900 dark:text-white">#{o.id.slice(0, 8).toUpperCase()}</span>
-                      <StatusBadge status={o.status} />
+                      <StatusBadge status={o.type === 'quote' ? 'quote' : o.status} />
                     </div>
                     <div className="font-semibold text-sm text-slate-900 dark:text-white mt-1">
                       {o.customer_info?.fullName || o.customer_info?.companyName || 'Client Inconnu'}
@@ -494,7 +494,7 @@ export default function AdminOrders({ quotesOnly = false }: { quotesOnly?: boole
 
       {/* Print document modal */}
       {printDoc && (
-        <div className="fixed inset-0 z-[62] bg-white overflow-y-auto animate-fade-in print:static print:h-auto print:overflow-visible">
+        <div className="fixed inset-0 z-[62] bg-white overflow-y-auto animate-fade-in print:static print:h-auto print:overflow-visible print:block">
           <div className="sticky top-0 z-10 bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between print:hidden shadow-sm">
             <div className="flex items-center gap-3">
               <button onClick={() => setPrintDoc(null)} className="flex items-center gap-2 px-4 py-2 rounded-xl text-slate-700 bg-slate-100 hover:bg-slate-200 transition-all text-sm font-bold">
@@ -513,7 +513,7 @@ export default function AdminOrders({ quotesOnly = false }: { quotesOnly?: boole
               </button>
             </div>
           </div>
-          <div className="print:block p-4 sm:p-8 bg-white min-h-screen">
+          <div className="print:block p-4 sm:p-8 bg-white min-h-screen print:min-h-0 print:p-0">
             <PrintableDocument order={printDoc.order} documentType={printDoc.type} />
           </div>
         </div>

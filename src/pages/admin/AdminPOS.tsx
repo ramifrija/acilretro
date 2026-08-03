@@ -603,34 +603,19 @@ export default function AdminPOS() {
 
               {/* VAT Selector */}
               <div className="relative">
-                <button
-                  onClick={() => setShowVatDropdown(!showVatDropdown)}
-                  className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm bg-slate-50 dark:bg-brand-900/40 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:border-brand-400 transition-all"
-                >
-                  <span className="flex items-center gap-2">
-                    <Percent className="w-4 h-4 text-brand-500" />
-                    <span className="font-semibold">TVA : <span className="text-brand-600 dark:text-brand-400">{vatRate}%</span></span>
-                  </span>
-                  <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${showVatDropdown ? 'rotate-180' : ''}`} />
-                </button>
-                {showVatDropdown && (
-                  <div className="absolute bottom-full left-0 right-0 mb-2 bg-white dark:bg-brand-900 border border-slate-200 dark:border-white/10 rounded-xl shadow-xl z-20 overflow-hidden">
-                    {VAT_OPTIONS.map((rate) => (
-                      <button
-                        key={rate}
-                        onClick={() => { setVatRate(rate); setShowVatDropdown(false); }}
-                        className={`w-full flex items-center justify-between px-4 py-2.5 text-sm font-semibold transition-colors
-                          ${vatRate === rate
-                            ? 'bg-brand-50 dark:bg-brand-800/60 text-brand-600 dark:text-brand-300'
-                            : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5'}
-                        `}
-                      >
-                        <span>TVA {rate}%</span>
-                        {vatRate === rate && <Check className="w-4 h-4" />}
-                      </button>
-                    ))}
-                  </div>
-                )}
+                <label className="text-xs font-semibold text-slate-500 uppercase mb-1.5 block">TVA (%)</label>
+                <div className="flex items-center">
+                  <input
+                    type="number"
+                    min="0"
+                    max="100"
+                    value={vatRate}
+                    onChange={(e) => setVatRate(Number(e.target.value) || 0)}
+                    className="input-field w-full pl-10"
+                    placeholder="Ex: 19"
+                  />
+                  <Percent className="w-4 h-4 text-brand-500 absolute left-3" />
+                </div>
               </div>
 
               {/* Totals */}
@@ -828,7 +813,7 @@ export default function AdminPOS() {
 
       {/* ===== Print Invoice Modal ===== */}
       {printDoc && (
-        <div className="fixed inset-0 z-[62] bg-white overflow-y-auto animate-fade-in">
+        <div className="fixed inset-0 z-[62] bg-white overflow-y-auto animate-fade-in print:static print:h-auto print:overflow-visible print:block">
           <div className="sticky top-0 bg-white/90 backdrop-blur border-b border-slate-200 px-6 py-3 flex items-center justify-between print:hidden shadow-sm">
             <div className="flex items-center gap-3">
               <button

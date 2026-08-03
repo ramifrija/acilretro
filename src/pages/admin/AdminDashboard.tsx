@@ -203,7 +203,7 @@ export default function AdminDashboard() {
                     <tr key={o.id} className="border-b border-slate-50 dark:border-white/5 hover:bg-white/50 dark:hover:bg-white/5 transition-colors">
                       <td className="py-3 font-mono text-xs text-slate-600 dark:text-slate-300">#{o.id.slice(0, 8).toUpperCase()}</td>
                       <td className="py-3"><span className="text-xs">{o.type === 'quote' ? 'Devis' : 'Commande'}</span></td>
-                      <td className="py-3"><StatusBadge status={o.status} /></td>
+                      <td className="py-3"><StatusBadge status={o.type === 'quote' ? 'quote' : o.status} /></td>
                       <td className="py-3 font-semibold text-slate-900 dark:text-white">{formatPrice(Number(o.total))}</td>
                       <td className="py-3 text-xs text-slate-500">{formatDate(o.created_at)}</td>
                     </tr>

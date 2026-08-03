@@ -42,6 +42,7 @@ export default function PrintableDocument({ order, documentType }: Props) {
   const totalHT = Number(order.subtotal);
   const totalTVA = Number(order.vat);
   const totalTTC = Number(order.total);
+  const calculatedVatRate = totalHT > 0 ? Math.round((totalTVA / totalHT) * 100) : 0;
   const timbre = totalHT > 0 ? 1 : 0;
 
   const finalTotal = totalTTC + timbre;
@@ -58,8 +59,8 @@ export default function PrintableDocument({ order, documentType }: Props) {
     <div id="printable-document" className="bg-white text-black p-8 lg:p-12 max-w-4xl mx-auto text-[13px]" style={{ fontFamily: 'Arial, sans-serif' }}>
       <style>{`
         @media print {
-          @page { margin: 0; }
-          body { padding: 1cm; }
+          @page { margin: 0.5cm; }
+          body { padding: 0; margin: 0; }
         }
       `}</style>
 
@@ -125,13 +126,14 @@ export default function PrintableDocument({ order, documentType }: Props) {
               </tr>
             );
           })}
-          {/* Empty spacer row for visual fill */}
-          <tr className="align-top h-24">
-            <td className="border border-black"></td>
-            <td className="border border-black"></td>
-            <td className="border border-black"></td>
-            <td className="border border-black"></td>
-          </tr>
+          {Array.from({ length: Math.max(0, 10 - (order.order_items?.length || 0)) }).map((_, i) => (
+            <tr key={`empty-${i}`} className="align-top h-6">
+              <td className="border border-black"></td>
+              <td className="border border-black"></td>
+              <td className="border border-black"></td>
+              <td className="border border-black"></td>
+            </tr>
+          ))}
           
           {/* Totals Section */}
           <tr>
@@ -145,10 +147,12 @@ export default function PrintableDocument({ order, documentType }: Props) {
             <td className="py-1 px-2 border border-black font-bold text-left bg-slate-50">FODEC 1%</td>
             <td className="py-1 px-2 border border-black font-bold text-right">{formatNumber(totalHT * 0.01)}</td>
           </tr>
-          <tr>
-            <td className="py-1 px-2 border border-black font-bold text-left bg-slate-50">TVA 19%</td>
-            <td className="py-1 px-2 border border-black font-bold text-right">{formatNumber(totalTVA)}</td>
-          </tr>
+          {calculatedVatRate > 0 && (
+            <tr>
+              <td className="py-1 px-2 border border-black font-bold text-left bg-slate-50">TVA {calculatedVatRate}%</td>
+              <td className="py-1 px-2 border border-black font-bold text-right">{formatNumber(totalTVA)}</td>
+            </tr>
+          )}
           <tr>
             <td className="py-1 px-2 border border-black font-bold text-left bg-slate-50">TIMBRE</td>
             <td className="py-1 px-2 border border-black font-bold text-right">{formatNumber(timbre)}</td>
