@@ -5,6 +5,23 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --brand-h: 225;
+    --brand-s: 100%;
+    --brand-l-50: 97%;
+    --brand-l-100: 93%;
+    --brand-l-200: 87%;
+    --brand-l-300: 78%;
+    --brand-l-400: 67%;
+    --brand-l-500: 60%;
+    --brand-l-600: 51%;
+    --brand-l-700: 41%;
+    --brand-l-800: 33%;
+    --brand-l-900: 33%;
+    --brand-l-950: 33%;
+    --brand-l-offset: 0%;
+  }
+
   html { scroll-behavior: smooth; }
   body {
     @apply font-sans antialiased bg-slate-50 text-slate-900 dark:bg-brand-950 dark:text-slate-100;

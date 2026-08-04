@@ -5,19 +5,19 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Premium dark blue ramp
+        // Premium dark blue ramp (dynamic via CSS variables)
         brand: {
-          50: '#eef4ff',
-          100: '#d9e6ff',
-          200: '#bcd3ff',
-          300: '#8eb6ff',
-          400: '#598dff',
-          500: '#3366ff',
-          600: '#1f47e6',
-          700: '#1a38b8',
-          800: '#1a3491',
-          900: '#1a3491', // Fallback
-          950: '#1a3491', // Fallback
+          50: ({ opacityValue }) => opacityValue ? `hsl(var(--brand-h) var(--brand-s) calc(var(--brand-l-50) + var(--brand-l-offset, 0%)) / ${opacityValue})` : `hsl(var(--brand-h) var(--brand-s) calc(var(--brand-l-50) + var(--brand-l-offset, 0%)))`,
+          100: ({ opacityValue }) => opacityValue ? `hsl(var(--brand-h) var(--brand-s) calc(var(--brand-l-100) + var(--brand-l-offset, 0%)) / ${opacityValue})` : `hsl(var(--brand-h) var(--brand-s) calc(var(--brand-l-100) + var(--brand-l-offset, 0%)))`,
+          200: ({ opacityValue }) => opacityValue ? `hsl(var(--brand-h) var(--brand-s) calc(var(--brand-l-200) + var(--brand-l-offset, 0%)) / ${opacityValue})` : `hsl(var(--brand-h) var(--brand-s) calc(var(--brand-l-200) + var(--brand-l-offset, 0%)))`,
+          300: ({ opacityValue }) => opacityValue ? `hsl(var(--brand-h) var(--brand-s) calc(var(--brand-l-300) + var(--brand-l-offset, 0%)) / ${opacityValue})` : `hsl(var(--brand-h) var(--brand-s) calc(var(--brand-l-300) + var(--brand-l-offset, 0%)))`,
+          400: ({ opacityValue }) => opacityValue ? `hsl(var(--brand-h) var(--brand-s) calc(var(--brand-l-400) + var(--brand-l-offset, 0%)) / ${opacityValue})` : `hsl(var(--brand-h) var(--brand-s) calc(var(--brand-l-400) + var(--brand-l-offset, 0%)))`,
+          500: ({ opacityValue }) => opacityValue ? `hsl(var(--brand-h) var(--brand-s) calc(var(--brand-l-500) + var(--brand-l-offset, 0%)) / ${opacityValue})` : `hsl(var(--brand-h) var(--brand-s) calc(var(--brand-l-500) + var(--brand-l-offset, 0%)))`,
+          600: ({ opacityValue }) => opacityValue ? `hsl(var(--brand-h) var(--brand-s) calc(var(--brand-l-600) + var(--brand-l-offset, 0%)) / ${opacityValue})` : `hsl(var(--brand-h) var(--brand-s) calc(var(--brand-l-600) + var(--brand-l-offset, 0%)))`,
+          700: ({ opacityValue }) => opacityValue ? `hsl(var(--brand-h) var(--brand-s) calc(var(--brand-l-700) + var(--brand-l-offset, 0%)) / ${opacityValue})` : `hsl(var(--brand-h) var(--brand-s) calc(var(--brand-l-700) + var(--brand-l-offset, 0%)))`,
+          800: ({ opacityValue }) => opacityValue ? `hsl(var(--brand-h) var(--brand-s) calc(var(--brand-l-800) + var(--brand-l-offset, 0%)) / ${opacityValue})` : `hsl(var(--brand-h) var(--brand-s) calc(var(--brand-l-800) + var(--brand-l-offset, 0%)))`,
+          900: ({ opacityValue }) => opacityValue ? `hsl(var(--brand-h) var(--brand-s) calc(var(--brand-l-900) + var(--brand-l-offset, 0%)) / ${opacityValue})` : `hsl(var(--brand-h) var(--brand-s) calc(var(--brand-l-900) + var(--brand-l-offset, 0%)))`,
+          950: ({ opacityValue }) => opacityValue ? `hsl(var(--brand-h) var(--brand-s) calc(var(--brand-l-950) + var(--brand-l-offset, 0%)) / ${opacityValue})` : `hsl(var(--brand-h) var(--brand-s) calc(var(--brand-l-950) + var(--brand-l-offset, 0%)))`,
         },
         accent: {
           400: '#38bdf8',
