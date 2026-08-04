@@ -61,6 +61,9 @@ export default function PrintableDocument({ order, documentType }: Props) {
         @media print {
           @page { margin: 0.5cm; }
           body { padding: 0; margin: 0; }
+          body * { visibility: hidden; }
+          #printable-document, #printable-document * { visibility: visible; }
+          #printable-document { position: absolute; left: 0; top: 0; width: 100%; margin: 0; }
         }
       `}</style>
 
@@ -70,7 +73,7 @@ export default function PrintableDocument({ order, documentType }: Props) {
         {/* Left Column: Logo & Invoice Details */}
         <div className="flex flex-col">
           <div className="w-48 mb-8">
-            <img src="/images/acil_logo.png" alt="Logo" className="w-full h-auto object-contain" />
+            <img src="/images/Logo_facture.png" alt="Logo" className="w-full h-auto object-contain" />
           </div>
           <div className="pt-4">
             <h1 className="font-bold text-[22px] mb-2">{docLabel} N° : {isInvoice ? 'FV' : 'DV'}{new Date(order.created_at).getFullYear()}/{docNumber}</h1>
@@ -134,7 +137,7 @@ export default function PrintableDocument({ order, documentType }: Props) {
               <td className="border border-black"></td>
             </tr>
           ))}
-          
+
           {/* Totals Section */}
           <tr>
             <td colSpan={2} rowSpan={5} className="border border-black font-bold text-center text-[14px] uppercase align-middle">
