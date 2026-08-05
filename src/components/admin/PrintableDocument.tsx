@@ -61,23 +61,6 @@ export default function PrintableDocument({ order, documentType }: Props) {
     <div id="printable-document" className="bg-white text-gray-800 p-8 lg:p-12 max-w-4xl mx-auto text-[13px] flex flex-col min-h-[297mm]" style={{ fontFamily: 'Arial, sans-serif' }}>
       <style>{`
         @media print {
-<<<<<<< HEAD
-          @page { margin: 0.5cm; }
-          body { padding: 0; margin: 0; }
-          body * { visibility: hidden; }
-          #printable-document, #printable-document * { visibility: visible; }
-          #printable-document { position: absolute; left: 0; top: 0; width: 100%; margin: 0; }
-        }
-      `}</style>
-
-      {/* Top Header Section */}
-      <div className="flex justify-between items-start mb-8">
-
-        {/* Left Column: Logo & Invoice Details */}
-        <div className="flex flex-col">
-          <div className="w-48 mb-8">
-            <img src="/images/Logo_facture.png" alt="Logo" className="w-full h-auto object-contain" />
-=======
           @page { margin: 0; size: A4; }
           body { padding: 0; margin: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
           #printable-document { padding: 1.5cm; max-width: 100%; width: 100%; min-height: 297mm; display: flex; flex-direction: column; }
@@ -90,7 +73,6 @@ export default function PrintableDocument({ order, documentType }: Props) {
         <div className="flex gap-6 items-center">
           <div className="w-[120px] shrink-0">
             <img src="/images/acil_logo.png" alt="Logo" className="w-full h-auto object-contain" />
->>>>>>> 874f92b (fixsation de facture et li 9altou)
           </div>
           <div className="flex flex-col text-[12px] text-gray-600 gap-0.5">
             <div className="font-bold text-[20px] text-black mb-1">{COMPANY.name}</div>
