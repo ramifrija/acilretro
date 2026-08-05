@@ -44,12 +44,12 @@ export default function Header() {
       onClick={() => navigate(to)}
       className={`text-sm font-semibold transition-colors relative group py-2 ${path === to
         ? 'text-white'
-        : 'text-brand-300 hover:text-white'
+        : 'text-white hover:text-white/80'
         }`}
     >
       {label}
       {path === to && (
-        <span className="absolute bottom-0 left-0 w-full h-0.5 bg-brand-400 rounded-full" />
+        <span className="absolute bottom-0 left-0 w-full h-0.5 bg-white rounded-full" />
       )}
     </button>
   );
@@ -57,15 +57,16 @@ export default function Header() {
   return (
     <>
       {/* Top bar */}
-      <div className="hidden lg:block bg-brand-950 text-brand-100 text-xs">
-        <div className="container-x flex items-center justify-between py-2">
+      <div className="hidden lg:block bg-[#3d6eff] text-white text-sm">
+        <div className="container-x flex items-center justify-between py-3">
           <div className="flex items-center gap-6">
-            <span className="flex items-center gap-1.5"><Phone className="w-3.5 h-3.5" /> {settings.phone}</span>
-            <span className="flex items-center gap-1.5"><Mail className="w-3.5 h-3.5" /> {settings.email}</span>
-            <span className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" /> {settings.address}</span>
+            <span className="flex items-center gap-2"><Phone className="w-4 h-4" /> {settings.phone}</span>
+            <span className="flex items-center gap-2"><Mail className="w-4 h-4" /> {settings.email}</span>
+            <span className="flex items-center gap-2"><MapPin className="w-4 h-4" /> {settings.address}</span>
           </div>
-          <div className="flex items-center gap-4">
-            <span>Livraison rapide partout en Tunisie</span>
+          <div className="flex items-center gap-6">
+            <span className="text-white">
+              Livraison rapide partout en Tunisie</span>
             <button onClick={() => navigate('/admin')} className="hover:text-white transition-colors">
               Espace Pro
             </button>
@@ -73,17 +74,17 @@ export default function Header() {
         </div>
       </div>
 
-      <header className={`sticky top-0 z-50 transition-all duration-300 bg-brand-950 ${scrolled ? 'shadow-md border-b border-brand-800' : ''}`}>
+      <header className={`sticky top-0 z-50 transition-all duration-300 bg-[#3d6eff] ${scrolled ? 'shadow-md border-b border-[#2d58d9]' : ''}`}>
         <div className="container-x">
           <div className="flex items-center justify-between gap-4 py-3">
             {/* Logo */}
-            <button onClick={() => navigate('/')} className="flex items-center gap-2.5 shrink-0">
-              <div className="w-20 h-20 rounded-xl overflow-hidden shrink-0 shadow-md">
-                <img src="/images/acil_logo.png" alt="ACIL RETRO Logo" className="w-full h-full object-cover" />
+            <button onClick={() => navigate('/')} className="flex items-center gap-3 shrink-0">
+              <div className="w-24 h-24 shrink-0">
+                <img src="/images/acil_logo.png" alt="ACIL RETRO Logo" className="w-full h-full object-contain" />
               </div>
               <div className="text-left leading-none">
-                <div className="font-display font-extrabold text-2xl text-white tracking-tight">ACIL RETRO</div>
-                <div className="text-xs text-brand-400 font-medium tracking-wide uppercase mt-1">Pièces Auto Premium</div>
+                <div className="font-display font-extrabold text-3xl text-white tracking-tight">ACIL RETRO</div>
+                <div className="text-sm text-white/90 font-medium tracking-wide uppercase mt-1">Pièces Auto Premium</div>
               </div>
             </button>
 
@@ -102,7 +103,7 @@ export default function Header() {
                 className="relative p-2.5 rounded-xl hover:bg-white/10 transition-all"
                 aria-label="Cart"
               >
-                <ShoppingCart className="w-5 h-5 text-brand-100" />
+                <ShoppingCart className="w-5 h-5 text-white" />
                 {count > 0 && (
                   <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-accent-500 text-white text-[10px] font-bold flex items-center justify-center animate-scale-in">
                     {count}
@@ -114,7 +115,7 @@ export default function Header() {
                 className="md:hidden p-2.5 rounded-xl hover:bg-white/10 transition-all"
                 aria-label="Menu"
               >
-                <Menu className="w-5 h-5 text-brand-100" />
+                <Menu className="w-5 h-5 text-white" />
               </button>
             </div>
           </div>

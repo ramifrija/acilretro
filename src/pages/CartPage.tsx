@@ -81,8 +81,7 @@ export default function CartPage() {
                       <span className="px-3 text-sm font-semibold text-slate-900 dark:text-white">{item.quantity}</span>
                       <button onClick={() => updateQty(item.productId, key, item.quantity + 1)} className="px-3 py-2 text-slate-500 hover:text-brand-500"><Plus className="w-3.5 h-3.5" /></button>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <span className="font-display font-bold text-lg text-brand-700 dark:text-brand-200">{formatPrice(item.unitPrice * item.quantity)}</span>
+                    <div className="flex items-center gap-6">
                       <button onClick={() => removeItem(item.productId, key)} className="p-2 rounded-lg text-slate-400 hover:text-error-500 hover:bg-error-500/10 transition-all">
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -99,57 +98,9 @@ export default function CartPage() {
           <div className="glass-card p-6 sticky top-24">
             <h3 className="font-display font-bold text-lg text-slate-900 dark:text-white mb-4">Récapitulatif</h3>
 
-            {/* Promo code */}
-            <div className="mb-4">
-              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2 block">Code promo</label>
-              <div className="flex gap-2">
-                <div className="relative flex-1">
-                  <Tag className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                  <input
-                    value={promoCode}
-                    onChange={(e) => setPromoCode(e.target.value)}
-                    placeholder="ACIL10"
-                    className="input-field text-sm pl-9"
-                  />
-                </div>
-                <button onClick={applyPromo} className="btn-ghost text-sm py-2 px-4">Appliquer</button>
-              </div>
-              {promoError && <p className="text-xs text-error-500 mt-1.5">{promoError}</p>}
-              {appliedPromo && (
-                <div className="flex items-center gap-1.5 mt-1.5 text-xs text-success-600">
-                  <Check className="w-3.5 h-3.5" /> Réduction de {appliedPromo * 100}% appliquée
-                </div>
-              )}
-            </div>
 
-            <div className="space-y-2.5 text-sm border-t border-slate-100 dark:border-white/10 pt-4">
-              <div className="flex justify-between text-slate-600 dark:text-slate-300">
-                <span>Sous-total</span><span className="font-semibold text-slate-900 dark:text-white">{formatPrice(subtotal)}</span>
-              </div>
-              {discount > 0 && (
-                <div className="flex justify-between text-success-600">
-                  <span>Réduction</span><span className="font-semibold">-{formatPrice(discount)}</span>
-                </div>
-              )}
-              <div className="flex justify-between text-slate-600 dark:text-slate-300">
-                <span>TVA (19%)</span><span className="font-semibold text-slate-900 dark:text-white">{formatPrice(vat)}</span>
-              </div>
-              {subtotal > 0 && (
-                <>
-                  <div className="flex justify-between text-slate-600 dark:text-slate-300">
-                    <span>Timbre fiscal</span><span className="font-semibold text-slate-900 dark:text-white">{formatPrice(timbre)}</span>
-                  </div>
-                  <div className="flex justify-between text-slate-600 dark:text-slate-300">
-                    <span>RAS (1%)</span><span className="font-semibold text-slate-900 dark:text-white">+{formatPrice(ras)}</span>
-                  </div>
-                </>
-              )}
-            </div>
 
-            <div className="flex justify-between items-baseline border-t border-slate-100 dark:border-white/10 pt-4 mt-4">
-              <span className="font-display font-bold text-lg text-slate-900 dark:text-white">Total</span>
-              <span className="font-display font-extrabold text-2xl text-brand-700 dark:text-brand-200">{formatPrice(total)}</span>
-            </div>
+
 
             <div className="flex flex-col gap-3 mt-6">
               <button onClick={() => navigate('/checkout?type=order')} className="btn-primary w-full">

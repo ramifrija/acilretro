@@ -182,7 +182,7 @@ export default function AdminDashboard() {
 
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Recent orders */}
-        <div className="lg:col-span-2 glass-card p-6">
+        <div className="lg:col-span-2 glass-card p-4 sm:p-6 overflow-hidden">
           <h3 className="font-display font-bold text-lg text-slate-900 dark:text-white mb-4">Commandes récentes</h3>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">

@@ -52,7 +52,7 @@ export default function ContactPage() {
         </div>
 
         <div className="lg:col-span-2">
-          <form onSubmit={submit} className="glass-card p-8">
+          <form onSubmit={submit} className="glass-card p-6 md:p-8">
             {sent && (
               <div className="mb-6 p-4 rounded-xl bg-success-500/10 text-success-600 flex items-center gap-2 animate-fade-in">
                 <Check className="w-5 h-5" /> Votre message a été envoyé avec succès!

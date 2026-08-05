@@ -82,7 +82,7 @@ export default function LandingPage() {
 
       {/* ===== HERO E-COMMERCE ===== */}
       <section
-        className="relative border-b border-brand-900 pt-10 pb-16 bg-brand-950 bg-cover bg-center overflow-hidden"
+        className="relative border-b border-brand-900 pt-10 pb-16 bg-[#3d6eff] bg-cover bg-center overflow-hidden"
         style={{ backgroundImage: "url('/images/hero-bg.jpg')" }}
       >
         {/* Dark overlay just in case the background is too busy */}
@@ -180,7 +180,7 @@ export default function LandingPage() {
             </div>
 
             {/* Block 3: Blue Text (was Red) */}
-            <div className="bg-brand-950 text-white p-5 lg:p-6 flex flex-col justify-between aspect-[4/3] lg:aspect-auto lg:h-[220px]">
+            <div className="bg-[#3d6eff] text-white p-5 lg:p-6 flex flex-col justify-between aspect-[4/3] lg:aspect-auto lg:h-[220px]">
               <h3 className="font-display font-bold text-xl lg:text-2xl leading-tight uppercase tracking-tight">La qualité<br />Acil Retro</h3>
               <p className="text-left text-xs lg:text-sm font-medium leading-relaxed mt-2">
                 Un large choix de références, une qualité de service et de conseil.<br />
@@ -227,7 +227,7 @@ export default function LandingPage() {
         </div>
 
         {/* The Blue Banner */}
-        <div className="bg-brand-950 py-12">
+        <div className="bg-[#3d6eff] py-12">
           <div className="container-x flex flex-col justify-center items-center text-center">
             <h2 className="font-display font-black text-4xl md:text-5xl text-white tracking-tighter uppercase mb-1">
               ACIL RETRO
@@ -252,7 +252,7 @@ export default function LandingPage() {
                 <div
                   key={i}
                   onClick={() => navigate(`/catalog?brand=${brand.name.toLowerCase()}`)}
-                  className="flex-shrink-0 w-48 h-28 md:w-72 md:h-40 bg-white border border-slate-100 shadow-sm rounded-2xl flex items-center justify-center p-8 cursor-pointer hover:border-brand-300 hover:shadow-md transition-all group"
+                  className="flex-shrink-0 w-48 h-28 md:w-72 md:h-40 bg-white border border-slate-100 shadow-sm rounded-2xl flex items-center justify-center p-4 md:p-8 cursor-pointer hover:border-brand-300 hover:shadow-md transition-all group"
                 >
                   <img
                     src={brand.logo}

@@ -65,7 +65,7 @@ export default function BrandsPage() {
             <Loader2 className="w-12 h-12 animate-spin text-brand-600" />
           </div>
         ) : filteredBrands.length === 0 ? (
-          <div className="bg-white rounded-3xl p-16 text-center border border-slate-100 shadow-sm flex flex-col items-center justify-center">
+          <div className="bg-white rounded-3xl p-8 md:p-16 text-center border border-slate-100 shadow-sm flex flex-col items-center justify-center">
             <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
               <Search className="w-8 h-8 text-slate-400" />
             </div>
@@ -85,7 +85,7 @@ export default function BrandsPage() {
                 <button
                   key={i}
                   onClick={() => navigate(`/catalog?brand=${brand.name.toLowerCase()}`)}
-                  className="group bg-white rounded-2xl p-8 flex flex-col items-center justify-center border border-slate-200 hover:border-brand-300 shadow-sm hover:shadow-xl transition-all duration-300 aspect-video relative overflow-hidden"
+                  className="group bg-white rounded-2xl p-6 md:p-8 flex flex-col items-center justify-center border border-slate-200 hover:border-brand-300 shadow-sm hover:shadow-xl transition-all duration-300 aspect-video relative overflow-hidden"
                 >
                   {brand.logo_url ? (
                     <img 

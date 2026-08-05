@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Warehouse, TrendingDown, TrendingUp, Package, Search, History, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Warehouse, TrendingDown, TrendingUp, Package, Search, History, Plus, Minus, ChevronLeft, ChevronRight } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { formatDate } from '@/lib/format';
 import type { Product, InventoryMovement } from '@/types/database';
@@ -11,6 +11,7 @@ export default function AdminInventory() {
   const [search, setSearch] = useState('');
   const [tab, setTab] = useState<'stock' | 'movements'>('stock');
   const [adjustProduct, setAdjustProduct] = useState<Product | null>(null);
+  const [adjustMode, setAdjustMode] = useState<'add' | 'remove'>('add');
 
   // Pagination states
   const [page, setPage] = useState(1);
@@ -155,9 +156,12 @@ export default function AdminInventory() {
                         : p.stock <= p.min_stock ? <span className="px-2 py-1 rounded-lg text-xs font-semibold bg-amber-500/10 text-amber-600">Faible</span>
                         : <span className="px-2 py-1 rounded-lg text-xs font-semibold bg-success-500/10 text-success-600">OK</span>}
                     </td>
-                    <td className="px-4 py-3">
-                      <button onClick={() => setAdjustProduct(p)} className="p-2 rounded-lg glass hover:bg-brand-50 dark:hover:bg-white/10 transition-all">
+                    <td className="px-4 py-3 flex items-center gap-1">
+                      <button onClick={() => { setAdjustProduct(p); setAdjustMode('add'); }} className="p-2 rounded-lg glass hover:bg-brand-50 dark:hover:bg-white/10 transition-all text-brand-600 dark:text-brand-400">
                         <Plus className="w-4 h-4" />
+                      </button>
+                      <button onClick={() => { setAdjustProduct(p); setAdjustMode('remove'); }} className="p-2 rounded-lg glass hover:bg-error-50 dark:hover:bg-white/10 transition-all text-error-600 dark:text-error-400">
+                        <Minus className="w-4 h-4" />
                       </button>
                     </td>
                   </tr>
@@ -231,7 +235,14 @@ export default function AdminInventory() {
         </div>
       )}
 
-      {adjustProduct && <AdjustModal product={adjustProduct} onClose={() => setAdjustProduct(null)} onSaved={() => { loadTableData(); fetchStats(); }} />}
+        {adjustProduct && (
+          <AdjustModal
+            product={adjustProduct}
+            initialMode={adjustMode}
+            onClose={() => setAdjustProduct(null)}
+            onSaved={() => { loadTableData(); fetchStats(); }}
+          />
+        )}
     </div>
   );
 }
@@ -240,9 +251,9 @@ const movementLabels: Record<string, string> = {
   purchase: 'Achat', sale: 'Vente', quote: 'Devis', adjustment: 'Ajustement', return: 'Retour', transfer: 'Transfert',
 };
 
-function AdjustModal({ product, onClose, onSaved }: { product: Product; onClose: () => void; onSaved: () => void }) {
-  const [type, setType] = useState('adjustment');
-  const [qty, setQty] = useState('0');
+function AdjustModal({ product, initialMode, onClose, onSaved }: { product: Product; initialMode: 'add' | 'remove'; onClose: () => void; onSaved: () => void }) {
+  const [type, setType] = useState(initialMode === 'add' ? 'purchase' : 'sale');
+  const [qty, setQty] = useState(initialMode === 'add' ? '1' : '-1');
   const [reason, setReason] = useState('');
 
   const save = async () => {

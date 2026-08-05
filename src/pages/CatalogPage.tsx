@@ -195,8 +195,6 @@ export default function CatalogPage() {
               <span className="text-sm text-slate-500 hidden sm:block">Trier par:</span>
               <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="input-field text-sm py-2 w-auto">
                 <option value="relevance">Pertinence</option>
-                <option value="price-asc">Prix croissant</option>
-                <option value="price-desc">Prix décroissant</option>
                 <option value="rating">Mieux notés</option>
               </select>
             </div>

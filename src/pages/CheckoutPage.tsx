@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Building2, User, ArrowLeft, ArrowRight, Check, FileText, ShoppingBag } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { useRouter } from '@/context/RouterContext';
@@ -38,6 +38,13 @@ export default function CheckoutPage() {
     fullName: '', email: '', phone: '', address: '', city: '', postalCode: '', country: 'Tunisie', notes: '',
     companyName: '', taxId: '', vatNumber: '', rcNumber: '', contactPerson: '',
   });
+
+  const [whatsappPhone, setWhatsappPhone] = useState('+216 71 000 000');
+  useEffect(() => {
+    supabase.from('site_settings').select('phone').limit(1).then(({ data }) => {
+      if (data && data[0]) setWhatsappPhone(data[0].phone);
+    });
+  }, []);
 
   const set = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
@@ -91,6 +98,32 @@ export default function CheckoutPage() {
       options_snapshot: i.options,
     }));
     await supabase.from('order_items').insert(itemRows);
+
+    // Redirect to WhatsApp
+    let clientInfoText = '';
+    if (customerType === 'individual') {
+      clientInfoText = `*Client :* ${form.fullName}
+*Tél :* ${form.phone}
+*Adresse :* ${form.address}, ${form.city}`;
+    } else {
+      clientInfoText = `*Société :* ${form.companyName} (MF: ${form.taxId})
+*Tél :* ${form.phone}
+*Adresse :* ${form.address}, ${form.city}`;
+    }
+
+    const wText = `Bonjour, voici ma demande de ${type === 'quote' ? 'devis' : 'commande'} :
+
+${clientInfoText}
+
+*Produits :*
+${items.map(i => {
+  const opts = i.options && i.options.length ? ` (${i.options.map(o => `${o.option} : ${o.value}`).join(' | ')})` : '';
+  return `- ${i.quantity}x ${i.name}${opts}`;
+}).join('\n')}
+
+Merci pour votre confiance.`;
+    const cleanPhone = whatsappPhone.replace(/\D/g, '');
+    window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(wText)}`, '_blank');
 
     setOrderId(order.id);
     setSuccess(true);
@@ -318,26 +351,10 @@ export default function CheckoutPage() {
                     <p className="font-medium text-slate-900 dark:text-white truncate">{i.name}</p>
                     <p className="text-xs text-slate-500">x{i.quantity}</p>
                   </div>
-                  <span className="font-semibold text-slate-900 dark:text-white">{formatPrice(i.unitPrice * i.quantity)}</span>
                 </div>
               ))}
             </div>
-            <div className="space-y-2 text-sm border-t border-slate-100 dark:border-white/10 pt-4">
-              <div className="flex justify-between text-slate-600 dark:text-slate-300"><span>Sous-total</span><span className="font-semibold">{formatPrice(subtotal)}</span></div>
-              <div className="flex justify-between text-slate-600 dark:text-slate-300"><span>TVA (19%)</span><span className="font-semibold">{formatPrice(vat)}</span></div>
-              {subtotal > 0 && (
-                <>
-                  <div className="flex justify-between text-slate-600 dark:text-slate-300"><span>Timbre fiscal</span><span className="font-semibold">{formatPrice(timbre)}</span></div>
-                  <div className="flex justify-between text-slate-600 dark:text-slate-300"><span>RAS (1%)</span><span className="font-semibold text-brand-600 dark:text-brand-400">+{formatPrice(ras)}</span></div>
-                </>
-              )}
-            </div>
-            <div className="flex justify-between items-baseline border-t border-slate-100 dark:border-white/10 pt-4 mt-4">
-              <span className="font-display font-bold text-lg">Total</span>
-              <span className="font-display font-extrabold text-2xl text-brand-700 dark:text-brand-200">
-                {formatPrice(total)}
-              </span>
-            </div>
+
             <button onClick={handleSubmit} disabled={submitting} className="btn-primary w-full mt-6">
               {submitting ? 'Envoi en cours...' : (
                 <>

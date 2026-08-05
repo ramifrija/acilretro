@@ -25,7 +25,7 @@ export default function AdminLayout({ children, section }: { children: ReactNode
     <div className="min-h-screen bg-slate-100 dark:bg-brand-950 flex print:bg-white print:min-h-0 print:block">
       {/* Sidebar */}
       <aside
-        className={`print:hidden fixed lg:sticky top-0 left-0 h-screen w-64 bg-brand-950 text-brand-100 z-50 transition-transform duration-300 ${
+        className={`print:hidden fixed lg:sticky top-0 left-0 h-screen w-64 bg-[#3d6eff] text-brand-100 z-50 transition-transform duration-300 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}
       >
@@ -36,7 +36,7 @@ export default function AdminLayout({ children, section }: { children: ReactNode
             </div>
             <div>
               <div className="font-display font-extrabold text-sm text-white">ACIL RETRO</div>
-              <div className="text-[10px] text-brand-400 uppercase tracking-wide">ERP Admin</div>
+              <div className="text-[10px] text-white/90 uppercase tracking-wide">ERP Admin</div>
             </div>
           </div>
           <button onClick={() => setSidebarOpen(false)} className="lg:hidden p-1.5 rounded-lg glass">
@@ -51,8 +51,8 @@ export default function AdminLayout({ children, section }: { children: ReactNode
               onClick={() => { navigate(n.path); setSidebarOpen(false); }}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
                 section === n.id
-                  ? 'bg-brand-600 text-white shadow-lg shadow-brand-600/30'
-                  : 'text-brand-300 hover:bg-white/5 hover:text-white'
+                  ? 'bg-[#2d58d9] text-white shadow-lg'
+                  : 'text-white hover:bg-white/10 hover:text-white/90'
               }`}
             >
               <n.icon className="w-4.5 h-4.5 shrink-0" />
@@ -62,7 +62,7 @@ export default function AdminLayout({ children, section }: { children: ReactNode
         </nav>
 
         <div className="absolute bottom-0 left-0 right-0 p-4">
-          <button onClick={() => navigate('/')} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-brand-300 hover:bg-white/5 hover:text-white transition-all">
+          <button onClick={() => navigate('/')} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-white hover:bg-white/10 hover:text-white/90 transition-all">
             <ArrowLeft className="w-4 h-4" /> Retour au site
           </button>
         </div>

@@ -5,7 +5,7 @@ import { ThemeProvider } from '@/context/ThemeContext';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import ThemeEditor from '@/components/ThemeEditor';
+
 import LandingPage from '@/pages/LandingPage';
 import TestLandingPage from '@/pages/TestLandingPage';
 import CatalogPage from '@/pages/CatalogPage';
@@ -42,7 +42,7 @@ function AdminRouteGuard({ children }: { children: React.ReactNode }) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-brand-950">
+      <div className="min-h-screen flex items-center justify-center bg-[#3d6eff]">
         <Loader2 className="w-8 h-8 animate-spin text-brand-500" />
       </div>
     );
@@ -159,7 +159,7 @@ function Routes() {
       </a>
       
       {/* Theme Editor Widget */}
-      <ThemeEditor />
+
     </div>
   );
 }

@@ -87,7 +87,7 @@ export default function TestLandingPage() {
 
       {/* ===== HERO E-COMMERCE ===== */}
       <section 
-        className="relative border-b border-brand-900 pt-10 pb-16 bg-brand-950 bg-cover bg-center overflow-hidden"
+        className="relative border-b border-brand-900 pt-10 pb-16 bg-[#3d6eff] bg-cover bg-center overflow-hidden"
         style={{ backgroundImage: "url('/images/hero-bg.jpg')" }}
       >
         {/* Dark overlay just in case the background is too busy */}

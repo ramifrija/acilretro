@@ -80,7 +80,7 @@ export default function LegalPage({ type }: LegalPageProps) {
 
   return (
     <div className="min-h-[70vh] py-12 px-4 animate-fade-in">
-      <div className="max-w-4xl mx-auto glass-card p-8 md:p-12">
+      <div className="max-w-4xl mx-auto glass-card p-6 md:p-12">
         <div className="flex items-center gap-4 mb-8 border-b border-slate-100 dark:border-white/5 pb-6">
           <div className="w-12 h-12 rounded-2xl bg-brand-500/10 flex items-center justify-center text-brand-600 dark:text-brand-400">
             <Icon className="w-6 h-6" />

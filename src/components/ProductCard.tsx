@@ -6,13 +6,14 @@ import type { Product } from '@/types/database';
 
 export default function ProductCard({ product }: { product: Product }) {
   const { navigate } = useRouter();
-  const { addItem } = useCart();
+  const { addItem, clear } = useCart();
 
   const price = product.promo_price ?? product.base_price;
   const hasPromo = product.is_promo && product.promo_price;
 
   const quickAdd = (e: React.MouseEvent) => {
     e.stopPropagation();
+    clear();
     addItem({
       productId: product.id,
       slug: product.slug,
@@ -84,11 +85,16 @@ export default function ProductCard({ product }: { product: Product }) {
         {product.oem_ref && (
           <p className="text-[10px] text-slate-400 mb-2 truncate">OEM: {product.oem_ref}</p>
         )}
-        <div className="flex items-end gap-2 mt-auto pt-2 border-t border-slate-50 dark:border-white/5">
-          <span className="font-display font-bold text-base text-brand-700 dark:text-brand-300">{formatPrice(price)}</span>
-          {hasPromo && (
-            <span className="text-[10px] text-slate-400 line-through pb-0.5">{formatPrice(product.base_price)}</span>
-          )}
+        <div className="mt-auto pt-2 flex items-center gap-2">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/product/${product.slug}`);
+            }}
+            className="flex-1 py-2 bg-[#3d6eff] hover:bg-[#2d58d9] text-white rounded-lg text-xs font-semibold transition-colors flex items-center justify-center shadow-sm uppercase tracking-wider"
+          >
+            Commander
+          </button>
         </div>
       </div>
     </div>

@@ -18,7 +18,7 @@ export default function Footer() {
   }, []);
 
   return (
-    <footer className="bg-brand-950 text-brand-100 mt-20">
+    <footer className="bg-[#3d6eff] text-brand-100 mt-20">
       <div className="container-x py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
 
@@ -37,10 +37,10 @@ export default function Footer() {
             <div className="flex items-center gap-2.5 mb-4">
               <div>
                 <div className="font-display font-extrabold text-lg text-white">ACIL RETRO</div>
-                <div className="text-[10px] text-brand-300 uppercase tracking-wide">Pièces Auto Premium</div>
+                <div className="text-[10px] text-white/90 uppercase tracking-wide">Pièces Auto Premium</div>
               </div>
             </div>
-            <p className="text-sm text-brand-300 leading-relaxed mb-4">
+            <p className="text-sm text-white leading-relaxed mb-4">
               Spécialiste tunisien des rétroviseurs et pièces détachées automobiles. Qualité OEM, expertise technique, livraison rapide.
             </p>
             <div className="flex gap-3">
@@ -68,7 +68,7 @@ export default function Footer() {
                 ['/contact', 'Contact'],
               ].map(([to, label]) => (
                 <li key={to}>
-                  <button onClick={() => navigate(to)} className="text-brand-300 hover:text-white transition-colors">
+                  <button onClick={() => navigate(to)} className="text-white hover:text-white/80 transition-colors">
                     {label}
                   </button>
                 </li>
@@ -79,7 +79,7 @@ export default function Footer() {
           {/* Contact */}
           <div>
             <h4 className="font-display font-bold text-white mb-4">Contact</h4>
-            <ul className="space-y-3 text-sm text-brand-300">
+            <ul className="space-y-3 text-sm text-white">
               <li className="flex items-start gap-2.5"><MapPin className="w-4 h-4 mt-0.5 shrink-0" /> {settings.address}</li>
               <li className="flex items-center gap-2.5"><Phone className="w-4 h-4 shrink-0" /> {settings.phone}</li>
               <li className="flex items-center gap-2.5"><Mail className="w-4 h-4 shrink-0" /> {settings.email}</li>
@@ -90,7 +90,7 @@ export default function Footer() {
 
         </div>
 
-        <div className="border-t border-white/10 mt-12 pt-6 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-brand-400">
+        <div className="border-t border-white/10 mt-12 pt-6 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-white">
           <p>© 2026 ACIL RETRO. Tous droits réservés.</p>
           <div className="flex gap-4">
             <button onClick={() => navigate('/mentions-legales')} className="hover:text-white transition-colors">Mentions légales</button>

@@ -34,16 +34,18 @@ function formatDateString(dateStr: string) {
 export default function PrintableDocument({ order, documentType }: Props) {
   const isInvoice = documentType === 'invoice';
   const docNumber = order.id.slice(0, 8).toUpperCase();
-  const docLabel = isInvoice ? 'Facture' : 'Devis';
+  const docLabel = isInvoice ? 'FACTURE' : 'DEVIS';
+  const prefix = isInvoice ? 'FV' : 'DV';
 
   const customerInfo = order.customer_info as any || {};
-  const customerName = customerInfo.fullName || customerInfo.companyName || (order.customer_type === 'company' ? 'Entreprise' : 'Client Passager');
+  const customerName = customerInfo.fullName || customerInfo.companyName || (order.customer_type === 'company' ? 'ENTREPRISE' : 'CLIENT PASSAGER');
 
   const totalHT = Number(order.subtotal);
   const totalTVA = Number(order.vat);
   const totalTTC = Number(order.total);
   const calculatedVatRate = totalHT > 0 ? Math.round((totalTVA / totalHT) * 100) : 0;
   const timbre = totalHT > 0 ? 1 : 0;
+  const fodec = totalHT * 0.01;
 
   const finalTotal = totalTTC + timbre;
   const dinars = Math.floor(finalTotal);
@@ -56,9 +58,10 @@ export default function PrintableDocument({ order, documentType }: Props) {
   const amountInWordsCapitalized = amountInWords.charAt(0).toUpperCase() + amountInWords.slice(1);
 
   return (
-    <div id="printable-document" className="bg-white text-black p-8 lg:p-12 max-w-4xl mx-auto text-[13px]" style={{ fontFamily: 'Arial, sans-serif' }}>
+    <div id="printable-document" className="bg-white text-gray-800 p-8 lg:p-12 max-w-4xl mx-auto text-[13px] flex flex-col min-h-[297mm]" style={{ fontFamily: 'Arial, sans-serif' }}>
       <style>{`
         @media print {
+<<<<<<< HEAD
           @page { margin: 0.5cm; }
           body { padding: 0; margin: 0; }
           body * { visibility: hidden; }
@@ -74,105 +77,137 @@ export default function PrintableDocument({ order, documentType }: Props) {
         <div className="flex flex-col">
           <div className="w-48 mb-8">
             <img src="/images/Logo_facture.png" alt="Logo" className="w-full h-auto object-contain" />
+=======
+          @page { margin: 0; size: A4; }
+          body { padding: 0; margin: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          #printable-document { padding: 1.5cm; max-width: 100%; width: 100%; min-height: 297mm; display: flex; flex-direction: column; }
+        }
+      `}</style>
+
+      {/* Header Section */}
+      <div className="flex justify-between items-center mb-6">
+        {/* Left Column: Logo & Company Details */}
+        <div className="flex gap-6 items-center">
+          <div className="w-[120px] shrink-0">
+            <img src="/images/acil_logo.png" alt="Logo" className="w-full h-auto object-contain" />
+>>>>>>> 874f92b (fixsation de facture et li 9altou)
           </div>
-          <div className="pt-4">
-            <h1 className="font-bold text-[22px] mb-2">{docLabel} N° : {isInvoice ? 'FV' : 'DV'}{new Date(order.created_at).getFullYear()}/{docNumber}</h1>
-            <div className="font-bold text-[15px]">
-              Le : {formatDateString(order.created_at)}
-            </div>
+          <div className="flex flex-col text-[12px] text-gray-600 gap-0.5">
+            <div className="font-bold text-[20px] text-black mb-1">{COMPANY.name}</div>
+            <div className="text-[#1e9eb9] font-bold text-[14px] mb-1">{COMPANY.tagline}</div>
+            <div>{COMPANY.address}</div>
+            <div>Tél : <span className="font-bold">{COMPANY.phone}</span> | Email : {COMPANY.email}</div>
+            <div>RC : {COMPANY.rc} | MF : {COMPANY.mf}</div>
           </div>
         </div>
 
-        {/* Right Column: Company Info & Client Info */}
-        <div className="w-[380px] flex flex-col gap-6">
-          {/* Company Info */}
-          <div>
-            <div className="font-bold text-[20px]">{COMPANY.name}</div>
-            <div className="text-[13px] font-bold text-[#173e7c] mb-2">{COMPANY.tagline}</div>
-            <div className="flex"><span className="font-bold w-20 text-[13px]">RC :</span> <span className="text-[13px]">{COMPANY.rc}</span></div>
-            <div className="flex"><span className="font-bold w-20 text-[13px]">MF :</span> <span className="text-[13px]">{COMPANY.mf}</span></div>
-            <div className="flex mt-1"><span className="font-bold w-20 text-[13px]">ADRESSE:</span> <span className="text-[13px] whitespace-pre-wrap leading-tight">{COMPANY.address}</span></div>
-            <div className="flex mt-1"><span className="font-bold w-20 text-[13px]">TÉL:</span> <span className="text-[13px] font-bold">{COMPANY.phone}</span></div>
-            <div className="flex mt-1"><span className="font-bold w-20 text-[13px]">EMAIL:</span> <span className="text-[13px]">{COMPANY.email}</span></div>
+        {/* Right Column: Invoice Label & Details */}
+        <div className="flex flex-col items-end text-[13px]">
+          <div className="text-[#1e9eb9] font-bold text-[42px] tracking-wider mb-2 uppercase leading-none">{docLabel}</div>
+          <div className="font-bold text-[14px] mb-1 text-black">N° : {prefix}{new Date(order.created_at).getFullYear()}/{docNumber}</div>
+          <div className="text-gray-500 mb-3">Date : {formatDateString(order.created_at)}</div>
+          <div className="w-20 h-20">
+            <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent('https://acilretro.netlify.app')}`} alt="QR Code" className="w-full h-full object-contain" />
           </div>
+        </div>
+      </div>
 
-          {/* Client Info */}
-          <div className="border-[1.5px] border-black rounded-[12px] p-4 bg-slate-50">
-            <div className="flex mb-1.5"><span className="font-bold w-24 text-[13px]">CLIENT :</span> <span className="font-bold text-[13px] uppercase">{customerName}</span></div>
-            <div className="flex mb-1.5"><span className="font-bold w-24 text-[13px]">ADRESSE :</span> <span className="text-[13px] uppercase">{customerInfo.city ? customerInfo.city : (customerInfo.address || '-')}</span></div>
-            <div className="flex mb-1.5"><span className="font-bold w-24 text-[13px]">TÉL :</span> <span className="font-bold text-[13px]">{customerInfo.phone || '-'}</span></div>
-            <div className="flex"><span className="font-bold w-24 text-[13px]">MF :</span> <span className="font-bold text-[13px]">{customerInfo.taxId || '-'}</span></div>
+      <div className="w-full h-[3px] bg-[#1e9eb9] my-6"></div>
+
+      {/* Facturé À & Merci */}
+      <div className="mb-8">
+        <div className="text-[#1e9eb9] font-bold uppercase mb-2 text-[14px]">FACTURE À</div>
+        <div className="bg-[#f8f9fa] rounded-xl p-5 max-w-[400px]">
+          <div className="font-bold text-[15px] mb-4 uppercase text-black">{customerName}</div>
+          <div className="grid grid-cols-[80px_1fr] gap-y-2 text-[13px] text-black">
+            <div className="font-bold">Adresse :</div>
+            <div>{customerInfo.city ? customerInfo.city : (customerInfo.address || '-')}</div>
+            <div className="font-bold">Tél :</div>
+            <div>{customerInfo.phone || '-'}</div>
+            <div className="font-bold">MF :</div>
+            <div>{customerInfo.taxId || '-'}</div>
           </div>
         </div>
       </div>
 
       {/* Table */}
-      <table className="w-full border-collapse mb-2 border border-black text-center text-[12px]">
+      <table className="w-full mb-8 text-[13px]">
         <thead>
           <tr className="bg-[#1e9eb9] text-white">
-            <th className="py-1.5 px-2 border border-black font-bold w-[10%]">Quantité</th>
-            <th className="py-1.5 px-2 border border-black font-bold uppercase">Désignation</th>
-            <th className="py-1.5 px-2 border border-black font-bold w-[15%]">P.U.HT</th>
-            <th className="py-1.5 px-2 border border-black font-bold w-[20%]">Montant</th>
+            <th className="py-2.5 px-4 font-semibold text-center w-[10%]">Qté</th>
+            <th className="py-2.5 px-4 font-semibold text-left uppercase">DÉSIGNATION</th>
+            <th className="py-2.5 px-4 font-semibold text-right w-[15%]">P.U.HT</th>
+            <th className="py-2.5 px-4 font-semibold text-right w-[20%]">Montant HT</th>
           </tr>
         </thead>
-        <tbody className="border-b border-black">
-          {order.order_items.map((item: any, idx: number) => {
+        <tbody>
+          {order.order_items.map((item: any) => {
             const unitPrice = Number(item.unit_price);
             const montantHT = unitPrice * item.quantity;
             return (
-              <tr key={item.id} className="align-top h-8">
-                <td className="py-1 px-2 border border-black">{item.quantity}</td>
-                <td className="py-1 px-2 border border-black text-left">{item.product_name}</td>
-                <td className="py-1 px-2 border border-black text-right">{formatNumber(unitPrice)}</td>
-                <td className="py-1 px-2 border border-black text-right">{formatNumber(montantHT)}</td>
+              <tr key={item.id} className="border-b border-gray-200 last:border-b-0">
+                <td className="py-3 px-4 text-center text-black">{item.quantity}</td>
+                <td className="py-3 px-4 text-left">
+                  <div className="font-medium text-black">{item.product_name}</div>
+                  {item.options_snapshot && item.options_snapshot.length > 0 && (
+                    <div className="text-[11px] text-gray-500 mt-0.5">
+                      {item.options_snapshot.map((o: any) => `${o.option} : ${o.value}`).join(' | ')}
+                    </div>
+                  )}
+                </td>
+                <td className="py-3 px-4 text-right text-gray-600">{formatNumber(unitPrice)}</td>
+                <td className="py-3 px-4 text-right font-bold text-black">{formatNumber(montantHT)}</td>
               </tr>
             );
           })}
-          {Array.from({ length: Math.max(0, 10 - (order.order_items?.length || 0)) }).map((_, i) => (
-            <tr key={`empty-${i}`} className="align-top h-6">
-              <td className="border border-black"></td>
-              <td className="border border-black"></td>
-              <td className="border border-black"></td>
-              <td className="border border-black"></td>
-            </tr>
-          ))}
 
-          {/* Totals Section */}
-          <tr>
-            <td colSpan={2} rowSpan={5} className="border border-black font-bold text-center text-[14px] uppercase align-middle">
-              MERCI POUR VOTRE CONFIANCE
-            </td>
-            <td className="py-1 px-2 border border-black font-bold text-left bg-slate-50">TOTAL HT</td>
-            <td className="py-1 px-2 border border-black font-bold text-right">{formatNumber(totalHT)}</td>
-          </tr>
-          <tr>
-            <td className="py-1 px-2 border border-black font-bold text-left bg-slate-50">FODEC 1%</td>
-            <td className="py-1 px-2 border border-black font-bold text-right">{formatNumber(totalHT * 0.01)}</td>
-          </tr>
-          {calculatedVatRate > 0 && (
-            <tr>
-              <td className="py-1 px-2 border border-black font-bold text-left bg-slate-50">TVA {calculatedVatRate}%</td>
-              <td className="py-1 px-2 border border-black font-bold text-right">{formatNumber(totalTVA)}</td>
-            </tr>
-          )}
-          <tr>
-            <td className="py-1 px-2 border border-black font-bold text-left bg-slate-50">TIMBRE</td>
-            <td className="py-1 px-2 border border-black font-bold text-right">{formatNumber(timbre)}</td>
-          </tr>
-          <tr>
-            <td className="py-1 px-2 border border-black font-bold text-left bg-slate-50">TOTAL TTC</td>
-            <td className="py-1 px-2 border border-black font-bold text-right">{formatNumber(totalTTC + timbre)}</td>
-          </tr>
         </tbody>
       </table>
 
-      <div className="mt-6 flex justify-between items-end">
-        <div className="font-bold text-[12px] uppercase">
-          Arrêtée la présente {docLabel.toLowerCase()} à la somme : {amountInWordsCapitalized} TTC
+      {/* Bottom Section (Totals & Bank Details) */}
+      <div className="mt-auto pt-6">
+        {/* Footer / Totals */}
+        <div className="flex justify-between items-center mb-6 gap-4">
+          {/* Merci */}
+          <div className="bg-[#e8f6f9] border border-[#bce4ec] rounded-xl p-4 w-[280px] flex items-center justify-center text-center">
+            <span className="text-[#173e7c] font-bold text-[13px] leading-relaxed uppercase">Merci pour votre<br />confiance</span>
+          </div>
+
+          {/* Totals Box */}
+          <div className="w-[320px] text-[12px]">
+            <div className="flex justify-between py-1.5 border-b border-gray-200">
+              <span className="font-bold text-gray-600">Total HT</span>
+              <span className="font-bold text-black">{formatNumber(totalHT)}</span>
+            </div>
+            <div className="flex justify-between py-1.5 border-b border-gray-200">
+              <span className="font-bold text-gray-600">FODEC 1%</span>
+              <span className="font-bold text-black">{formatNumber(fodec)}</span>
+            </div>
+            <div className="flex justify-between py-1.5 border-b border-gray-200">
+              <span className="font-bold text-gray-600">TVA {calculatedVatRate}%</span>
+              <span className="font-bold text-black">{formatNumber(totalTVA)}</span>
+            </div>
+            <div className="flex justify-between py-1.5 border-b border-gray-200">
+              <span className="font-bold text-gray-600">Timbre Fiscal</span>
+              <span className="font-bold text-black">{formatNumber(timbre)}</span>
+            </div>
+            <div className="flex justify-between items-center py-2.5 px-4 mt-2 bg-[#e8f6f9] rounded-xl text-[#1e9eb9]">
+              <span className="font-bold text-[14px] uppercase">TOTAL TTC</span>
+              <span className="font-bold text-[16px]">{formatNumber(totalTTC + timbre)}</span>
+            </div>
+            <div className="mt-2 text-center">
+              <div className="text-gray-500 text-[10px] font-bold uppercase mb-0.5">ARRÊTÉE LA PRÉSENTE {docLabel} À LA SOMME DE :</div>
+              <div className="text-[#173e7c] font-bold text-[11px] leading-tight">{amountInWordsCapitalized} TTC</div>
+            </div>
+          </div>
         </div>
-        <div className="w-20 h-20">
-          <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent('https://acilretro.netlify.app')}`} alt="Site QR Code" className="w-full h-full object-contain" />
+
+        {/* Bank Details Footer */}
+        <div className="pt-4 border-t border-gray-200 text-[11px] text-gray-700 flex flex-wrap justify-center items-center gap-x-6 gap-y-2">
+          <span className="font-bold text-gray-800 uppercase">Coordonnées Bancaires :</span>
+          <span className="flex gap-1.5"><span className="text-gray-500">Banque :</span> <span className="font-bold text-black">{COMPANY.bank}</span></span>
+          <span className="flex gap-1.5"><span className="text-gray-500">RIB :</span> <span className="font-bold text-black">{COMPANY.rib}</span></span>
+          <span className="flex gap-1.5"><span className="text-gray-500">IBAN :</span> <span className="font-bold text-black">{COMPANY.iban}</span></span>
         </div>
       </div>
     </div>
