@@ -4,7 +4,7 @@ import writtenNumber from 'written-number';
 
 type Props = {
   order: Order & { order_items: OrderItem[] };
-  documentType: 'invoice' | 'quote';
+  documentType: 'invoice' | 'quote' | 'delivery_note';
 };
 
 const COMPANY = {
@@ -33,9 +33,10 @@ function formatDateString(dateStr: string) {
 
 export default function PrintableDocument({ order, documentType }: Props) {
   const isInvoice = documentType === 'invoice';
+  const isDelivery = documentType === 'delivery_note';
   const docNumber = order.id.slice(0, 8).toUpperCase();
-  const docLabel = isInvoice ? 'FACTURE' : 'DEVIS';
-  const prefix = isInvoice ? 'FV' : 'DV';
+  const docLabel = isInvoice ? 'FACTURE' : (isDelivery ? 'BON DE LIVRAISON' : 'DEVIS');
+  const prefix = isInvoice ? 'FV' : (isDelivery ? 'BL' : 'DV');
 
   const customerInfo = order.customer_info as any || {};
   const customerName = customerInfo.fullName || customerInfo.companyName || (order.customer_type === 'company' ? 'ENTREPRISE' : 'CLIENT PASSAGER');
@@ -44,7 +45,7 @@ export default function PrintableDocument({ order, documentType }: Props) {
   const totalTVA = Number(order.vat);
   const totalTTC = Number(order.total);
   const calculatedVatRate = totalHT > 0 ? Math.round((totalTVA / totalHT) * 100) : 0;
-  const timbre = totalHT > 0 ? 1 : 0;
+  const timbre = (totalHT > 0 && !isDelivery) ? 1 : 0;
   const fodec = totalHT * 0.01;
 
   const finalTotal = totalTTC + timbre;
@@ -84,8 +85,8 @@ export default function PrintableDocument({ order, documentType }: Props) {
         </div>
 
         {/* Right Column: Invoice Label & Details */}
-        <div className="flex flex-col items-end text-[13px]">
-          <div className="text-[#1e9eb9] font-bold text-[42px] tracking-wider mb-2 uppercase leading-none">{docLabel}</div>
+        <div className="flex flex-col items-end text-[13px] shrink-0">
+          <div className={`text-[#1e9eb9] font-bold tracking-wider mb-2 uppercase leading-tight text-right ${isDelivery ? 'text-[24px] sm:text-[28px]' : 'text-[32px] sm:text-[42px]'}`}>{docLabel}</div>
           <div className="font-bold text-[14px] mb-1 text-black">N° : {prefix}{new Date(order.created_at).getFullYear()}/{docNumber}</div>
           <div className="text-gray-500 mb-3">Date : {formatDateString(order.created_at)}</div>
           <div className="w-20 h-20">
@@ -169,13 +170,15 @@ export default function PrintableDocument({ order, documentType }: Props) {
               <span className="font-bold text-gray-600">TVA {calculatedVatRate}%</span>
               <span className="font-bold text-black">{formatNumber(totalTVA)}</span>
             </div>
-            <div className="flex justify-between py-1.5 border-b border-gray-200">
-              <span className="font-bold text-gray-600">Timbre Fiscal</span>
-              <span className="font-bold text-black">{formatNumber(timbre)}</span>
-            </div>
+            {!isDelivery && (
+              <div className="flex justify-between py-1.5 border-b border-gray-200">
+                <span className="font-bold text-gray-600">Timbre Fiscal</span>
+                <span className="font-bold text-black">{formatNumber(timbre)}</span>
+              </div>
+            )}
             <div className="flex justify-between items-center py-2.5 px-4 mt-2 bg-[#e8f6f9] rounded-xl text-[#1e9eb9]">
               <span className="font-bold text-[14px] uppercase">TOTAL TTC</span>
-              <span className="font-bold text-[16px]">{formatNumber(totalTTC + timbre)}</span>
+              <span className="font-bold text-[16px]">{formatNumber(finalTotal)}</span>
             </div>
             <div className="mt-2 text-center">
               <div className="text-gray-500 text-[10px] font-bold uppercase mb-0.5">ARRÊTÉE LA PRÉSENTE {docLabel} À LA SOMME DE :</div>

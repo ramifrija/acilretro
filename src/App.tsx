@@ -7,6 +7,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
 import LandingPage from '@/pages/LandingPage';
+import NewLandingPage from '@/pages/NewLandingPage';
 import TestLandingPage from '@/pages/TestLandingPage';
 import CatalogPage from '@/pages/CatalogPage';
 import ProductPage from '@/pages/ProductPage';
@@ -113,6 +114,8 @@ function Routes() {
   let page;
   if (path === '/' || path === '') {
     page = <LandingPage />;
+  } else if (path === '/newlanding') {
+    page = <NewLandingPage />;
   } else if (path === '/test1') {
     page = <TestLandingPage />;
   } else if (path === '/catalog') {

@@ -11,6 +11,8 @@ export default function AdminCustomers() {
   const [clientOrders, setClientOrders] = useState<any[]>([]);
   const [loadingOrders, setLoadingOrders] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<any | null>(null);
+  const [ordersPage, setOrdersPage] = useState(1);
+  const ORDERS_PER_PAGE = 4;
 
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -75,6 +77,7 @@ export default function AdminCustomers() {
 
   const handleSelectClient = (c: any) => {
     setSelectedClient(c);
+    setOrdersPage(1);
     fetchClientOrders(c);
   };
 
@@ -97,9 +100,13 @@ export default function AdminCustomers() {
     setShowModal(true);
   };
 
-  const handleDelete = async (id: string) => {
-    if (!(await customConfirm('Voulez-vous vraiment supprimer ce client ?'))) return;
-    const { error } = await supabase.from('client').delete().eq('id', id);
+  const handleDelete = async (client: any) => {
+    if (!(await customConfirm(
+      <span>
+        Voulez-vous vraiment supprimer le client <span className="text-red-500 font-bold">{client.prenom} {client.nom}</span> ?
+      </span>
+    ))) return;
+    const { error } = await supabase.from('client').delete().eq('id', client.id);
     if (!error) fetchClients();
     else customAlert('Erreur: ' + error.message);
   };
@@ -235,12 +242,23 @@ export default function AdminCustomers() {
               
               <div className="space-y-4">
                 <div className="flex items-center gap-3 text-sm">
-                  <Mail className="w-4 h-4 text-slate-400" />
-                  <span className="text-slate-600 dark:text-slate-300">{selectedClient.email || 'N/A'}</span>
+                  <Mail className="w-4 h-4 text-slate-400 shrink-0" />
+                  <span className="text-slate-600 dark:text-slate-300 truncate">{selectedClient.email || 'N/A'}</span>
                 </div>
                 <div className="flex items-center gap-3 text-sm">
-                  <Phone className="w-4 h-4 text-slate-400" />
+                  <Phone className="w-4 h-4 text-slate-400 shrink-0" />
                   <span className="text-slate-600 dark:text-slate-300">{selectedClient.num_tel || 'N/A'}</span>
+                </div>
+                <div className="flex items-center gap-3 text-sm">
+                  <FileText className="w-4 h-4 text-slate-400 shrink-0" />
+                  <span className="text-slate-600 dark:text-slate-300">
+                    <span className="font-semibold text-slate-400 mr-1">MF/RC:</span>
+                    {selectedClient.tax_id || 'N/A'}
+                  </span>
+                </div>
+                <div className="flex items-start gap-3 text-sm">
+                  <MapPin className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
+                  <span className="text-slate-600 dark:text-slate-300 leading-snug">{selectedClient.adresse || 'N/A'}</span>
                 </div>
               </div>
 
@@ -259,7 +277,7 @@ export default function AdminCustomers() {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {clientOrders.map(order => (
+                  {clientOrders.slice((ordersPage - 1) * ORDERS_PER_PAGE, ordersPage * ORDERS_PER_PAGE).map(order => (
                     <div 
                       key={order.id} 
                       onClick={() => setSelectedOrder(order)}
@@ -286,6 +304,30 @@ export default function AdminCustomers() {
                       </div>
                     </div>
                   ))}
+                  
+                  {clientOrders.length > ORDERS_PER_PAGE && (
+                    <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-white/5">
+                      <span className="text-xs text-slate-500">
+                        {((ordersPage - 1) * ORDERS_PER_PAGE) + 1}–{Math.min(ordersPage * ORDERS_PER_PAGE, clientOrders.length)} sur {clientOrders.length}
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => setOrdersPage(p => Math.max(1, p - 1))}
+                          disabled={ordersPage === 1}
+                          className="px-3 py-1.5 rounded-lg text-xs font-semibold border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 disabled:opacity-30 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+                        >
+                          Précédent
+                        </button>
+                        <button
+                          onClick={() => setOrdersPage(p => Math.min(Math.ceil(clientOrders.length / ORDERS_PER_PAGE), p + 1))}
+                          disabled={ordersPage === Math.ceil(clientOrders.length / ORDERS_PER_PAGE)}
+                          className="px-3 py-1.5 rounded-lg text-xs font-semibold border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 disabled:opacity-30 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+                        >
+                          Suivant
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -356,7 +398,7 @@ export default function AdminCustomers() {
                         <button onClick={(e) => { e.stopPropagation(); openEditModal(c); }} className="p-1.5 text-brand-500 hover:text-brand-400 transition-colors" title="Modifier">
                           <Edit2 className="w-4 h-4" />
                         </button>
-                        <button onClick={(e) => { e.stopPropagation(); handleDelete(c.id); }} className="p-1.5 text-red-500 hover:text-red-400 transition-colors" title="Supprimer">
+                        <button onClick={(e) => { e.stopPropagation(); handleDelete(c); }} className="p-1.5 text-red-500 hover:text-red-400 transition-colors" title="Supprimer">
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </div>

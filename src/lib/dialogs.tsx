@@ -40,7 +40,7 @@ export const customAlert = (message: string, type: 'error' | 'success' | 'info' 
   );
 };
 
-export const customConfirm = (message: string): Promise<boolean> => {
+export const customConfirm = (message: React.ReactNode): Promise<boolean> => {
   return new Promise((resolve) => {
     toast.custom(
       (t) => (

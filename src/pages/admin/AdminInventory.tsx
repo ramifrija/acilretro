@@ -5,8 +5,8 @@ import { formatDate } from '@/lib/format';
 import type { Product, InventoryMovement } from '@/types/database';
 
 export default function AdminInventory() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [movements, setMovements] = useState<(InventoryMovement & { products: { name: string } })[]>([]);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [allMovements, setAllMovements] = useState<(InventoryMovement & { products: { name: string } })[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [tab, setTab] = useState<'stock' | 'movements'>('stock');
@@ -16,7 +16,6 @@ export default function AdminInventory() {
   // Pagination states
   const [page, setPage] = useState(1);
   const itemsPerPage = 10;
-  const [totalItems, setTotalItems] = useState(0);
 
   // Stats states
   const [stats, setStats] = useState({
@@ -44,51 +43,50 @@ export default function AdminInventory() {
     }
   };
 
-  const loadTableData = async () => {
+  const loadAllData = async () => {
     setLoading(true);
-    const from = (page - 1) * itemsPerPage;
-    const to = from + itemsPerPage - 1;
-
-    if (tab === 'stock') {
-      let query = supabase.from('products').select('*', { count: 'exact' });
-      if (search.trim()) {
-        const s = `%${search.trim()}%`;
-        query = query.or(`name.ilike.${s},sku.ilike.${s}`);
-      }
-      const { data, count } = await query.order('name').range(from, to);
-      setProducts(data || []);
-      setTotalItems(count || 0);
-    } else {
-      let query = supabase.from('inventory_movements').select('*, products!inner(name)', { count: 'exact' });
-      if (search.trim()) {
-        const s = `%${search.trim()}%`;
-        query = query.or(`products.name.ilike.${s},reason.ilike.${s}`);
-      }
-      const { data, count } = await query
-        .order('created_at', { ascending: false })
-        .range(from, to);
-      setMovements(data || []);
-      setTotalItems(count || 0);
-    }
+    const [productsRes, movementsRes] = await Promise.all([
+      supabase.from('products').select('*').order('name').limit(5000),
+      supabase.from('inventory_movements').select('*, products!inner(name)').order('created_at', { ascending: false }).limit(5000)
+    ]);
+    
+    setAllProducts(productsRes.data || []);
+    setAllMovements(movementsRes.data || []);
     setLoading(false);
   };
 
   useEffect(() => {
     fetchStats();
+    loadAllData();
   }, []);
 
-  useEffect(() => {
-    loadTableData();
-  }, [page, tab, search]);
+  // --- DERIVED STATE (Client-Side Filtering & Pagination) ---
+  const s = search.toLowerCase().trim();
+  
+  const filteredProducts = allProducts.filter(p => 
+    p.name?.toLowerCase().includes(s) || p.sku?.toLowerCase().includes(s)
+  );
+  
+  const filteredMovements = allMovements.filter(m => 
+    m.reason?.toLowerCase().includes(s) || m.products?.name?.toLowerCase().includes(s)
+  );
 
+  const activeData = tab === 'stock' ? filteredProducts : filteredMovements;
+  const totalItems = activeData.length;
   const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage));
+  
+  const safePage = Math.min(page, totalPages) || 1;
+  const fromIndex = (safePage - 1) * itemsPerPage;
+  const toIndex = fromIndex + itemsPerPage;
+
+  const currentProducts = filteredProducts.slice(fromIndex, toIndex);
+  const currentMovements = filteredMovements.slice(fromIndex, toIndex);
 
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
         {[
-          { label: 'Valeur du stock', value: `${stats.totalValue.toFixed(0)} TND`, icon: Package, color: 'from-brand-600 to-brand-500' },
           { label: 'Références', value: stats.references, icon: Warehouse, color: 'from-accent-500 to-accent-400' },
           { label: 'Stock faible', value: stats.lowStock, icon: TrendingDown, color: 'from-amber-500 to-amber-400' },
           { label: 'Ruptures', value: stats.outOfStock, icon: TrendingUp, color: 'from-error-500 to-error-400' },
@@ -143,9 +141,9 @@ export default function AdminInventory() {
               <tbody>
                 {loading ? (
                   <tr><td colSpan={7} className="py-10 text-center text-slate-400">Chargement...</td></tr>
-                ) : products.length === 0 ? (
+                ) : currentProducts.length === 0 ? (
                   <tr><td colSpan={7} className="py-10 text-center text-slate-400">Aucun produit trouvé</td></tr>
-                ) : products.map((p) => (
+                ) : currentProducts.map((p) => (
                   <tr key={p.id} className="border-t border-slate-50 dark:border-white/5 hover:bg-white/50 dark:hover:bg-white/5 transition-colors">
                     <td className="px-4 py-3 font-medium text-slate-900 dark:text-white">{p.name}</td>
                     <td className="px-4 py-3 font-mono text-xs text-slate-500">{p.sku}</td>
@@ -198,9 +196,9 @@ export default function AdminInventory() {
               <tbody>
                 {loading ? (
                   <tr><td colSpan={5} className="py-10 text-center text-slate-400">Chargement...</td></tr>
-                ) : movements.length === 0 ? (
+                ) : currentMovements.length === 0 ? (
                   <tr><td colSpan={5} className="py-10 text-center text-slate-400">Aucun mouvement trouvé</td></tr>
-                ) : movements.map((m) => (
+                ) : currentMovements.map((m) => (
                   <tr key={m.id} className="border-t border-slate-50 dark:border-white/5 hover:bg-white/50 dark:hover:bg-white/5 transition-colors">
                     <td className="px-4 py-3 text-xs text-slate-500">{formatDate(m.created_at)}</td>
                     <td className="px-4 py-3 font-medium text-slate-900 dark:text-white">{m.products?.name}</td>
@@ -240,7 +238,7 @@ export default function AdminInventory() {
             product={adjustProduct}
             initialMode={adjustMode}
             onClose={() => setAdjustProduct(null)}
-            onSaved={() => { loadTableData(); fetchStats(); }}
+            onSaved={() => { loadAllData(); fetchStats(); }}
           />
         )}
     </div>

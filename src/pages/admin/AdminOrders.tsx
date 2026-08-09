@@ -70,7 +70,7 @@ export default function AdminOrders({ quotesOnly = false }: { quotesOnly?: boole
 
   const rejectOrder = async (order: OrderWithItems, reason: string) => {
     // If it was accepted/paid, refund stock
-    if (order.status === 'accepted' || order.status === 'paid' || order.status === 'completed' || order.status === 'delivered') {
+    if (order.status === 'accepted' || order.status === 'paid' || order.status === 'completed' || order.status === 'delivered' || order.status === 'delivery_note') {
       const { error: rpcError } = await supabase.rpc('restore_stock_for_order', {
         p_order_id: order.id,
         p_reason_prefix: 'Rejet - Commande'
@@ -88,7 +88,7 @@ export default function AdminOrders({ quotesOnly = false }: { quotesOnly?: boole
 
   const cancelOrder = async (order: OrderWithItems) => {
     if (!(await customConfirm('Annuler cette commande? Le stock sera restauré.'))) return;
-    if (order.status === 'accepted' || order.status === 'paid' || order.status === 'completed' || order.status === 'delivered') {
+    if (order.status === 'accepted' || order.status === 'paid' || order.status === 'completed' || order.status === 'delivered' || order.status === 'delivery_note') {
       const { error: rpcError } = await supabase.rpc('restore_stock_for_order', {
         p_order_id: order.id,
         p_reason_prefix: 'Annulation - Commande'
@@ -142,8 +142,8 @@ export default function AdminOrders({ quotesOnly = false }: { quotesOnly?: boole
     }
 
     // Check if we need to refund or reduce stock
-    const wasStockReduced = order.status === 'accepted' || order.status === 'paid' || order.status === 'completed' || order.status === 'delivered';
-    const willStockReduce = status === 'accepted' || status === 'paid' || status === 'completed' || status === 'delivered';
+    const wasStockReduced = order.status === 'accepted' || order.status === 'paid' || order.status === 'completed' || order.status === 'delivered' || order.status === 'delivery_note';
+    const willStockReduce = status === 'accepted' || status === 'paid' || status === 'completed' || status === 'delivered' || status === 'delivery_note';
 
     if (wasStockReduced && !willStockReduce && order.type === 'order') {
       // Refund stock
@@ -174,6 +174,14 @@ export default function AdminOrders({ quotesOnly = false }: { quotesOnly?: boole
     load();
   };
 
+  const markAsPaidAndPrint = async (order: any) => {
+    setPrintDoc({ order, type: 'invoice' });
+    const { error } = await supabase.from('orders').update({ status: 'paid' }).eq('id', order.id);
+    if (!error) {
+      load();
+    }
+  };
+
   const filtered = statusFilter === 'all' ? orders : orders.filter((o) => o.status === statusFilter);
 
   const totalPages = Math.ceil(filtered.length / itemsPerPage);
@@ -182,7 +190,7 @@ export default function AdminOrders({ quotesOnly = false }: { quotesOnly?: boole
   // Simplified statuses per user request: accepté, en attente, annulé, devis
   const statuses = quotesOnly
     ? ['pending', 'accepted', 'cancelled']
-    : ['pending', 'accepted', 'cancelled'];
+    : ['pending', 'accepted', 'delivery_note', 'cancelled'];
 
   return (
     <div className="space-y-6 animate-fade-in print:space-y-0">
@@ -217,7 +225,11 @@ export default function AdminOrders({ quotesOnly = false }: { quotesOnly?: boole
           </div>
         ) : (
           paginated.map((o) => (
-            <div key={o.id} className="glass-card p-5">
+            <div key={o.id} className={`p-5 rounded-2xl border transition-all ${
+              o.status === 'pending' 
+                ? 'bg-amber-50 border-amber-200 shadow-sm dark:bg-amber-900/20 dark:border-amber-700/50' 
+                : 'glass-card border-transparent'
+            }`}>
               <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
                   <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${o.type === 'quote' ? 'bg-amber-500/10' : 'bg-brand-500/10'}`}>
@@ -270,7 +282,7 @@ export default function AdminOrders({ quotesOnly = false }: { quotesOnly?: boole
 
                     {/* Accepted order: view/print invoice */}
                     {o.status === 'accepted' && o.type === 'order' && (
-                      <button onClick={() => setPrintDoc({ order: o, type: 'invoice' })} className="p-2 rounded-lg bg-brand-500/10 text-brand-600 hover:bg-brand-500/20 transition-all" title="Voir / Imprimer facture">
+                      <button onClick={() => markAsPaidAndPrint(o)} className="p-2 rounded-lg bg-brand-500/10 text-brand-600 hover:bg-brand-500/20 transition-all" title="Voir / Imprimer facture (Marquer comme Payée)">
                         <Receipt className="w-4 h-4" />
                       </button>
                     )}
@@ -341,6 +353,19 @@ export default function AdminOrders({ quotesOnly = false }: { quotesOnly?: boole
                 <p className="text-sm text-slate-500 mt-1">{formatDate(selected.created_at)}</p>
               </div>
               <div className="flex gap-2 items-center">
+                <button 
+                  onClick={() => {
+                    if (selected.status === 'accepted' && selected.type === 'order') {
+                      markAsPaidAndPrint(selected);
+                    } else {
+                      setPrintDoc({ order: selected, type: selected.type === 'quote' ? 'quote' : 'invoice' });
+                    }
+                  }} 
+                  className="p-2 rounded-lg bg-brand-500/10 text-brand-600 hover:bg-brand-500/20 transition-all" 
+                  title={`Imprimer ${selected.type === 'quote' ? 'Devis' : 'Facture'}`}
+                >
+                  <Printer className="w-5 h-5" />
+                </button>
                 <select
                   value={selected.type === 'quote' ? 'quote' : selected.status}
                   onChange={(e) => updateStatus(selected, e.target.value)}
@@ -348,6 +373,7 @@ export default function AdminOrders({ quotesOnly = false }: { quotesOnly?: boole
                 >
                   <option value="pending" className="bg-white text-slate-900 dark:bg-brand-950 dark:text-white">En attente</option>
                   <option value="accepted" className="bg-white text-slate-900 dark:bg-brand-950 dark:text-white">Acceptée</option>
+                  <option value="delivery_note" className="bg-white text-slate-900 dark:bg-brand-950 dark:text-white">Bon de livraison</option>
                   <option value="paid" className="bg-white text-slate-900 dark:bg-brand-950 dark:text-white">Payée</option>
                   <option value="cancelled" className="bg-white text-slate-900 dark:bg-brand-950 dark:text-white">Annulée</option>
                   <option value="quote" className="bg-white text-slate-900 dark:bg-brand-950 dark:text-white">Devis</option>
@@ -454,12 +480,7 @@ export default function AdminOrders({ quotesOnly = false }: { quotesOnly?: boole
               </div>
             </div>
 
-            {/* Actions */}
-            <div className="flex flex-wrap gap-2 mt-6">
-              <button onClick={() => setPrintDoc({ order: selected, type: selected.type === 'quote' ? 'quote' : 'invoice' })} className="btn-primary">
-                <Printer className="w-4 h-4" /> Imprimer {selected.type === 'quote' ? 'Devis' : 'Facture'}
-              </button>
-            </div>
+
           </div>
         </div>
       )}
@@ -571,6 +592,7 @@ function downloadAsText(order: OrderWithItems, type: 'invoice' | 'quote') {
 const statusLabels: Record<string, string> = {
   pending: 'En attente',
   accepted: 'Accepté',
+  delivery_note: 'Bon de livraison',
   paid: 'Payée',
   cancelled: 'Annulé',
   rejected: 'Rejeté',
@@ -581,6 +603,7 @@ function StatusBadge({ status }: { status: string }) {
   const colors: Record<string, string> = {
     pending: 'bg-amber-500/10 text-amber-600',
     accepted: 'bg-brand-500/10 text-brand-600',
+    delivery_note: 'bg-indigo-500/10 text-indigo-600',
     paid: 'bg-success-500/10 text-success-600',
     cancelled: 'bg-error-500/10 text-error-500',
     rejected: 'bg-error-500/10 text-error-500',

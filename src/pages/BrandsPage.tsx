@@ -10,7 +10,7 @@ export default function BrandsPage() {
   const [brands, setBrands] = useState<Brand[]>([]);
   const [loading, setLoading] = useState(true);
   const { navigate } = useRouter();
-  const itemsPerPage = 6;
+  const itemsPerPage = 12;
 
   useEffect(() => {
     (async () => {
@@ -80,7 +80,7 @@ export default function BrandsPage() {
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-12">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 mb-12">
               {currentBrands.map((brand, i) => (
                 <button
                   key={i}
@@ -98,8 +98,8 @@ export default function BrandsPage() {
                       {brand.name}
                     </div>
                   )}
-                  {/* Subtle brand name that appears on hover */}
-                  <span className="mt-6 text-sm font-bold text-slate-400 group-hover:text-brand-600 transition-colors z-10 opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 duration-300">
+                  {/* Brand name */}
+                  <span className="mt-4 text-sm font-bold text-slate-500 group-hover:text-[#3d6eff] transition-colors z-10 duration-300">
                     {brand.name}
                   </span>
                   
