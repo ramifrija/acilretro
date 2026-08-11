@@ -7,8 +7,8 @@ export default function Footer() {
   const { navigate } = useRouter();
   const [settings, setSettings] = useState({
     email: 'contact@acilretro.com',
-    phone: '+216 71 000 000',
-    address: 'Zone Industrielle, Tunis'
+    phone: '+216 27 804 642',
+    address: 'Ben Arous, Rue D\'Egypte'
   });
 
   useEffect(() => {

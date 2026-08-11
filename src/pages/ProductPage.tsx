@@ -130,6 +130,13 @@ export default function ProductPage() {
     setTimeout(() => setAdded(false), 2000);
   };
 
+  const handleShareFacebook = () => {
+    const currentUrl = window.location.href;
+    const text = `Découvrez ce super produit sur AcilRetro : ${product?.name || ''}`;
+    const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}&quote=${encodeURIComponent(text)}`;
+    window.open(facebookShareUrl, '_blank', 'width=600,height=400');
+  };
+
   if (loading) {
     return (
       <div className="container-x py-20">
@@ -156,7 +163,7 @@ export default function ProductPage() {
   }
 
   return (
-    <div className="container-x py-8 animate-fade-in">
+    <div className="container-x py-8 animate-fade-in max-w-6xl mx-auto">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm text-slate-500 mb-6">
         <button onClick={() => navigate('/')} className="hover:text-brand-500">Accueil</button>
@@ -166,11 +173,11 @@ export default function ProductPage() {
         <span className="text-slate-900 dark:text-white font-medium truncate">{product.name}</span>
       </div>
 
-      <div className="grid lg:grid-cols-5 gap-8 lg:gap-12">
+      <div className="grid md:grid-cols-2 gap-8 lg:gap-16 items-start">
         {/* Gallery */}
-        <div className="lg:col-span-2">
+        <div className="">
           <div
-            className="relative glass-card overflow-hidden aspect-square cursor-zoom-in group"
+            className="relative bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden aspect-[4/3] cursor-zoom-in group"
             onClick={() => setZoom(!zoom)}
           >
             {currentImage ? (
@@ -215,7 +222,7 @@ export default function ProductPage() {
         </div>
 
         {/* Info */}
-        <div className="lg:col-span-3">
+        <div className="">
           <div className="flex items-center gap-3 mb-3">
 
             {product.stock > 0 ? (
@@ -282,7 +289,7 @@ export default function ProductPage() {
              <span>Partager</span>
              <div className="flex gap-2">
                {/* Facebook */}
-               <button className="w-10 h-10 rounded-full border border-slate-200 bg-white flex items-center justify-center hover:bg-slate-50 transition-colors text-[#1877F2] shadow-sm">
+               <button onClick={handleShareFacebook} className="w-10 h-10 rounded-full border border-slate-200 bg-white flex items-center justify-center hover:bg-slate-50 transition-colors text-[#1877F2] shadow-sm">
                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                    <path fillRule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clipRule="evenodd" />
                  </svg>

@@ -90,7 +90,7 @@ export default function NewLandingPage() {
 
   return (
     <div className="bg-white text-slate-900 min-h-screen font-sans overflow-x-hidden">
-      
+
 
 
       {/* ===== HERO SECTION ===== */}
@@ -102,9 +102,9 @@ export default function NewLandingPage() {
 
         <div className="container-x relative z-10">
           <div className="grid lg:grid-cols-12 gap-12 items-center">
-            
+
             {/* TEXT */}
-            <motion.div 
+            <motion.div
               className="lg:col-span-7"
               initial="hidden"
               animate="visible"
@@ -117,15 +117,15 @@ export default function NewLandingPage() {
                 </span>
                 Spécialiste N°1 en Tunisie
               </motion.div>
-              
+
               <motion.h1 variants={fadeIn} className="font-display font-extrabold text-4xl md:text-5xl lg:text-6xl text-slate-900 leading-[1.15] mb-6">
                 Trouvez le <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#3d6eff] to-blue-700 drop-shadow-sm">rétroviseur parfait</span> pour votre voiture en 3 clics.
               </motion.h1>
-              
+
               <motion.p variants={fadeIn} className="text-lg text-slate-600 max-w-xl mb-8 leading-relaxed">
                 Plus besoin de chercher des heures ou de vous déplacer. Sélectionnez votre véhicule, commandez en ligne et recevez votre pièce chez vous, prête à être montée.
               </motion.p>
-              
+
               <motion.div variants={fadeIn} className="flex flex-wrap gap-4">
                 <button onClick={() => navigate('/catalog')} className="bg-[#3d6eff] hover:bg-blue-600 text-white px-8 py-4 rounded-xl font-bold text-lg shadow-lg shadow-[#3d6eff]/30 transition-all hover:-translate-y-1 flex items-center gap-2">
                   <Search className="w-5 h-5" /> Explorer le catalogue
@@ -134,12 +134,12 @@ export default function NewLandingPage() {
                   Obtenir un devis gratuit
                 </button>
               </motion.div>
-              
+
               <motion.div variants={fadeIn} className="mt-8 flex items-center gap-4 text-sm text-slate-600">
                 <div className="flex -space-x-2">
-                  {[1,2,3,4].map(i => (
+                  {[1, 2, 3, 4].map(i => (
                     <div key={i} className="w-8 h-8 rounded-full bg-[#3d6eff] border-2 border-white flex items-center justify-center text-xs font-bold text-white shadow-sm overflow-hidden">
-                      <img src={`https://i.pravatar.cc/100?img=${i+10}`} alt="User" />
+                      <img src={`https://i.pravatar.cc/100?img=${i + 10}`} alt="User" />
                     </div>
                   ))}
                 </div>
@@ -148,7 +148,7 @@ export default function NewLandingPage() {
             </motion.div>
 
             {/* WIDGET RECHERCHE */}
-            <motion.div 
+            <motion.div
               className="lg:col-span-5"
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
@@ -299,7 +299,7 @@ export default function NewLandingPage() {
       <section className="pt-12 pb-4 bg-white">
         <div className="container-x">
           <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, amount: 0.2 }}
@@ -309,11 +309,11 @@ export default function NewLandingPage() {
               </div>
               <h2 className="font-display font-black text-3xl md:text-4xl text-slate-900">Produits Populaires</h2>
             </motion.div>
-            <motion.button 
+            <motion.button
               initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, amount: 0.2 }}
-              onClick={() => navigate('/catalog')} 
+              onClick={() => navigate('/catalog')}
               className="text-brand-600 font-bold hover:text-brand-700 flex items-center gap-2 group bg-brand-50 px-6 py-3 rounded-xl hover:bg-brand-100 transition-colors"
             >
               Voir tout le catalogue <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -321,7 +321,7 @@ export default function NewLandingPage() {
           </div>
 
           {topProducts.length > 0 ? (
-            <motion.div 
+            <motion.div
               className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6"
               variants={staggerContainer}
               initial="hidden"
@@ -346,9 +346,9 @@ export default function NewLandingPage() {
       <section className="pt-8 pb-4 bg-slate-50 overflow-hidden relative">
         <div className="container-x relative z-10">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
-            
+
             {/* Image Column */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, amount: 0.2 }}
@@ -362,9 +362,9 @@ export default function NewLandingPage() {
                 <h3 className="text-2xl font-bold">L'expertise à votre service</h3>
               </div>
             </motion.div>
-            
+
             {/* Text Column */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, x: 50 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, amount: 0.2 }}
@@ -380,15 +380,15 @@ export default function NewLandingPage() {
               <p className="text-slate-600 text-lg mb-8 leading-relaxed">
                 Né d'une passion pour l'automobile, <strong className="text-[#3d6eff]">Acil Retro</strong> est devenu la référence incontournable pour la vision arrière de votre véhicule. Nous allions savoir-faire technique et service client irréprochable.
               </p>
-              
+
               <ul className="space-y-5 mb-10">
                 {[
                   "Vente de pièces d'origine et adaptables de haute qualité.",
                   "Service de peinture sur-mesure pour s'adapter à votre carrosserie.",
                   "Installation professionnelle rapide dans nos ateliers ou chez vous."
                 ].map((item, i) => (
-                  <motion.li 
-                    key={i} 
+                  <motion.li
+                    key={i}
                     className="flex items-start gap-4"
                     initial={{ opacity: 0, y: 10 }}
                     whileInView={{ opacity: 1, x: 0 }}
@@ -402,7 +402,7 @@ export default function NewLandingPage() {
                   </motion.li>
                 ))}
               </ul>
-              
+
               <div>
                 <button onClick={() => setShowCertModal(true)} className="bg-[#3d6eff] text-white font-bold px-8 py-4 rounded-xl hover:bg-blue-600 transition-all hover:-translate-y-1 shadow-lg shadow-[#3d6eff]/30 flex items-center gap-2 justify-center w-full sm:w-auto">
                   <ShieldCheck className="w-5 h-5" /> Nos certifications
@@ -418,7 +418,7 @@ export default function NewLandingPage() {
       <section className="pt-4 pb-8 bg-slate-50">
         <div className="container-x">
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <motion.h2 
+            <motion.h2
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.2 }}
@@ -426,7 +426,7 @@ export default function NewLandingPage() {
             >
               Ils nous font confiance
             </motion.h2>
-            <motion.p 
+            <motion.p
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.2 }}
@@ -439,19 +439,19 @@ export default function NewLandingPage() {
 
           <div className="relative mt-8 group">
             <style>{`.hide-scrollbar::-webkit-scrollbar { display: none; }`}</style>
-            
-            <div 
+
+            <div
               ref={scrollContainerRef}
               className="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-8 -mx-4 px-4 md:mx-0 md:px-0 hide-scrollbar"
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
               {reviews.map((review, i) => (
-                <div 
-                  key={i} 
+                <div
+                  key={i}
                   className="w-full sm:w-[calc(50%-12px)] md:w-[calc(33.333%-16px)] flex-shrink-0 snap-center bg-white p-6 md:p-8 rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.04)] border border-slate-100 hover:-translate-y-2 transition-transform duration-300"
                 >
                   <div className="flex gap-1 mb-6">
-                    {[1,2,3,4,5].map(star => <Star key={star} className="w-5 h-5 fill-yellow-400 text-yellow-400" />)}
+                    {[1, 2, 3, 4, 5].map(star => <Star key={star} className="w-5 h-5 fill-yellow-400 text-yellow-400" />)}
                   </div>
                   <p className="text-slate-700 mb-6 italic text-lg leading-relaxed" dir={/[\u0600-\u06FF]/.test(review.text) ? 'rtl' : 'ltr'}>"{review.text}"</p>
                   <div className="flex items-center gap-4">
@@ -468,14 +468,14 @@ export default function NewLandingPage() {
             </div>
 
             {/* Navigation Buttons - Desktop (Sides) */}
-            <button 
-              onClick={() => scrollReviews('left')} 
+            <button
+              onClick={() => scrollReviews('left')}
               className="hidden md:flex absolute -left-5 lg:-left-6 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full bg-white border border-slate-200 items-center justify-center text-slate-600 hover:bg-[#3d6eff] hover:text-white hover:border-[#3d6eff] transition-all shadow-md"
             >
               <ChevronLeft className="w-6 h-6" />
             </button>
-            <button 
-              onClick={() => scrollReviews('right')} 
+            <button
+              onClick={() => scrollReviews('right')}
               className="hidden md:flex absolute -right-5 lg:-right-6 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full bg-white border border-slate-200 items-center justify-center text-slate-600 hover:bg-[#3d6eff] hover:text-white hover:border-[#3d6eff] transition-all shadow-md"
             >
               <ChevronRight className="w-6 h-6" />
@@ -498,20 +498,20 @@ export default function NewLandingPage() {
       <section className="pt-8 pb-10 bg-slate-50 text-left px-4 relative">
         <div className="max-w-6xl mx-auto">
           {/* Main Banner */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.2 }}
             className="relative rounded-2xl overflow-hidden shadow-2xl bg-[#3d6eff]"
           >
             {/* Background image on the right */}
-            <div 
+            <div
               className="absolute inset-y-0 right-0 w-full md:w-1/2 bg-cover bg-center mix-blend-overlay opacity-80 md:opacity-100 md:mix-blend-normal"
               style={{ backgroundImage: "url('/images/retro-route.jpg')" }}
             ></div>
             {/* Gradient overlay */}
             <div className="absolute inset-0 bg-gradient-to-r from-[#3d6eff] via-[#3d6eff]/90 to-transparent"></div>
-            
+
             {/* Content */}
             <div className="relative z-10 px-8 py-8 md:px-12 md:py-10 lg:px-16 lg:py-12 max-w-2xl text-left">
               <p className="text-white/80 uppercase tracking-widest text-xs font-bold mb-3">VOTRE SÉCURITÉ AVANT TOUT</p>
@@ -530,7 +530,7 @@ export default function NewLandingPage() {
           </motion.div>
 
           {/* Contact Section Below Banner */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.2 }}
@@ -541,7 +541,7 @@ export default function NewLandingPage() {
               <h3 className="text-xl font-bold text-slate-900 mb-1">Prêt à commencer ?</h3>
               <p className="text-slate-500 text-sm md:text-base">Vous avez des questions ? Notre équipe est là pour vous aider à trouver la pièce parfaite.</p>
             </div>
-            
+
             <div className="flex flex-col md:flex-row items-start md:items-center gap-6 lg:gap-10">
               {/* Phone */}
               <div className="flex items-center gap-4">
@@ -553,9 +553,9 @@ export default function NewLandingPage() {
                   <p className="text-slate-500 text-sm">+216 27 804 642</p>
                 </div>
               </div>
-              
+
               <div className="w-px h-10 bg-slate-200 hidden md:block"></div>
-              
+
               {/* Email */}
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-[#0a4de3]">
@@ -566,9 +566,9 @@ export default function NewLandingPage() {
                   <p className="text-slate-500 text-sm">contact@acilretro.com</p>
                 </div>
               </div>
-              
+
               <div className="w-px h-10 bg-slate-200 hidden md:block"></div>
-              
+
               {/* Visit */}
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-[#0a4de3]">
@@ -576,7 +576,7 @@ export default function NewLandingPage() {
                 </div>
                 <div>
                   <p className="font-bold text-slate-900 text-sm">Visitez-nous</p>
-                  <p className="text-slate-500 text-sm">Tunis, Tunisie</p>
+                  <p className="text-slate-500 text-sm">Ben Arous, Rue D'Egypte</p>
                 </div>
               </div>
             </div>
@@ -587,31 +587,31 @@ export default function NewLandingPage() {
       {/* ===== CERTIFICATIONS MODAL ===== */}
       <AnimatePresence>
         {showCertModal && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
             onClick={() => setShowCertModal(false)}
           >
-            <motion.div 
+            <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
               className="bg-white rounded-3xl p-6 md:p-10 max-w-5xl w-full max-h-[95vh] overflow-y-auto shadow-2xl relative"
             >
-              <button 
+              <button
                 onClick={() => setShowCertModal(false)}
                 className="absolute top-4 right-4 w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center text-slate-500 hover:bg-slate-200 transition-colors font-bold text-lg"
               >
                 ✕
               </button>
-              
+
               <h3 className="text-2xl md:text-3xl font-black font-display text-slate-900 mb-8 text-center">
                 Nos Certifications Officielles
               </h3>
-              
+
               <div className="flex flex-col md:flex-row gap-6">
                 <div className="flex-1 bg-slate-50 rounded-2xl p-4 flex items-center justify-center border border-slate-100">
                   <img src="/images/cert.png" alt="Certification 1" className="w-full h-auto max-h-[60vh] object-contain rounded-xl shadow-sm" />
