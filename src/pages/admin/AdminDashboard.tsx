@@ -81,10 +81,10 @@ export default function AdminDashboard() {
   }
 
   const cards = [
-    { label: 'Chiffre d\'affaires', value: formatPrice(stats.totalRevenue), icon: DollarSign, trend: '+12.5%', up: true, color: 'from-brand-600 to-brand-500' },
-    { label: 'Commandes', value: stats.totalOrders, icon: ShoppingCart, trend: '+8.2%', up: true, color: 'from-accent-500 to-accent-400' },
-    { label: 'Devis en attente', value: stats.pendingQuotes, icon: FileText, trend: '-3.1%', up: false, color: 'from-amber-500 to-amber-400' },
-    { label: 'Valeur stock', value: formatPrice(stats.inventoryValue), icon: Package, trend: '+5.4%', up: true, color: 'from-success-600 to-success-500' },
+    { label: 'Commandes en attente', value: stats.pendingOrders, icon: Clock, color: 'from-brand-600 to-brand-500' },
+    { label: 'Produits totaux', value: stats.totalProducts, icon: Package, color: 'from-accent-500 to-accent-400' },
+    { label: 'Clients', value: stats.totalCustomers, icon: Users, color: 'from-amber-500 to-amber-400' },
+    { label: 'Alertes stock', value: stats.lowStockCount, icon: AlertTriangle, color: 'from-error-500 to-error-400' },
   ];
 
   const monthLabels = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
@@ -98,18 +98,14 @@ export default function AdminDashboard() {
       {/* Stat cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {cards.map((c, i) => (
-          <div key={i} className="glass-card p-5">
-            <div className="flex items-start justify-between mb-3">
-              <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${c.color} flex items-center justify-center shadow-lg`}>
-                <c.icon className="w-5 h-5 text-white" />
-              </div>
-              <span className={`text-xs font-bold flex items-center gap-0.5 ${c.up ? 'text-success-600' : 'text-error-500'}`}>
-                {c.up ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
-                {c.trend}
-              </span>
+          <div key={i} className="glass-card p-5 flex items-center gap-4">
+            <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${c.color} flex items-center justify-center shadow-lg shrink-0`}>
+              <c.icon className="w-6 h-6 text-white" />
             </div>
-            <div className="font-display font-extrabold text-2xl text-slate-900 dark:text-white">{c.value}</div>
-            <div className="text-xs text-slate-500 mt-1">{c.label}</div>
+            <div>
+              <div className="font-display font-extrabold text-2xl text-slate-900 dark:text-white leading-none mb-1">{c.value}</div>
+              <div className="text-sm text-slate-500">{c.label}</div>
+            </div>
           </div>
         ))}
       </div>
@@ -238,25 +234,6 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* Secondary stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {[
-          { label: 'Commandes en attente', value: stats.pendingOrders, icon: Clock },
-          { label: 'Produits totaux', value: stats.totalProducts, icon: Package },
-          { label: 'Clients', value: stats.totalCustomers, icon: Users },
-          { label: 'Alertes stock', value: stats.lowStockCount, icon: AlertTriangle },
-        ].map((s, i) => (
-          <div key={i} className="glass-card p-4 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-brand-100 dark:bg-brand-800/40 flex items-center justify-center">
-              <s.icon className="w-5 h-5 text-brand-600 dark:text-brand-300" />
-            </div>
-            <div>
-              <div className="font-display font-bold text-xl text-slate-900 dark:text-white">{s.value}</div>
-              <div className="text-xs text-slate-500">{s.label}</div>
-            </div>
-          </div>
-        ))}
-      </div>
     </div>
   );
 }

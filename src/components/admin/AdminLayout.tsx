@@ -49,8 +49,8 @@ export default function AdminLayout({ children, section }: { children: ReactNode
               key={n.id}
               onClick={() => { navigate(n.path); setSidebarOpen(false); }}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${section === n.id
-                  ? 'bg-[#2d58d9] text-white shadow-lg'
-                  : 'text-white hover:bg-white/10 hover:text-white/90'
+                ? 'bg-[#2d58d9] text-white shadow-lg'
+                : 'text-white hover:bg-white/10 hover:text-white/90'
                 }`}
             >
               <n.icon className="w-4.5 h-4.5 shrink-0" />
