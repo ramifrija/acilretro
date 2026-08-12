@@ -40,19 +40,7 @@ export default function NewLandingPage() {
     { name: "Thomas L.", role: "Mécanicien", text: "Pièces de très bonne qualité. Le support client est réactif et les livraisons sont toujours dans les délais annoncés.", lang: "fr" },
   ];
 
-  useEffect(() => {
-    const reviewTimer = setInterval(() => {
-      if (scrollContainerRef.current) {
-        const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
-        if (scrollLeft + clientWidth >= scrollWidth - 10) {
-          scrollContainerRef.current.scrollTo({ left: 0, behavior: 'smooth' });
-        } else {
-          scrollContainerRef.current.scrollBy({ left: clientWidth, behavior: 'smooth' });
-        }
-      }
-    }, 4000); // changes every 4 seconds
-    return () => clearInterval(reviewTimer);
-  }, []);
+  // Auto-scroll pour les avis désactivé à la demande de l'utilisateur
 
   const scrollReviews = (direction: 'left' | 'right') => {
     if (scrollContainerRef.current) {
