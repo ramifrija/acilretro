@@ -58,12 +58,12 @@ export default function CheckoutPage() {
   const handleSubmit = async () => {
     // Basic validation
     if (customerType === 'individual') {
-      if (!form.fullName || !form.phone || !form.address || !form.city) {
+      if (!form.fullName || !form.phone || !form.address) {
         toast.error(lang === 'fr' ? 'Veuillez remplir tous les champs obligatoires' : 'الرجاء ملء جميع الحقول الإجبارية');
         return;
       }
     } else {
-      if (!form.companyName || !form.taxId || !form.phone || !form.address || !form.city) {
+      if (!form.companyName || !form.taxId || !form.address || !form.contactPerson || !form.phone) {
         toast.error(lang === 'fr' ? 'Veuillez remplir tous les champs obligatoires' : 'الرجاء ملء جميع الحقول الإجبارية');
         return;
       }
@@ -219,11 +219,11 @@ Merci pour votre confiance.`;
               {customerType === 'individual' ? (
                 <>
                   <div className="grid sm:grid-cols-2 gap-4">
-                    <Field label={t[lang].fullName} value={form.fullName} onChange={(v) => set('fullName', v)} placeholder={t[lang].phFullName} rtl={lang === 'ar'} />
-                    <Field label={t[lang].phone} value={form.phone} onChange={(v) => set('phone', v)} placeholder={t[lang].phPhone} rtl={lang === 'ar'} />
+                    <Field label={t[lang].fullName} value={form.fullName} onChange={(v) => set('fullName', v)} placeholder={t[lang].phFullName} rtl={lang === 'ar'} required />
+                    <Field label={t[lang].phone} value={form.phone} onChange={(v) => set('phone', v)} placeholder={t[lang].phPhone} rtl={lang === 'ar'} required />
                   </div>
                   <Field label={t[lang].email} value={form.email} onChange={(v) => set('email', v)} placeholder={t[lang].phEmail} type="email" rtl={lang === 'ar'} />
-                  <Field label={t[lang].address} value={form.address} onChange={(v) => set('address', v)} placeholder={t[lang].phAddress} rtl={lang === 'ar'} />
+                  <Field label={t[lang].address} value={form.address} onChange={(v) => set('address', v)} placeholder={t[lang].phAddress} rtl={lang === 'ar'} required />
                   <div className="grid sm:grid-cols-3 gap-4">
                     <Field label={t[lang].city} value={form.city} onChange={(v) => set('city', v)} placeholder={t[lang].phCity} rtl={lang === 'ar'} />
                     <Field label={t[lang].postalCode} value={form.postalCode} onChange={(v) => set('postalCode', v)} placeholder={t[lang].phPostalCode} rtl={lang === 'ar'} />
@@ -232,21 +232,21 @@ Merci pour votre confiance.`;
                 </>
               ) : (
                 <>
-                  <Field label={t[lang].companyName} value={form.companyName} onChange={(v) => set('companyName', v)} placeholder={t[lang].phCompanyName} rtl={lang === 'ar'} />
+                  <Field label={t[lang].companyName} value={form.companyName} onChange={(v) => set('companyName', v)} placeholder={t[lang].phCompanyName} rtl={lang === 'ar'} required />
                   <div className="grid sm:grid-cols-3 gap-4">
-                    <Field label={t[lang].taxId} value={form.taxId} onChange={(v) => set('taxId', v)} placeholder={t[lang].phTaxId} rtl={lang === 'ar'} />
+                    <Field label={t[lang].taxId} value={form.taxId} onChange={(v) => set('taxId', v)} placeholder={t[lang].phTaxId} rtl={lang === 'ar'} required />
                     <Field label={t[lang].vatNumber} value={form.vatNumber} onChange={(v) => set('vatNumber', v)} placeholder={t[lang].phVatNumber} rtl={lang === 'ar'} />
                     <Field label={t[lang].rcNumber} value={form.rcNumber} onChange={(v) => set('rcNumber', v)} placeholder={t[lang].phRcNumber} rtl={lang === 'ar'} />
                   </div>
-                  <Field label={t[lang].address} value={form.address} onChange={(v) => set('address', v)} placeholder={t[lang].phAddress} rtl={lang === 'ar'} />
+                  <Field label={t[lang].address} value={form.address} onChange={(v) => set('address', v)} placeholder={t[lang].phAddress} rtl={lang === 'ar'} required />
                   <div className="grid sm:grid-cols-3 gap-4">
                     <Field label={t[lang].city} value={form.city} onChange={(v) => set('city', v)} placeholder={t[lang].phCity} rtl={lang === 'ar'} />
                     <Field label={t[lang].postalCode} value={form.postalCode} onChange={(v) => set('postalCode', v)} placeholder={t[lang].phPostalCode} rtl={lang === 'ar'} />
                     <Field label={t[lang].country} value={form.country} onChange={(v) => set('country', v)} rtl={lang === 'ar'} />
                   </div>
                   <div className="grid sm:grid-cols-2 gap-4">
-                    <Field label={t[lang].contactPerson} value={form.contactPerson} onChange={(v) => set('contactPerson', v)} placeholder={t[lang].phContactPerson} rtl={lang === 'ar'} />
-                    <Field label={t[lang].phone} value={form.phone} onChange={(v) => set('phone', v)} placeholder={t[lang].phPhone} rtl={lang === 'ar'} />
+                    <Field label={t[lang].contactPerson} value={form.contactPerson} onChange={(v) => set('contactPerson', v)} placeholder={t[lang].phContactPerson} rtl={lang === 'ar'} required />
+                    <Field label={t[lang].phone} value={form.phone} onChange={(v) => set('phone', v)} placeholder={t[lang].phPhone} rtl={lang === 'ar'} required />
                   </div>
                   <Field label={t[lang].email} value={form.email} onChange={(v) => set('email', v)} placeholder={t[lang].phEmail} type="email" rtl={lang === 'ar'} />
                 </>
@@ -369,10 +369,12 @@ Merci pour votre confiance.`;
   );
 }
 
-function Field({ label, value, onChange, placeholder, type = 'text', rtl = false }: { label: string; value: string; onChange: (v: string) => void; placeholder?: string; type?: string; rtl?: boolean }) {
+function Field({ label, value, onChange, placeholder, type = 'text', rtl = false, required = false }: { label: string; value: string; onChange: (v: string) => void; placeholder?: string; type?: string; rtl?: boolean; required?: boolean }) {
   return (
     <div className="mb-4">
-      <label className={`text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5 block ${rtl ? 'text-right' : ''}`}>{label}</label>
+      <label className={`text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5 block ${rtl ? 'text-right' : ''}`}>
+        {label} {required && <span className="text-red-500">*</span>}
+      </label>
       <input type={type} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className={`input-field ${rtl ? 'text-right placeholder:text-right' : ''}`} />
     </div>
   );

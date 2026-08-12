@@ -23,6 +23,7 @@ export default function ProductPage() {
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
   const [cote, setCote] = useState<'Droite' | 'Gauche' | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'desc' | 'details'>('desc');
 
   useEffect(() => {
@@ -114,6 +115,13 @@ export default function ProductPage() {
 
   const handleAddToCart = () => {
     if (!product) return;
+    
+    if (!cote) {
+      setError("Veuillez sélectionner le côté.");
+      return;
+    }
+    setError(null);
+
     addItem({
       productId: product.id,
       slug: product.slug,
@@ -243,16 +251,20 @@ export default function ProductPage() {
           <h1 className="font-display font-bold text-2xl lg:text-3xl text-slate-900 dark:text-white mb-6">{product.name}</h1>
 
           <div className="mb-4">
-            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Côté</label>
+            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Côté <span className="text-red-500">*</span></label>
             <select
               value={cote || ''}
-              onChange={(e) => setCote(e.target.value ? e.target.value as 'Droite' | 'Gauche' : null)}
-              className="w-full sm:w-64 input-field text-sm py-2 bg-white"
+              onChange={(e) => {
+                setCote(e.target.value ? e.target.value as 'Droite' | 'Gauche' : null);
+                if (error) setError(null);
+              }}
+              className={`w-full sm:w-64 input-field text-sm py-2 bg-white ${error ? 'border-red-500 ring-1 ring-red-500' : ''}`}
             >
-              <option value="">-- Sélectionner un côté (Annuler) --</option>
+              <option value="">-- Sélectionner un côté --</option>
               <option value="Droite">droit / passager</option>
               <option value="Gauche">gauche / conducteur</option>
             </select>
+            {error && <div className="text-red-500 text-xs mt-1 font-medium">{error}</div>}
           </div>
 
           {/* Options */}
