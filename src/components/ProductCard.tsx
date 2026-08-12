@@ -3,7 +3,7 @@ import { useRouter } from '@/context/RouterContext';
 import { useCart } from '@/context/CartContext';
 import { formatPrice } from '@/lib/format';
 import type { Product } from '@/types/database';
-
+import WatermarkedImage from '@/components/WatermarkedImage';
 export default function ProductCard({ product }: { product: Product }) {
   const { navigate } = useRouter();
   const { addItem, clear } = useCart();
@@ -32,18 +32,12 @@ export default function ProductCard({ product }: { product: Product }) {
     >
       <div className="relative aspect-[4/3] overflow-hidden bg-slate-50 dark:bg-brand-950">
         {product.images?.[0] ? (
-          <>
-            <img
+            <WatermarkedImage
               src={product.images[0]}
               alt={product.name}
               loading="lazy"
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             />
-            {/* Watermark */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.30]">
-              <img src="/images/acil_logo.png" alt="" className="w-2/3 object-contain grayscale" />
-            </div>
-          </>
         ) : (
           <div className="w-full h-full flex items-center justify-center text-slate-300">
             <Star className="w-12 h-12" />

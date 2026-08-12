@@ -6,7 +6,7 @@ import { useCart } from '@/context/CartContext';
 import { formatPrice } from '@/lib/format';
 import type { Product, ProductOption, ProductCompat } from '@/types/database';
 import ProductCard from '@/components/ProductCard';
-
+import WatermarkedImage from '@/components/WatermarkedImage';
 export default function ProductPage() {
   const { path, navigate } = useRouter();
   const slug = path.split('/').pop() || '';
@@ -189,13 +189,12 @@ export default function ProductPage() {
             onClick={() => setZoom(!zoom)}
           >
             {currentImage ? (
-              <>
-                <img src={currentImage} alt={product.name} className={`w-full h-full object-cover transition-transform duration-500 ${zoom ? 'scale-150' : 'group-hover:scale-105'}`} />
-                {/* Watermark */}
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.30]">
-                  <img src="/images/acil_logo.png" alt="" className="w-1/2 max-w-[250px] object-contain grayscale" />
-                </div>
-              </>
+              <WatermarkedImage 
+                src={currentImage} 
+                alt={product.name} 
+                watermarkScale={0.5}
+                className={`w-full h-full object-cover transition-transform duration-500 ${zoom ? 'scale-150' : 'group-hover:scale-105'}`} 
+              />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-slate-300"><Package className="w-24 h-24" /></div>
             )}
