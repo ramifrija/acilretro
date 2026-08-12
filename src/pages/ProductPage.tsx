@@ -246,10 +246,10 @@ export default function ProductPage() {
             <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Côté</label>
             <select
               value={cote || ''}
-              onChange={(e) => setCote(e.target.value as 'Droite' | 'Gauche')}
+              onChange={(e) => setCote(e.target.value ? e.target.value as 'Droite' | 'Gauche' : null)}
               className="w-full sm:w-64 input-field text-sm py-2 bg-white"
             >
-              <option value="" disabled>Sélectionner un côté</option>
+              <option value="">-- Sélectionner un côté (Annuler) --</option>
               <option value="Droite">droit / passager</option>
               <option value="Gauche">gauche / conducteur</option>
             </select>
@@ -263,10 +263,21 @@ export default function ProductPage() {
               </label>
               <select
                 value={selectedOptions[o.id] || ''}
-                onChange={(e) => setSelectedOptions((s) => ({ ...s, [o.id]: e.target.value }))}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setSelectedOptions((s) => {
+                    const newS = { ...s };
+                    if (!val) {
+                      delete newS[o.id];
+                    } else {
+                      newS[o.id] = val;
+                    }
+                    return newS;
+                  });
+                }}
                 className="w-full sm:w-64 input-field text-sm py-2 bg-white"
               >
-                <option value="" disabled>Sélectionner {o.name.toLowerCase()}</option>
+                <option value="">-- {o.required ? `Sélectionner ${o.name.toLowerCase()}` : `Aucun(e) (Annuler)`} --</option>
                 {o.option_values.map((v) => (
                   <option key={v.id} value={v.id}>{v.value}</option>
                 ))}

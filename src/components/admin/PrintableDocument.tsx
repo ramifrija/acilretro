@@ -81,6 +81,18 @@ export default function PrintableDocument({ order, documentType }: Props) {
             <div>{COMPANY.address}</div>
             <div>Tél : <span className="font-bold">{COMPANY.phone}</span> | Email : {COMPANY.email}</div>
             <div>RC : {COMPANY.rc} | MF : {COMPANY.mf}</div>
+            {/* Bank Details - Horizontal 
+            <div className="mt-1.5 border border-[#1e9eb9] rounded px-2.5 py-1.5 bg-[#f0fbfd] text-[11px] text-gray-700">
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-0.5">
+                <span className="font-bold text-[#1e9eb9] whitespace-nowrap">Coordonnées Bancaires :</span>
+                <span className="whitespace-nowrap"><span className="font-bold">Banque :</span> BNA</span>
+                <span className="text-gray-300">|</span>
+                <span className="whitespace-nowrap"><span className="font-bold">RIB :</span> 12 345 678 901 234 567 89 01</span>
+                <span className="text-gray-300">|</span>
+                <span className="whitespace-nowrap"><span className="font-bold">IBAN :</span> TN59 1234 5678 9012 3456 7890 1234</span>
+              </div>
+            </div>
+            */}
           </div>
         </div>
 
@@ -100,15 +112,14 @@ export default function PrintableDocument({ order, documentType }: Props) {
       {/* Facturé À & Merci */}
       <div className="mb-8">
         <div className="text-[#1e9eb9] font-bold uppercase mb-2 text-[14px]">FACTURE À</div>
-        <div className="bg-[#f8f9fa] rounded-xl p-5 max-w-[400px]">
-          <div className="font-bold text-[15px] mb-4 uppercase text-black">{customerName}</div>
-          <div className="grid grid-cols-[80px_1fr] gap-y-2 text-[13px] text-black">
-            <div className="font-bold">Adresse :</div>
-            <div>{customerInfo.city ? customerInfo.city : (customerInfo.address || '-')}</div>
-            <div className="font-bold">Tél :</div>
-            <div>{customerInfo.phone || '-'}</div>
-            <div className="font-bold">MF :</div>
-            <div>{customerInfo.taxId || '-'}</div>
+        <div className="bg-[#f8f9fa] rounded-xl p-4 w-full">
+          <div className="font-bold text-[15px] mb-2 uppercase text-black">{customerName}</div>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[13px] text-black">
+            <span><span className="font-bold">Adresse :</span> {customerInfo.city ? customerInfo.city : (customerInfo.address || '-')}</span>
+            <span className="text-gray-300">|</span>
+            <span><span className="font-bold">Tél :</span> {customerInfo.phone || '-'}</span>
+            <span className="text-gray-300">|</span>
+            <span><span className="font-bold">MF :</span> {customerInfo.taxId || '-'}</span>
           </div>
         </div>
       </div>
@@ -189,10 +200,11 @@ export default function PrintableDocument({ order, documentType }: Props) {
 
         {/* Bank Details Footer */}
         <div className="pt-4 border-t border-gray-200 text-[11px] text-gray-700 flex flex-wrap justify-center items-center gap-x-6 gap-y-2">
-          <span className="font-bold text-gray-800 uppercase">Coordonnées Bancaires :</span>
-          <span className="flex gap-1.5"><span className="text-gray-500">Banque :</span> <span className="font-bold text-black">{COMPANY.bank}</span></span>
-          <span className="flex gap-1.5"><span className="text-gray-500">RIB :</span> <span className="font-bold text-black">{COMPANY.rib}</span></span>
-          <span className="flex gap-1.5"><span className="text-gray-500">IBAN :</span> <span className="font-bold text-black">{COMPANY.iban}</span></span>
+          <span className="whitespace-nowrap"><span className="font-bold">Banque :</span> BNA</span>
+          <span className="text-gray-300">|</span>
+          <span className="whitespace-nowrap"><span className="font-bold">RIB :</span> 12 345 678 901 234 567 89 01</span>
+          <span className="text-gray-300">|</span>
+          <span className="whitespace-nowrap"><span className="font-bold">IBAN :</span> TN59 1234 5678 9012 3456 7890 1234</span>
         </div>
       </div>
     </div>

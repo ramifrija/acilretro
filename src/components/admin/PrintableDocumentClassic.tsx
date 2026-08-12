@@ -87,14 +87,25 @@ export default function PrintableDocumentClassic({ order, documentType }: Props)
             <div className="flex mt-0.5 text-[12px]"><span className="font-bold w-16">ADRESSE:</span> <span>{COMPANY.address}</span></div>
             <div className="flex mt-0.5 text-[12px]"><span className="font-bold w-16">TÉL:</span> <span className="font-bold">{COMPANY.phone}</span></div>
             <div className="flex mt-0.5 text-[12px]"><span className="font-bold w-16">EMAIL:</span> <span>{COMPANY.email}</span></div>
+            {/* Bank Details Box */}
+            <div className="mt-2 border border-[#173e7c] rounded p-2 text-[11px] text-gray-700 bg-blue-50">
+              <div className="font-bold text-[#173e7c] mb-1">Coordonnées Bancaires :</div>
+              <div><span className="font-bold">Banque :</span> BNA</div>
+              <div><span className="font-bold">RIB :</span> 12 345 678 901 234 567 89 01</div>
+              <div><span className="font-bold">IBAN :</span> TN59 1234 5678 9012 3456 7890 1234</div>
+            </div>
           </div>
 
           {/* Client Info Box */}
-          <div className="border-[1.5px] border-black rounded-[10px] p-3 bg-slate-50">
-            <div className="flex mb-1"><span className="font-bold w-20 text-[12px]">CLIENT :</span> <span className="font-bold text-[12px] uppercase">{customerName}</span></div>
-            <div className="flex mb-1"><span className="font-bold w-20 text-[12px]">ADRESSE :</span> <span className="text-[12px]">{customerInfo.address || customerInfo.city || '-'}</span></div>
-            <div className="flex mb-1"><span className="font-bold w-20 text-[12px]">TÉL :</span> <span className="font-bold text-[12px]">{customerInfo.phone || '-'}</span></div>
-            <div className="flex"><span className="font-bold w-20 text-[12px]">MF :</span> <span className="font-bold text-[12px]">{customerInfo.taxId || '-'}</span></div>
+          <div className="border-[1.5px] border-black rounded-[10px] p-3 bg-slate-50 text-[12px]">
+            <div className="font-bold mb-1.5 uppercase">{customerName}</div>
+            <div className="flex flex-wrap items-center gap-x-2.5 gap-y-0.5 text-slate-700">
+              <span><span className="font-bold text-black">Adresse :</span> {customerInfo.address || customerInfo.city || '-'}</span>
+              <span className="text-gray-300">|</span>
+              <span><span className="font-bold text-black">Tél :</span> {customerInfo.phone || '-'}</span>
+              <span className="text-gray-300">|</span>
+              <span><span className="font-bold text-black">MF :</span> {customerInfo.taxId || '-'}</span>
+            </div>
           </div>
         </div>
       </div>

@@ -25,9 +25,8 @@ export default function AdminLayout({ children, section }: { children: ReactNode
     <div className="min-h-screen bg-slate-100 dark:bg-brand-950 flex print:bg-white print:min-h-0 print:block">
       {/* Sidebar */}
       <aside
-        className={`print:hidden fixed lg:sticky top-0 left-0 h-screen w-64 bg-[#3d6eff] text-brand-100 z-50 transition-transform duration-300 ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
-        }`}
+        className={`print:hidden fixed lg:sticky top-0 left-0 h-screen w-64 bg-[#3d6eff] text-brand-100 z-50 transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+          }`}
       >
         <div className="p-5 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
@@ -49,11 +48,10 @@ export default function AdminLayout({ children, section }: { children: ReactNode
             <button
               key={n.id}
               onClick={() => { navigate(n.path); setSidebarOpen(false); }}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-                section === n.id
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${section === n.id
                   ? 'bg-[#2d58d9] text-white shadow-lg'
                   : 'text-white hover:bg-white/10 hover:text-white/90'
-              }`}
+                }`}
             >
               <n.icon className="w-4.5 h-4.5 shrink-0" />
               {n.label}

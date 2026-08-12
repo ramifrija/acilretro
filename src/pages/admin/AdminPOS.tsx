@@ -360,7 +360,7 @@ export default function AdminPOS() {
                           ) : (
                             <Barcode className="w-10 h-10 text-slate-300" />
                           )}
-                          
+
                           {/* Badges */}
                           <div className="absolute top-2 left-2 flex flex-col gap-1 z-10">
                             {hasOptions && (
@@ -374,7 +374,7 @@ export default function AdminPOS() {
                               </span>
                             )}
                           </div>
-                          
+
                           {isOutOfStock && (
                             <div className="absolute inset-0 bg-white/60 dark:bg-black/60 backdrop-blur-[2px] flex items-center justify-center z-20">
                               <span className="text-slate-700 dark:text-white text-xs font-bold bg-white dark:bg-slate-800 px-3 py-1.5 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700">Rupture</span>
@@ -388,7 +388,7 @@ export default function AdminPOS() {
                             <h4 className="text-[13px] font-bold text-slate-800 dark:text-white leading-snug line-clamp-2 group-hover:text-brand-600 transition-colors">{p.name}</h4>
                             {p.sku && <p className="text-[10px] text-slate-400 font-mono mt-1">{p.sku}</p>}
                           </div>
-                          
+
                           <div className="flex items-end justify-between gap-2 mt-3 pt-3 border-t border-slate-100 dark:border-white/5">
                             <div className="flex flex-col">
                               {p.promo_price && (
@@ -396,7 +396,7 @@ export default function AdminPOS() {
                               )}
                               <span className="text-[15px] font-black text-brand-600 dark:text-brand-400 leading-none">{formatPrice(price)}</span>
                             </div>
-                            
+
                             <div className={`flex items-center gap-1.5 px-2 py-1 rounded-md border ${p.stock <= (p.min_stock || 3) ? 'bg-amber-50 border-amber-200 text-amber-700' : 'bg-emerald-50 border-emerald-200 text-emerald-700'}`}>
                               <div className={`w-1.5 h-1.5 rounded-full ${p.stock <= (p.min_stock || 3) ? 'bg-amber-500' : 'bg-emerald-500'}`}></div>
                               <span className="text-[10px] font-bold">{p.stock}</span>
