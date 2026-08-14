@@ -155,10 +155,11 @@ export default function AdminPOS() {
   const removeFromCart = (id: string) => setCart((c) => c.filter((i) => i.id !== id));
 
   const subtotal = cart.reduce((s, i) => s + i.unitPrice * i.quantity, 0);
-  const vat = subtotal * (vatRate / 100);
+  const fodec = subtotal * 0.01;
+  const vat = (subtotal + fodec) * (vatRate / 100);
   const timbre = subtotal > 0 && !isDeliveryMode ? 1 : 0;
-  const ras = (subtotal + vat + timbre) * 0.01;
-  const total = subtotal + vat + timbre + ras;
+  const ras = (subtotal + fodec + vat + timbre) * 0.01;
+  const total = subtotal + fodec + vat + timbre + ras;
 
   const checkout = async () => {
     setIsLoading(true);

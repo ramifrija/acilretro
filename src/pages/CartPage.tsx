@@ -28,10 +28,11 @@ export default function CartPage() {
 
   const discount = appliedPromo ? subtotal * appliedPromo : 0;
   const afterDiscount = subtotal - discount;
-  const vat = afterDiscount * VAT_RATE;
+  const fodec = afterDiscount * 0.01;
+  const vat = (afterDiscount + fodec) * VAT_RATE;
   const timbre = subtotal > 0 ? 1 : 0;
-  const ras = (afterDiscount + vat + timbre) * 0.01;
-  const total = afterDiscount + vat + timbre + ras;
+  const ras = (afterDiscount + fodec + vat + timbre) * 0.01;
+  const total = afterDiscount + fodec + vat + timbre + ras;
 
   if (count === 0) {
     return (

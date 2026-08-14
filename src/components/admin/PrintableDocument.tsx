@@ -42,13 +42,18 @@ export default function PrintableDocument({ order, documentType }: Props) {
   const customerName = customerInfo.fullName || customerInfo.companyName || (order.customer_type === 'company' ? 'ENTREPRISE' : 'CLIENT PASSAGER');
 
   const totalHT = Number(order.subtotal);
+  const fodec = totalHT * 0.01;
   const totalTVA = Number(order.vat);
   const totalTTC = Number(order.total);
-  const calculatedVatRate = totalHT > 0 ? Math.round((totalTVA / totalHT) * 100) : 0;
+  
+  // Use a base to calculate vat rate so it returns 19 instead of 19.19
+  const baseTva = totalHT + fodec;
+  const calculatedVatRate = baseTva > 0 ? Math.round((totalTVA / baseTva) * 100) : 0;
+  
   const timbre = (totalHT > 0 && !isDelivery) ? 1 : 0;
-  const fodec = totalHT * 0.01;
-
-  const finalTotal = totalTTC + timbre;
+  
+  // finalTotal should visually match the sum of printed lines
+  const finalTotal = totalHT + fodec + totalTVA + timbre;
   const dinars = Math.floor(finalTotal);
   const millimes = Math.round((finalTotal - dinars) * 1000);
 
@@ -109,12 +114,11 @@ export default function PrintableDocument({ order, documentType }: Props) {
 
       <div className="w-full h-[3px] bg-[#1e9eb9] my-6"></div>
 
-      {/* Facturé À & Merci */}
-      <div className="mb-8">
-        <div className="text-[#1e9eb9] font-bold uppercase mb-2 text-[14px]">FACTURE À</div>
-        <div className="bg-[#f8f9fa] rounded-xl p-4 w-full">
-          <div className="font-bold text-[15px] mb-2 uppercase text-black">{customerName}</div>
-          <div className="flex flex-col gap-y-1 text-[13px] text-black">
+      {/* Client Info */}
+      <div className="mb-4">
+        <div className="bg-[#f8f9fa] rounded-xl p-3 w-full border border-gray-100">
+          <div className="font-bold text-[15px] mb-1.5 uppercase text-black">Nom client : {customerName}</div>
+          <div className="flex flex-col gap-y-0.5 text-[12px] text-black">
             <span><span className="font-bold">Adresse :</span> {customerInfo.city ? customerInfo.city : (customerInfo.address || '-')}</span>
             <span><span className="font-bold">MF :</span> {customerInfo.taxId || '-'}</span>
           </div>
@@ -122,13 +126,13 @@ export default function PrintableDocument({ order, documentType }: Props) {
       </div>
 
       {/* Table */}
-      <table className="w-full mb-8 text-[13px]">
+      <table className="w-full mb-4 text-[12px]">
         <thead>
           <tr className="bg-[#1e9eb9] text-white">
-            <th className="py-2.5 px-4 font-semibold text-center w-[10%]">Qté</th>
-            <th className="py-2.5 px-4 font-semibold text-left uppercase">DÉSIGNATION</th>
-            <th className="py-2.5 px-4 font-semibold text-right w-[15%]">P.U.HT</th>
-            <th className="py-2.5 px-4 font-semibold text-right w-[20%]">Montant HT</th>
+            <th className="py-1.5 px-2 font-semibold text-center w-[10%]">Qté</th>
+            <th className="py-1.5 px-2 font-semibold text-left uppercase">DÉSIGNATION</th>
+            <th className="py-1.5 px-2 font-semibold text-right w-[15%]">P.U.HT</th>
+            <th className="py-1.5 px-2 font-semibold text-right w-[20%]">Montant HT</th>
           </tr>
         </thead>
         <tbody>
@@ -137,35 +141,36 @@ export default function PrintableDocument({ order, documentType }: Props) {
             const montantHT = unitPrice * item.quantity;
             return (
               <tr key={item.id} className="border-b border-gray-200 last:border-b-0">
-                <td className="py-3 px-4 text-center text-black">{item.quantity}</td>
-                <td className="py-3 px-4 text-left">
-                  <div className="font-medium text-black">{item.product_name}</div>
+                <td className="py-1 px-2 text-center text-black">{item.quantity}</td>
+                <td className="py-1 px-2 text-left">
+                  <span className="font-medium text-black">{item.product_name}</span>
                   {item.options_snapshot && item.options_snapshot.length > 0 && (
-                    <div className="text-[11px] text-gray-500 mt-0.5">
-                      {item.options_snapshot.map((o: any) => `${o.option} : ${o.value}`).join(' | ')}
-                    </div>
+                    <span className="text-[11px] text-gray-500 ml-1">
+                      ({item.options_snapshot.map((o: any) => `${o.option} : ${o.value}`).join(' | ')})
+                    </span>
                   )}
                 </td>
-                <td className="py-3 px-4 text-right text-gray-600">{formatNumber(unitPrice)}</td>
-                <td className="py-3 px-4 text-right font-bold text-black">{formatNumber(montantHT)}</td>
+                <td className="py-1 px-2 text-right text-gray-600">{formatNumber(unitPrice)}</td>
+                <td className="py-1 px-2 text-right font-bold text-black">{formatNumber(montantHT)}</td>
               </tr>
             );
           })}
-
         </tbody>
       </table>
 
       {/* Bottom Section (Totals & Bank Details) */}
-      <div className="mt-auto pt-6">
+      <div className="mt-auto pt-4">
         {/* Footer / Totals */}
-        <div className="flex justify-between items-center mb-6 gap-4">
+        <div className="flex mb-6 gap-4 items-stretch">
           {/* Merci */}
-          <div className="bg-[#e8f6f9] border border-[#bce4ec] rounded-xl p-4 w-[280px] flex items-center justify-center text-center">
-            <span className="text-[#173e7c] font-bold text-[13px] leading-relaxed uppercase">Merci pour votre<br />confiance</span>
+          <div className="flex-1 flex items-center justify-center">
+            <div className="bg-[#e8f6f9] border border-[#bce4ec] rounded-xl p-3 w-[260px] flex items-center justify-center text-center shadow-sm">
+              <span className="text-[#173e7c] font-bold text-[13px] leading-relaxed uppercase">Merci pour votre<br />confiance</span>
+            </div>
           </div>
 
           {/* Totals Box */}
-          <div className="w-[320px] text-[12px]">
+          <div className="w-[320px] shrink-0 text-[12px] flex flex-col justify-center">
             <div className="flex justify-between py-1.5 border-b border-gray-200">
               <span className="font-bold text-gray-600">Total HT</span>
               <span className="font-bold text-black">{formatNumber(totalHT)}</span>
@@ -184,15 +189,17 @@ export default function PrintableDocument({ order, documentType }: Props) {
                 <span className="font-bold text-black">{formatNumber(timbre)}</span>
               </div>
             )}
-            <div className="flex justify-between items-center py-2.5 px-4 mt-2 bg-[#e8f6f9] rounded-xl text-[#1e9eb9]">
+            <div className="flex justify-between items-center py-2 px-4 mt-2 bg-[#e8f6f9] rounded-xl text-[#1e9eb9]">
               <span className="font-bold text-[14px] uppercase">TOTAL TTC</span>
               <span className="font-bold text-[16px]">{formatNumber(finalTotal)}</span>
             </div>
-            <div className="mt-2 text-center">
-              <div className="text-gray-500 text-[10px] font-bold uppercase mb-0.5">ARRÊTÉE LA PRÉSENTE {docLabel} À LA SOMME DE :</div>
-              <div className="text-[#173e7c] font-bold text-[11px] leading-tight">{amountInWordsCapitalized} TTC</div>
-            </div>
           </div>
+        </div>
+
+        {/* Arrêtée Text */}
+        <div className="mt-2 mb-2 text-center w-full">
+          <div className="text-gray-500 text-[10px] font-bold uppercase mb-0.5">ARRÊTÉE LA PRÉSENTE {docLabel} À LA SOMME DE :</div>
+          <div className="text-[#173e7c] font-bold text-[11px] leading-tight">{amountInWordsCapitalized} TTC</div>
         </div>
 
         {/* Bank Details Footer 

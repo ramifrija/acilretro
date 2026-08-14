@@ -48,10 +48,11 @@ export default function CheckoutPage() {
 
   const set = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
-  const vat = subtotal * VAT_RATE;
+  const fodec = subtotal * 0.01;
+  const vat = (subtotal + fodec) * VAT_RATE;
   const timbre = subtotal > 0 ? 1 : 0; // 1 DT
   
-  let baseTotal = subtotal + vat + timbre;
+  let baseTotal = subtotal + fodec + vat + timbre;
   const ras = baseTotal * 0.01; // 1% of TTC
   const total = baseTotal + ras;
 
