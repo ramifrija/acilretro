@@ -552,7 +552,7 @@ function downloadAsText(order: OrderWithItems, type: 'invoice' | 'quote') {
   lines.push(`            ${label} ${isInvoice ? 'FAC' : 'DEV'}-${order.id.slice(0, 8).toUpperCase()}`);
   lines.push(`=========================================`);
   lines.push(``);
-  lines.push(`ACIL RETRO - Pièces Auto Premium`);
+  lines.push(`ACIL RETRO - Spécialiste du Rétroviseur`);
   lines.push(`Zone Industrielle, Rue 12, Tunis, Tunisie`);
   lines.push(`Tél: +216 71 000 000 | contact@acilretro.com`);
   lines.push(``);

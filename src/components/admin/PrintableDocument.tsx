@@ -117,7 +117,7 @@ export default function PrintableDocument({ order, documentType }: Props) {
       {/* Client Info */}
       <div className="mb-4">
         <div className="bg-[#f8f9fa] rounded-xl p-3 w-full border border-gray-100">
-          <div className="font-bold text-[15px] mb-1.5 uppercase text-black">Nom client : {customerName}</div>
+          <div className="font-bold text-[15px] mb-1.5 uppercase text-black">Client : {customerName}</div>
           <div className="flex flex-col gap-y-0.5 text-[12px] text-black">
             <span><span className="font-bold">Adresse :</span> {customerInfo.city ? customerInfo.city : (customerInfo.address || '-')}</span>
             <span><span className="font-bold">MF :</span> {customerInfo.taxId || '-'}</span>

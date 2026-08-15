@@ -33,11 +33,11 @@ export default function NewLandingPage() {
     // Page 1
     { name: "Ahmed B.", role: "Propriétaire Peugeot 208", text: "Site très facile à utiliser. J'ai trouvé le rétroviseur pour ma 208 en 2 minutes. Reçu le lendemain et monté moi-même grâce à leurs conseils.", lang: "fr" },
     { name: "Mohamed A.", role: "Propriétaire VW Golf", text: "خدمة ممتازة وتوصيل سريع جداً. قطعة الغيار مطابقة تماماً للأصلية. شكراً لكم!", lang: "ar" },
-    { name: "Sonia T.", role: "Propriétaire Renault Clio", text: "Service impeccable ! Ils m'ont même peint la coque à la couleur exacte de ma voiture avant l'envoi. Résultat parfait.", lang: "fr" },
     // Page 2
     { name: "Karim M.", role: "Chauffeur Taxi", text: "En tant que pro, j'ai besoin de rapidité. Acil Retro m'a toujours livré des pièces fiables en un temps record. Je recommande fortement.", lang: "fr" },
-    { name: "Fatma S.", role: "Propriétaire Kia Rio", text: "أفضل موقع لقطع الغيار في تونس. الأسعار معقولة جداً والجودة لا يعلى عليها. أنصح به بشدة.", lang: "ar" },
+    { name: "Fatma S.", role: "Propriétaire Kia Rio", text: "أفضل موقع لمرآة سيارات في تونس. الأسعار معقولة جداً والجودة لا يعلى عليها. أنصح به بشدة.", lang: "ar" },
     { name: "Thomas L.", role: "Mécanicien", text: "Pièces de très bonne qualité. Le support client est réactif et les livraisons sont toujours dans les délais annoncés.", lang: "fr" },
+    { name: "Ramzi Bn.", role: "Propriétaire BMW", text: "Rapide et efficace, je recommande.", lang: "fr" },
   ];
 
   // Auto-scroll pour les avis désactivé à la demande de l'utilisateur
@@ -158,7 +158,7 @@ export default function NewLandingPage() {
       <section className="py-4 md:py-6 relative z-20 -mt-6">
         <div className="container-x mb-2">
           {/* Carousel */}
-          <div className="relative w-full h-[180px] md:h-[280px] overflow-hidden group border border-slate-200 rounded-2xl md:rounded-[2rem] shadow-2xl">
+          <div className="relative w-full h-[180px] md:h-[220px] overflow-hidden group border border-slate-200 rounded-2xl md:rounded-[2rem] shadow-2xl">
             {promos.map((promo, idx) => (
               <img
                 key={idx}
@@ -183,18 +183,17 @@ export default function NewLandingPage() {
         </div>
 
         {/* 4-Block Grid */}
-        <div className="container-x mt-4 md:mt-8">
+        <div className="container-x mt-3 md:mt-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 w-full rounded-2xl md:rounded-3xl overflow-hidden shadow-xl border border-slate-200">
 
-            <div className="bg-[#595959] text-white p-6 md:p-8 flex flex-col justify-between min-h-[180px] lg:h-[220px]">
-              <h3 className="font-display font-bold text-2xl lg:text-3xl leading-tight uppercase tracking-tight">Un concept<br />novateur</h3>
-              <p className="text-left text-sm md:text-base font-medium leading-relaxed mt-4 text-white/90">
-                Vente, peinture, installation :<br className="hidden md:block" />
-                tous les produits et services liés au rétroviseur en un seul site.
+            <div className="bg-[#595959] text-white p-5 md:p-6 flex flex-col justify-center min-h-[180px] lg:min-h-[200px]">
+              <h3 className="font-display font-bold text-2xl lg:text-3xl leading-tight uppercase tracking-tight mb-2">Un concept<br />novateur</h3>
+              <p className="text-left text-sm md:text-sm font-medium leading-relaxed text-white/90">
+                Vente tous type de miroirs de rétroviseurs en un seul site
               </p>
             </div>
 
-            <div className="min-h-[180px] lg:h-[220px] bg-slate-200">
+            <div className="min-h-[180px] lg:min-h-[200px] bg-slate-200">
               <img
                 src="/images/retro-paysage.jpg"
                 className="w-full h-full object-cover"
@@ -202,15 +201,15 @@ export default function NewLandingPage() {
               />
             </div>
 
-            <div className="bg-[#3d6eff] text-white p-6 md:p-8 flex flex-col justify-between min-h-[180px] lg:h-[220px]">
-              <h3 className="font-display font-bold text-2xl lg:text-3xl leading-tight uppercase tracking-tight">La qualité<br />Acil Retro</h3>
-              <p className="text-left text-sm md:text-base font-medium leading-relaxed mt-4 text-white/90">
-                Un large choix de références, une qualité de service et de conseil.<br className="hidden lg:block" />
-                Une solution intelligente pour une intervention rapide.
+            <div className="bg-[#3d6eff] text-white p-5 md:p-6 flex flex-col justify-center min-h-[180px] lg:min-h-[200px]">
+              <h3 className="font-display font-bold text-2xl lg:text-3xl leading-tight uppercase tracking-tight mb-2">La qualité<br />Acil Retro</h3>
+              <p className="text-left text-sm md:text-sm font-medium leading-relaxed text-white/90">
+                Un Large choix de références , une qualité de service de conseil.<br className="hidden lg:block" />
+                Une solution intelligente pour une intervention rapide et un gain de temps précieux.
               </p>
             </div>
 
-            <div className="min-h-[180px] lg:h-[220px] bg-slate-200">
+            <div className="min-h-[180px] lg:min-h-[200px] bg-slate-200">
               <img
                 src="/images/retro-route.jpg"
                 className="w-full h-full object-cover"
@@ -346,7 +345,7 @@ export default function NewLandingPage() {
               <img src="/images/retro-paysage.jpg" alt="Atelier Acil Retro" className="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent"></div>
               <div className="absolute bottom-8 left-8 right-8 text-white">
-                <div className="bg-[#3d6eff] text-white font-bold px-4 py-2 rounded-lg inline-block mb-3 shadow-lg">Depuis 2018</div>
+                <div className="bg-[#3d6eff] text-white font-bold px-4 py-2 rounded-lg inline-block mb-3 shadow-lg">Depuis 1994</div>
                 <h3 className="text-2xl font-bold">L'expertise à votre service</h3>
               </div>
             </motion.div>
@@ -359,40 +358,42 @@ export default function NewLandingPage() {
               transition={{ duration: 0.6 }}
               className="flex flex-col justify-center"
             >
-              <div className="inline-flex items-center gap-2 text-[#3d6eff] font-bold mb-4 text-sm uppercase tracking-wider">
+              <div className="inline-flex items-center gap-2 text-[#3d6eff] font-bold mb-2 text-sm uppercase tracking-wider">
                 <ShieldCheck className="w-5 h-5" /> À propos de nous
               </div>
-              <h2 className="font-display font-black text-3xl md:text-5xl mb-6 leading-tight text-slate-900">
-                L'expert du rétroviseur en Tunisie
+              <h2 className="font-display font-black text-3xl md:text-4xl mb-4 leading-tight text-slate-900">
+                L'expert du miroir de rétroviseur
               </h2>
-              <p className="text-slate-600 text-lg mb-8 leading-relaxed">
+              <p className="text-slate-600 text-base md:text-lg mb-6 leading-relaxed">
                 Né d'une passion pour l'automobile, <strong className="text-[#3d6eff]">Acil Retro</strong> est devenu la référence incontournable pour la vision arrière de votre véhicule. Nous allions savoir-faire technique et service client irréprochable.
+                <strong className="text-[#3d6eff]"> Depuis 1994</strong>, AcilRetro entretient vos miroirs de rétroviseurs selon les normes internationales.
+                Proposant une livraison partout en <strong className="text-[#3d6eff]">Tunisie</strong> et en <strong className="text-[#3d6eff]">Europe</strong>.
               </p>
 
-              <ul className="space-y-5 mb-10">
+              <ul className="space-y-3 mb-6">
                 {[
                   "Vente de pièces d'origine et adaptables de haute qualité.",
-                  "Service de peinture sur-mesure pour s'adapter à votre carrosserie.",
+                  "A la recherche d’une solution pratique ? Commandez votre miroir de rétroviseur et recevez votre pièce directement de votre voiture",
                   "Installation professionnelle rapide dans nos ateliers ou chez vous."
                 ].map((item, i) => (
                   <motion.li
                     key={i}
-                    className="flex items-start gap-4"
+                    className="flex items-start gap-3"
                     initial={{ opacity: 0, y: 10 }}
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true, amount: 0.2 }}
                     transition={{ delay: 0.2 + (i * 0.1) }}
                   >
-                    <div className="w-8 h-8 rounded-full bg-[#3d6eff]/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <CheckCircle2 className="w-5 h-5 text-[#3d6eff]" />
+                    <div className="w-6 h-6 rounded-full bg-[#3d6eff]/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <CheckCircle2 className="w-4 h-4 text-[#3d6eff]" />
                     </div>
-                    <span className="text-slate-700 font-medium leading-relaxed">{item}</span>
+                    <span className="text-slate-700 font-medium leading-relaxed text-sm md:text-base">{item}</span>
                   </motion.li>
                 ))}
               </ul>
 
               <div>
-                <button onClick={() => setShowCertModal(true)} className="bg-[#3d6eff] text-white font-bold px-8 py-4 rounded-xl hover:bg-blue-600 transition-all hover:-translate-y-1 shadow-lg shadow-[#3d6eff]/30 flex items-center gap-2 justify-center w-full sm:w-auto">
+                <button onClick={() => setShowCertModal(true)} className="bg-[#3d6eff] text-white font-bold px-6 py-3 rounded-xl hover:bg-blue-600 transition-all hover:-translate-y-1 shadow-lg shadow-[#3d6eff]/30 flex items-center gap-2 justify-center w-full sm:w-auto">
                   <ShieldCheck className="w-5 h-5" /> Nos certifications
                 </button>
               </div>
@@ -532,13 +533,23 @@ export default function NewLandingPage() {
 
             <div className="flex flex-col md:flex-row items-start md:items-center gap-6 lg:gap-10">
               {/* Phone */}
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-[#0a4de3]">
-                  <Phone className="w-5 h-5" />
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-[#0a4de3] shrink-0">
+                    <Phone className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <p className="font-bold text-slate-900 text-sm">Appelez-nous</p>
+                    <p className="text-slate-500 text-sm">+216 27 804 642</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="font-bold text-slate-900 text-sm">Appelez-nous</p>
-                  <p className="text-slate-500 text-sm">+216 27 804 642</p>
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-[#0a4de3] shrink-0">
+                    <Phone className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <p className="text-slate-500 text-sm">+216 24 244 061</p>
+                  </div>
                 </div>
               </div>
 

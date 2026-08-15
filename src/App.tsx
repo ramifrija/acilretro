@@ -113,8 +113,6 @@ function Routes() {
   // Storefront routes
   let page;
   if (path === '/' || path === '') {
-    page = <LandingPage />;
-  } else if (path === '/newlanding') {
     page = <NewLandingPage />;
   } else if (path === '/test1') {
     page = <TestLandingPage />;

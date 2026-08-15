@@ -36,7 +36,7 @@ export default function Footer() {
                 ACIL RETRO
               </div>
               <div className="text-[11px] xl:text-[12px] text-white/80 font-medium tracking-wide uppercase mb-5 whitespace-nowrap">
-                Pièces Auto Premium
+                Spécialiste du Rétroviseur
               </div>
               <div className="flex gap-2">
                 <a href="#" className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white hover:text-[#3d6eff] transition-colors shadow-sm">

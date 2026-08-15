@@ -84,7 +84,7 @@ export default function Header() {
               </div>
               <div className="text-left leading-none">
                 <div className="font-display font-extrabold text-3xl text-white tracking-tight">ACIL RETRO</div>
-                <div className="text-sm text-white/90 font-medium tracking-wide uppercase mt-1">Pièces Auto Premium</div>
+                <div className="text-sm text-white/90 font-medium tracking-wide uppercase mt-1">Spécialiste du Rétroviseur</div>
               </div>
             </button>
 
