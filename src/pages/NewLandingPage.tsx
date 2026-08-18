@@ -204,16 +204,16 @@ export default function NewLandingPage() {
             <div className="bg-[#3d6eff] text-white p-5 md:p-6 flex flex-col justify-center min-h-[180px] lg:min-h-[200px]">
               <h3 className="font-display font-bold text-2xl lg:text-3xl leading-tight uppercase tracking-tight mb-2">La qualité<br />Acil Retro</h3>
               <p className="text-left text-sm md:text-sm font-medium leading-relaxed text-white/90">
-                Un Large choix de références , une qualité de service de conseil.<br className="hidden lg:block" />
-                Une solution intelligente pour une intervention rapide et un gain de temps précieux.
+                Une Vaste gamme de références.<br className="hidden lg:block" />
+                Un Service rapide et un gain de temps précieux.
               </p>
             </div>
 
             <div className="min-h-[180px] lg:min-h-[200px] bg-slate-200">
               <img
-                src="/images/retro-route.jpg"
+                src="/images/Stock.png"
                 className="w-full h-full object-cover"
-                alt="Rétroviseur route"
+                alt="Stock"
               />
             </div>
 
@@ -226,7 +226,7 @@ export default function NewLandingPage() {
         <div className="container-x py-12">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <div className="flex flex-col items-center justify-center">
-              <Truck className="w-14 h-14 mb-4 text-black" strokeWidth={1.5} />
+              <img src="/images/camion.png" alt="Livraison Express" className="h-14 w-auto mb-4 object-contain" />
               <h3 className="font-display font-bold text-[13px] uppercase tracking-wider text-black">Livraison Express</h3>
             </div>
             <div className="flex flex-col items-center justify-center">
@@ -234,8 +234,8 @@ export default function NewLandingPage() {
               <h3 className="font-display font-bold text-[13px] uppercase tracking-wider text-black">Pose Possible</h3>
             </div>
             <div className="flex flex-col items-center justify-center">
-              <CreditCard className="w-14 h-14 mb-4 text-black" strokeWidth={1.5} />
-              <h3 className="font-display font-bold text-[13px] uppercase tracking-wider text-black">Paiement Sécurisé</h3>
+              <img src="/images/paiement.png" alt="Paiement à la livraison" className="h-14 w-auto mb-4 object-contain" />
+              <h3 className="font-display font-bold text-[13px] uppercase tracking-wider text-black">Paiement à la livraison</h3>
             </div>
             <div className="flex flex-col items-center justify-center">
               <Headset className="w-14 h-14 mb-4 text-black" strokeWidth={1.5} />

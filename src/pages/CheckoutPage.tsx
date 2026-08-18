@@ -346,7 +346,7 @@ Merci pour votre confiance.`;
               {items.map((i, idx) => (
                 <div key={idx} className="flex gap-3 text-sm">
                   <div className="w-12 h-12 rounded-lg overflow-hidden bg-slate-100 dark:bg-brand-900/30 shrink-0">
-                    {i.image && <img src={i.image} alt="" className="w-full h-full object-cover" />}
+                    {i.image && <img src={i.image} alt="" className="w-full h-full object-contain" />}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-slate-900 dark:text-white truncate">{i.name}</p>

@@ -7,6 +7,7 @@ import { formatPrice } from '@/lib/format';
 import type { Product, ProductOption, ProductCompat } from '@/types/database';
 import ProductCard from '@/components/ProductCard';
 import WatermarkedImage from '@/components/WatermarkedImage';
+import toast from 'react-hot-toast';
 export default function ProductPage() {
   const { path, navigate } = useRouter();
   const slug = path.split('/').pop() || '';
@@ -116,6 +117,14 @@ export default function ProductPage() {
   const handleAddToCart = () => {
     if (!product) return;
     
+    if (product.stock === 0) {
+      toast.error("Ce produit est en rupture de stock. Contactez-nous sur WhatsApp pour le commander.", { duration: 5000 });
+      const message = `Bonjour, je suis intéressé par le produit "${product.name}" (Réf: ${product.oem_ref || product.sku || 'N/A'}) qui est actuellement en rupture de stock. Pouvez-vous m'informer de sa disponibilité ?`;
+      const whatsappUrl = `https://wa.me/21627804642?text=${encodeURIComponent(message)}`;
+      window.open(whatsappUrl, '_blank');
+      return;
+    }
+
     if (!cote) {
       setError("Veuillez sélectionner le côté.");
       return;
@@ -193,7 +202,7 @@ export default function ProductPage() {
                 src={currentImage} 
                 alt={product.name} 
                 watermarkScale={0.5}
-                className={`w-full h-full object-cover transition-transform duration-500 ${zoom ? 'scale-150' : 'group-hover:scale-105'}`} 
+                className={`w-full h-full object-contain transition-transform duration-500 ${zoom ? 'scale-150' : 'group-hover:scale-105'}`} 
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-slate-300"><Package className="w-24 h-24" /></div>
@@ -227,7 +236,7 @@ export default function ProductPage() {
                   className={`w-20 h-20 rounded-xl overflow-hidden shrink-0 border-2 transition-all ${currentImage === img ? 'border-brand-500 scale-105' : 'border-transparent opacity-60 hover:opacity-100'
                     }`}
                 >
-                  <img src={img} alt="" className="w-full h-full object-cover" loading="lazy" />
+                  <img src={img} alt="" className="w-full h-full object-contain" loading="lazy" />
                 </button>
               ))}
             </div>
@@ -307,7 +316,7 @@ export default function ProductPage() {
                 onChange={(e) => setQty(Math.max(1, parseInt(e.target.value) || 1))}
                 className="input-field w-20 text-center py-2 bg-white"
               />
-              <button onClick={handleAddToCart} className="btn-primary py-2 px-6 flex items-center gap-2" style={{ backgroundColor: '#2cbcd1' }} disabled={product.stock === 0}>
+              <button onClick={handleAddToCart} className="btn-primary py-2 px-6 flex items-center gap-2" style={{ backgroundColor: '#2cbcd1' }}>
                 {added ? <><Check className="w-4 h-4" /> AJOUTÉ!</> : <><ShoppingCart className="w-4 h-4" /> AJOUTER AU PANIER</>}
               </button>
             </div>

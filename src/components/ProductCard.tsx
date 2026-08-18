@@ -4,6 +4,7 @@ import { useCart } from '@/context/CartContext';
 import { formatPrice } from '@/lib/format';
 import type { Product } from '@/types/database';
 import WatermarkedImage from '@/components/WatermarkedImage';
+import toast from 'react-hot-toast';
 export default function ProductCard({ product }: { product: Product }) {
   const { navigate } = useRouter();
   const { addItem, clear } = useCart();
@@ -13,6 +14,15 @@ export default function ProductCard({ product }: { product: Product }) {
 
   const quickAdd = (e: React.MouseEvent) => {
     e.stopPropagation();
+
+    if (product.stock === 0) {
+      toast.error("Ce produit est en rupture de stock. Contactez-nous sur WhatsApp.", { duration: 5000 });
+      const message = `Bonjour, je suis intéressé par le produit "${product.name}" (Réf: ${product.oem_ref || product.sku || 'N/A'}) qui est actuellement en rupture de stock. Pouvez-vous m'informer de sa disponibilité ?`;
+      const whatsappUrl = `https://wa.me/21627804642?text=${encodeURIComponent(message)}`;
+      window.open(whatsappUrl, '_blank');
+      return;
+    }
+
     clear();
     addItem({
       productId: product.id,
@@ -36,7 +46,7 @@ export default function ProductCard({ product }: { product: Product }) {
               src={product.images[0]}
               alt={product.name}
               loading="lazy"
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
             />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-slate-300">

@@ -56,7 +56,7 @@ export default function Footer() {
           <div className="lg:col-span-2">
             <h4 className="font-display font-bold text-white mb-4 text-sm uppercase pt-2">ACIL RETRO</h4>
             <p className="text-xs xl:text-sm leading-relaxed mb-4">
-              Spécialiste tunisien des rétroviseurs et pièces détachées. OEM, expertise techy, livraison rapide.
+              Spécialiste tunisien des rétroviseurs et pièces détachées.
             </p>
           </div>
 
@@ -92,8 +92,9 @@ export default function Footer() {
           {/* 5. CONTACTEZ-NOUS */}
           <div className="lg:col-span-2">
             <h4 className="font-display font-bold text-white mb-4 text-sm uppercase pt-2">CONTACTEZ-NOUS</h4>
-            <div className="flex items-center gap-2 text-xs xl:text-sm mb-4">
-              <Clock className="w-4 h-4 shrink-0 text-white" /> <span>Lun-Sam: 8h00 - 18h00</span>
+            <div className="flex items-start gap-2 text-xs xl:text-sm mb-4">
+              <Clock className="w-4 h-4 shrink-0 text-white mt-0.5" /> 
+              <span className="whitespace-pre-line">Lun-Vendredi: 8h00 - 17h00{'\n'}Sam : 8h00 - 15h00</span>
             </div>
           </div>
 

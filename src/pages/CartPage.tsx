@@ -61,7 +61,7 @@ export default function CartPage() {
             return (
               <div key={`${item.productId}-${key}`} className="glass-card p-4 flex gap-4">
                 <button onClick={() => navigate(`/product/${item.slug}`)} className="w-24 h-24 rounded-xl overflow-hidden shrink-0 bg-slate-100 dark:bg-brand-900/30">
-                  {item.image ? <img src={item.image} alt={item.name} className="w-full h-full object-cover" /> : <ShoppingBag className="w-full h-full p-8 text-slate-300" />}
+                  {item.image ? <img src={item.image} alt={item.name} className="w-full h-full object-contain" /> : <ShoppingBag className="w-full h-full p-8 text-slate-300" />}
                 </button>
                 <div className="flex-1 min-w-0">
                   <button onClick={() => navigate(`/product/${item.slug}`)} className="font-semibold text-slate-900 dark:text-white hover:text-brand-500 transition-colors text-left line-clamp-2">

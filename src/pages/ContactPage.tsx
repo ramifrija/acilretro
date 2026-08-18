@@ -37,7 +37,7 @@ export default function ContactPage() {
             { icon: MapPin, title: 'Adresse', value: settings.address },
             { icon: Phone, title: 'Téléphone', value: settings.phone },
             { icon: Mail, title: 'Email', value: settings.email },
-            { icon: Clock, title: 'Horaires', value: 'Lun-Sam: 8h00 - 18h00' },
+            { icon: Clock, title: 'Horaires', value: 'Lun-Vendredi: 8h00 - 17h00\nSam : 8h00 - 15h00' },
           ].map((c, i) => (
             <div key={i} className="glass-card p-5 flex items-start gap-3">
               <div className="w-10 h-10 rounded-xl bg-brand-100 dark:bg-brand-800/40 flex items-center justify-center shrink-0">
@@ -45,7 +45,7 @@ export default function ContactPage() {
               </div>
               <div>
                 <h3 className="font-bold text-sm text-slate-900 dark:text-white">{c.title}</h3>
-                <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">{c.value}</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5 whitespace-pre-line">{c.value}</p>
               </div>
             </div>
           ))}
