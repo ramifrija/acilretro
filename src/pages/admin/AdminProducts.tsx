@@ -248,17 +248,18 @@ function ProductForm({ product, categories, onClose, onSaved }: { product: Produ
     const finalPromoPrice = form.is_promo ? form.promo_price : null;
 
     setSaving(true);
+    const finalSlug = form.slug || form.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
     const data = {
       name: form.name,
-      slug: form.slug || form.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''),
+      slug: product ? finalSlug : `${finalSlug}-${Math.random().toString(36).substring(2, 8)}`,
       description: form.description,
       category_id: form.category_id || null,
       brand_id: form.brand_id || null,
       base_price: Number(form.base_price) || 0,
       promo_price: finalPromoPrice ? Number(finalPromoPrice) : null,
-      sku: form.sku,
-      oem_ref: form.oem_ref,
-      manufacturer_ref: form.manufacturer_ref,
+      sku: form.sku || null,
+      oem_ref: form.oem_ref || null,
+      manufacturer_ref: form.manufacturer_ref || null,
       weight: form.weight,
       dimensions: form.dimensions,
       warranty: form.warranty,

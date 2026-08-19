@@ -403,6 +403,49 @@ export default function NewLandingPage() {
         </div>
       </section>
 
+      {/* ===== CUSTOM REQUEST CTA ===== */}
+      <section className="py-16 bg-gradient-to-br from-[#3d6eff] to-blue-900 relative overflow-hidden">
+        {/* Decorative background elements */}
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-20 pointer-events-none">
+          <div className="absolute -top-24 -left-24 w-96 h-96 bg-white rounded-full mix-blend-overlay filter blur-3xl opacity-50 animate-blob"></div>
+          <div className="absolute top-1/2 -right-24 w-96 h-96 bg-cyan-300 rounded-full mix-blend-overlay filter blur-3xl opacity-50 animate-blob animation-delay-2000"></div>
+          <div className="absolute -bottom-24 left-1/2 w-96 h-96 bg-blue-400 rounded-full mix-blend-overlay filter blur-3xl opacity-50 animate-blob animation-delay-4000"></div>
+        </div>
+
+        <div className="container-x relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.6 }}
+            className="max-w-4xl mx-auto bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl p-8 md:p-12 text-center shadow-2xl"
+          >
+            <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-6 backdrop-blur-sm border border-white/30 shadow-inner">
+              <Search className="w-8 h-8 text-white" />
+            </div>
+            
+            <h2 className="font-display font-black text-3xl md:text-4xl mb-6 text-white leading-tight">
+              Vous ne trouvez pas votre pièce ?
+            </h2>
+            <p className="text-white/90 text-lg md:text-xl mb-10 leading-relaxed max-w-3xl mx-auto font-medium">
+              Nous sommes en mesure de proposer des pièces de rétroviseur pour de nombreux véhicules. Tous nos produits ne sont pas en ligne.<br className="hidden md:block mt-2" />
+              Contactez nous par mail ou téléphone, nous vous proposerons un tarif sous 24h.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <a href="tel:+21600000000" className="flex items-center gap-3 bg-white text-[#3d6eff] font-bold px-8 py-4 rounded-xl hover:bg-slate-50 transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-white/20 w-full sm:w-auto justify-center group">
+                <Phone className="w-5 h-5 group-hover:rotate-12 transition-transform" />
+                <span>Nous appeler</span>
+              </a>
+              <a href="mailto:contact@acilretro.com" className="flex items-center gap-3 bg-white/10 border-2 border-white/50 text-white font-bold px-8 py-4 rounded-xl hover:bg-white/20 transition-all hover:-translate-y-1 hover:border-white w-full sm:w-auto justify-center backdrop-blur-sm">
+                <Mail className="w-5 h-5" />
+                <span>Envoyer un mail</span>
+              </a>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
       {/* ===== TESTIMONIALS ===== */}
       <section className="pt-4 pb-8 bg-slate-50">
         <div className="container-x">

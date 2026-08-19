@@ -13,6 +13,8 @@ export default function AdminOrders({ quotesOnly = false }: { quotesOnly?: boole
   const [orders, setOrders] = useState<OrderWithItems[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('all');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
   const [selected, setSelected] = useState<OrderWithItems | null>(null);
   const [printDoc, setPrintDoc] = useState<{ order: OrderWithItems; type: 'invoice' | 'quote' } | null>(null);
   const [rejecting, setRejecting] = useState<OrderWithItems | null>(null);
@@ -182,7 +184,16 @@ export default function AdminOrders({ quotesOnly = false }: { quotesOnly?: boole
     }
   };
 
-  const filtered = statusFilter === 'all' ? orders : orders.filter((o) => o.status === statusFilter);
+  const filtered = orders.filter((o) => {
+    if (statusFilter !== 'all' && o.status !== statusFilter) return false;
+    if (dateFrom && new Date(o.created_at) < new Date(dateFrom)) return false;
+    if (dateTo) {
+      const end = new Date(dateTo);
+      end.setHours(23, 59, 59, 999);
+      if (new Date(o.created_at) > end) return false;
+    }
+    return true;
+  });
 
   const totalPages = Math.ceil(filtered.length / itemsPerPage);
   const paginated = filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
@@ -195,24 +206,59 @@ export default function AdminOrders({ quotesOnly = false }: { quotesOnly?: boole
   return (
     <div className="space-y-6 animate-fade-in print:space-y-0">
       <div className="print:hidden space-y-6">
-        {/* Status filter */}
-      <div className="flex gap-2 overflow-x-auto no-scrollbar">
-        <button
-          onClick={() => setStatusFilter('all')}
-          className={`px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${statusFilter === 'all' ? 'bg-brand-600 text-white' : 'glass'}`}
-        >
-          Tous ({orders.length})
-        </button>
-        {statuses.map((s) => (
-          <button
-            key={s}
-            onClick={() => setStatusFilter(s)}
-            className={`px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${statusFilter === s ? 'bg-brand-600 text-white' : 'glass'}`}
-          >
-            {statusLabels[s]} ({orders.filter((o) => o.status === s).length})
-          </button>
-        ))}
-      </div>
+        {/* Filters section */}
+        <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
+          {/* Status filter */}
+          <div className="flex gap-2 overflow-x-auto no-scrollbar w-full md:w-auto pb-2 md:pb-0">
+            <button
+              onClick={() => setStatusFilter('all')}
+              className={`px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${statusFilter === 'all' ? 'bg-brand-600 text-white' : 'glass'}`}
+            >
+              Tous ({orders.length})
+            </button>
+            {statuses.map((s) => (
+              <button
+                key={s}
+                onClick={() => setStatusFilter(s)}
+                className={`px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${statusFilter === s ? 'bg-brand-600 text-white' : 'glass'}`}
+              >
+                {statusLabels[s]} ({orders.filter((o) => o.status === s).length})
+              </button>
+            ))}
+          </div>
+
+          {/* Date filters */}
+          <div className="flex items-center gap-2 glass px-3 py-1.5 rounded-xl w-full md:w-auto">
+            <div className="flex flex-col">
+              <span className="text-[10px] text-slate-500 font-medium px-1">Du</span>
+              <input
+                type="date"
+                value={dateFrom}
+                onChange={(e) => setDateFrom(e.target.value)}
+                className="bg-transparent border-none text-sm outline-none w-full dark:text-white"
+              />
+            </div>
+            <div className="w-px h-8 bg-slate-200 dark:bg-slate-700 mx-2" />
+            <div className="flex flex-col">
+              <span className="text-[10px] text-slate-500 font-medium px-1">Au</span>
+              <input
+                type="date"
+                value={dateTo}
+                onChange={(e) => setDateTo(e.target.value)}
+                className="bg-transparent border-none text-sm outline-none w-full dark:text-white"
+              />
+            </div>
+            {(dateFrom || dateTo) && (
+              <button 
+                onClick={() => { setDateFrom(''); setDateTo(''); }}
+                className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500 transition-colors ml-2"
+                title="Effacer les dates"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+        </div>
 
       {/* Orders list */}
       <div className="space-y-3">
