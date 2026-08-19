@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Plus, Search, Edit, Trash2, X, Package, AlertTriangle, Upload, Image as ImageIcon, Link as LinkIcon, ListPlus } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, X, Package, AlertTriangle, Upload, Image as ImageIcon, Link as LinkIcon, ListPlus, ChevronUp, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { formatPrice } from '@/lib/format';
 import type { Product, Category, Brand, Model } from '@/types/database';
@@ -14,6 +14,11 @@ export default function AdminProducts() {
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Product | null>(null);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [sortField, setSortField] = useState<'name' | 'brand' | 'price' | null>(null);
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const itemsPerPage = 10;
+
   const load = async () => {
     setLoading(true);
     const { data } = await supabase.from('products').select('*').order('created_at', { ascending: false });
@@ -27,11 +32,43 @@ export default function AdminProducts() {
 
   useEffect(() => { load(); }, []);
 
-  const filtered = products.filter((p) =>
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search]);
+
+  const handleSort = (field: 'name' | 'brand' | 'price') => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
+
+  let filtered = products.filter((p) =>
     p.name.toLowerCase().includes(search.toLowerCase()) ||
     p.sku?.toLowerCase().includes(search.toLowerCase()) ||
     p.oem_ref?.toLowerCase().includes(search.toLowerCase()),
   );
+
+  if (sortField) {
+    filtered.sort((a, b) => {
+      let aVal: any = a[sortField === 'brand' ? 'brand_id' : sortField === 'price' ? (a.promo_price ?? a.base_price) : 'name'];
+      let bVal: any = b[sortField === 'brand' ? 'brand_id' : sortField === 'price' ? (b.promo_price ?? b.base_price) : 'name'];
+      
+      if (sortField === 'brand') {
+        aVal = brands.find(br => br.id === a.brand_id)?.name || '';
+        bVal = brands.find(br => br.id === b.brand_id)?.name || '';
+      }
+      
+      if (aVal < bVal) return sortDirection === 'asc' ? -1 : 1;
+      if (aVal > bVal) return sortDirection === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }
+
+  const totalPages = Math.ceil(filtered.length / itemsPerPage);
+  const paginated = filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   const handleDelete = async (id: string) => {
     if (!(await customConfirm('Supprimer ce produit?'))) return;
@@ -58,10 +95,16 @@ export default function AdminProducts() {
           <table className="w-full text-sm">
             <thead className="bg-slate-50 dark:bg-white/5">
               <tr className="text-left text-xs text-slate-500 uppercase tracking-wide">
-                <th className="px-4 py-3 font-semibold">Produit</th>
+                <th className="px-4 py-3 font-semibold cursor-pointer hover:bg-slate-100 dark:hover:bg-white/10 transition-colors" onClick={() => handleSort('name')}>
+                  <div className="flex items-center gap-1">Produit {sortField === 'name' && (sortDirection === 'asc' ? <ChevronUp className="w-3 h-3"/> : <ChevronDown className="w-3 h-3"/>)}</div>
+                </th>
                 <th className="px-4 py-3 font-semibold">SKU</th>
-                <th className="px-4 py-3 font-semibold">Marque</th>
-                <th className="px-4 py-3 font-semibold">Prix</th>
+                <th className="px-4 py-3 font-semibold cursor-pointer hover:bg-slate-100 dark:hover:bg-white/10 transition-colors" onClick={() => handleSort('brand')}>
+                  <div className="flex items-center gap-1">Marque {sortField === 'brand' && (sortDirection === 'asc' ? <ChevronUp className="w-3 h-3"/> : <ChevronDown className="w-3 h-3"/>)}</div>
+                </th>
+                <th className="px-4 py-3 font-semibold cursor-pointer hover:bg-slate-100 dark:hover:bg-white/10 transition-colors" onClick={() => handleSort('price')}>
+                  <div className="flex items-center gap-1">Prix {sortField === 'price' && (sortDirection === 'asc' ? <ChevronUp className="w-3 h-3"/> : <ChevronDown className="w-3 h-3"/>)}</div>
+                </th>
                 <th className="px-4 py-3 font-semibold">Stock</th>
                 <th className="px-4 py-3 font-semibold">Actions</th>
               </tr>
@@ -69,10 +112,10 @@ export default function AdminProducts() {
             <tbody>
               {loading ? (
                 <tr><td colSpan={6} className="py-10 text-center text-slate-400">Chargement...</td></tr>
-              ) : filtered.length === 0 ? (
+              ) : paginated.length === 0 ? (
                 <tr><td colSpan={6} className="py-10 text-center text-slate-400"><Package className="w-10 h-10 mx-auto mb-2" />Aucun produit</td></tr>
               ) : (
-                filtered.map((p) => (
+                paginated.map((p) => (
                   <tr key={p.id} className="border-t border-slate-50 dark:border-white/5 hover:bg-white/50 dark:hover:bg-white/5 transition-colors">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
@@ -117,6 +160,42 @@ export default function AdminProducts() {
           </table>
         </div>
       </div>
+
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center gap-2 mt-6">
+          <button
+            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+            className="p-2 rounded-xl glass hover:bg-white disabled:opacity-50 transition-colors"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+          
+          <div className="flex items-center gap-1">
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+              <button
+                key={page}
+                onClick={() => setCurrentPage(page)}
+                className={`w-10 h-10 rounded-xl font-medium transition-all ${
+                  currentPage === page
+                    ? 'bg-brand-600 text-white shadow-lg'
+                    : 'glass hover:bg-white text-slate-600'
+                }`}
+              >
+                {page}
+              </button>
+            ))}
+          </div>
+
+          <button
+            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+            disabled={currentPage === totalPages}
+            className="p-2 rounded-xl glass hover:bg-white disabled:opacity-50 transition-colors"
+          >
+            <ChevronRight className="w-5 h-5" />
+          </button>
+        </div>
+      )}
 
       {showForm && <ProductForm product={editing} categories={categories} onClose={() => setShowForm(false)} onSaved={load} />}
     </div>

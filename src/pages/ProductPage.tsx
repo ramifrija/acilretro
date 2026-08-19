@@ -8,6 +8,8 @@ import type { Product, ProductOption, ProductCompat } from '@/types/database';
 import ProductCard from '@/components/ProductCard';
 import WatermarkedImage from '@/components/WatermarkedImage';
 import toast from 'react-hot-toast';
+import { customConfirm } from '@/lib/dialogs';
+
 export default function ProductPage() {
   const { path, navigate } = useRouter();
   const slug = path.split('/').pop() || '';
@@ -114,14 +116,20 @@ export default function ProductPage() {
     }).filter(Boolean) as Array<{ option: string; value: string; modifier: number }>,
     [options, selectedOptions]);
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (!product) return;
     
     if (product.stock === 0) {
-      toast.error("Ce produit est en rupture de stock. Contactez-nous sur WhatsApp pour le commander.", { duration: 5000 });
-      const message = `Bonjour, je suis intéressé par le produit "${product.name}" (Réf: ${product.oem_ref || product.sku || 'N/A'}) qui est actuellement en rupture de stock. Pouvez-vous m'informer de sa disponibilité ?`;
-      const whatsappUrl = `https://wa.me/21627804642?text=${encodeURIComponent(message)}`;
-      window.open(whatsappUrl, '_blank');
+      const confirm = await customConfirm(
+        "Ce produit est en rupture de stock. Vous pouvez nous contacter sur WhatsApp pour savoir quand il sera disponible.",
+        "Contacter",
+        "Annuler"
+      );
+      if (confirm) {
+        const message = `Bonjour, je suis intéressé par le produit "${product.name}" (Réf: ${product.oem_ref || product.sku || 'N/A'}) qui est actuellement en rupture de stock. Pouvez-vous m'informer de sa disponibilité ?`;
+        const whatsappUrl = `https://wa.me/21627804642?text=${encodeURIComponent(message)}`;
+        window.open(whatsappUrl, '_blank');
+      }
       return;
     }
 
@@ -198,11 +206,11 @@ export default function ProductPage() {
             onClick={() => setZoom(!zoom)}
           >
             {currentImage ? (
-              <WatermarkedImage 
-                src={currentImage} 
-                alt={product.name} 
+              <WatermarkedImage
+                src={currentImage}
+                alt={product.name}
                 watermarkScale={0.5}
-                className={`w-full h-full object-contain transition-transform duration-500 ${zoom ? 'scale-150' : 'group-hover:scale-105'}`} 
+                className={`w-full h-full object-contain transition-transform duration-500 ${zoom ? 'scale-150' : 'group-hover:scale-105'}`}
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-slate-300"><Package className="w-24 h-24" /></div>

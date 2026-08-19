@@ -5,6 +5,8 @@ import { formatPrice } from '@/lib/format';
 import type { Product } from '@/types/database';
 import WatermarkedImage from '@/components/WatermarkedImage';
 import toast from 'react-hot-toast';
+import { customConfirm } from '@/lib/dialogs';
+
 export default function ProductCard({ product }: { product: Product }) {
   const { navigate } = useRouter();
   const { addItem, clear } = useCart();
@@ -12,14 +14,20 @@ export default function ProductCard({ product }: { product: Product }) {
   const price = product.promo_price ?? product.base_price;
   const hasPromo = product.is_promo && product.promo_price;
 
-  const quickAdd = (e: React.MouseEvent) => {
+  const quickAdd = async (e: React.MouseEvent) => {
     e.stopPropagation();
 
     if (product.stock === 0) {
-      toast.error("Ce produit est en rupture de stock. Contactez-nous sur WhatsApp.", { duration: 5000 });
-      const message = `Bonjour, je suis intéressé par le produit "${product.name}" (Réf: ${product.oem_ref || product.sku || 'N/A'}) qui est actuellement en rupture de stock. Pouvez-vous m'informer de sa disponibilité ?`;
-      const whatsappUrl = `https://wa.me/21627804642?text=${encodeURIComponent(message)}`;
-      window.open(whatsappUrl, '_blank');
+      const confirm = await customConfirm(
+        "Ce produit est en rupture de stock. Vous pouvez nous contacter sur WhatsApp pour savoir quand il sera disponible.",
+        "Contacter",
+        "Annuler"
+      );
+      if (confirm) {
+        const message = `Bonjour, je suis intéressé par le produit "${product.name}" (Réf: ${product.oem_ref || product.sku || 'N/A'}) qui est actuellement en rupture de stock. Pouvez-vous m'informer de sa disponibilité ?`;
+        const whatsappUrl = `https://wa.me/21627804642?text=${encodeURIComponent(message)}`;
+        window.open(whatsappUrl, '_blank');
+      }
       return;
     }
 

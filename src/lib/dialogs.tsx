@@ -40,7 +40,7 @@ export const customAlert = (message: string, type: 'error' | 'success' | 'info' 
   );
 };
 
-export const customConfirm = (message: React.ReactNode): Promise<boolean> => {
+export const customConfirm = (message: React.ReactNode, confirmText: string = 'Confirmer', cancelText: string = 'Annuler'): Promise<boolean> => {
   return new Promise((resolve) => {
     toast.custom(
       (t) => (
@@ -60,7 +60,7 @@ export const customConfirm = (message: React.ReactNode): Promise<boolean> => {
                   <AlertTriangle className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="font-display font-bold text-lg text-slate-900 dark:text-white">Confirmation</h3>
+                  <h3 className="font-display font-bold text-lg text-slate-900 dark:text-white">Information</h3>
                   <p className="text-sm text-slate-500 mt-1">{message}</p>
                 </div>
               </div>
@@ -72,7 +72,7 @@ export const customConfirm = (message: React.ReactNode): Promise<boolean> => {
                   }}
                   className="btn-secondary flex-1"
                 >
-                  Annuler
+                  {cancelText}
                 </button>
                 <button
                   onClick={() => {
@@ -81,7 +81,7 @@ export const customConfirm = (message: React.ReactNode): Promise<boolean> => {
                   }}
                   className="btn-primary flex-1 !bg-brand-500 hover:!bg-brand-600"
                 >
-                  Confirmer
+                  {confirmText}
                 </button>
               </div>
             </div>
