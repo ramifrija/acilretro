@@ -101,15 +101,11 @@ Merci pour votre confiance.`;
     const generatedWaUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(wText)}`;
     setWaUrl(generatedWaUrl);
 
-    // Open window synchronously to avoid popup blocker
-    const newWindow = window.open('', '_blank');
-    if (newWindow) {
-      newWindow.document.body.innerHTML = `
-        <div style="font-family: sans-serif; text-align: center; margin-top: 50px;">
-          <h2>Redirection vers WhatsApp en cours...</h2>
-          <p>Veuillez patienter.</p>
-        </div>
-      `;
+    // Open WhatsApp synchronously to bypass popup blockers completely
+    try {
+      window.open(generatedWaUrl, '_blank');
+    } catch (e) {
+      console.error('Popup blocked', e);
     }
 
     const orderData = {
@@ -127,7 +123,7 @@ Merci pour votre confiance.`;
 
     const { data: order, error } = await supabase.from('orders').insert(orderData).select().single();
     if (error || !order) {
-      if (newWindow) newWindow.close();
+      toast.error('La sauvegarde de la commande a échoué, mais WhatsApp devrait s\'ouvrir.');
       setSubmitting(false);
       return;
     }
@@ -140,12 +136,11 @@ Merci pour votre confiance.`;
       unit_price: i.unitPrice,
       options_snapshot: i.options,
     }));
-    await supabase.from('order_items').insert(itemRows);
-
-    if (newWindow) {
-      newWindow.location.href = generatedWaUrl;
-    } else {
-      window.location.href = generatedWaUrl; // fallback
+    
+    try {
+      await supabase.from('order_items').insert(itemRows);
+    } catch (e) {
+      console.error(e);
     }
 
     setOrderId(order.id);
