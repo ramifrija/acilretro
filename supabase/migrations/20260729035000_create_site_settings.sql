@@ -24,7 +24,7 @@ CREATE POLICY "admin_update_site_settings" ON site_settings FOR UPDATE TO authen
 INSERT INTO site_settings (id, email, phone, address)
 SELECT 
   '00000000-0000-0000-0000-000000000000'::uuid, 
-  'contact@acilretro.com', 
+  'king-glass@hotmail.com', 
   '+216 71 000 000', 
   'Zone Industrielle, Tunis'
 WHERE NOT EXISTS (SELECT 1 FROM site_settings);

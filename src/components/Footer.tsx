@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase';
 export default function Footer() {
   const { navigate } = useRouter();
   const [settings, setSettings] = useState({
-    email: 'contact@acilretro.com',
+    email: 'king-glass@hotmail.com',
     phone: '+216 27 804 642',
     address: 'Ben Arous, Rue D\'Egypte'
   });

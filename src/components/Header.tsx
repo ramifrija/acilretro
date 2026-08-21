@@ -13,7 +13,7 @@ export default function Header() {
   const [brands, setBrands] = useState<Brand[]>([]);
   const [search, setSearch] = useState('');
   const [settings, setSettings] = useState({
-    email: 'contact@acilretro.com',
+    email: 'king-glass@hotmail.com',
     phone: '+216 71 000 000',
     address: 'Zone Industrielle, Tunis'
   });

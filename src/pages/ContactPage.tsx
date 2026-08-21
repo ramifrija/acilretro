@@ -6,7 +6,7 @@ export default function ContactPage() {
   const [sent, setSent] = useState(false);
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
   const [settings, setSettings] = useState({ 
-    email: 'contact@acilretro.com', 
+    email: 'king-glass@hotmail.com', 
     phone: '+216 71 000 000', 
     address: 'Zone Industrielle, Tunis' 
   });
@@ -37,7 +37,7 @@ export default function ContactPage() {
             { icon: MapPin, title: 'Adresse', value: settings.address },
             { icon: Phone, title: 'Téléphone', value: settings.phone },
             { icon: Mail, title: 'Email', value: settings.email },
-            { icon: Clock, title: 'Horaires', value: 'Lun-Vendredi: 8h00 - 17h00\nSam : 8h00 - 15h00' },
+            { icon: Clock, title: 'Horaires', value: 'Lun-Ven: 8h00 - 17h00\nSam : 8h00 - 15h00' },
           ].map((c, i) => (
             <div key={i} className="glass-card p-5 flex items-start gap-3">
               <div className="w-10 h-10 rounded-xl bg-brand-100 dark:bg-brand-800/40 flex items-center justify-center shrink-0">

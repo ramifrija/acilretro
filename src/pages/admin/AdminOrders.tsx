@@ -600,7 +600,7 @@ function downloadAsText(order: OrderWithItems, type: 'invoice' | 'quote') {
   lines.push(``);
   lines.push(`ACIL RETRO - Spécialiste du Rétroviseur`);
   lines.push(`Zone Industrielle, Rue 12, Tunis, Tunisie`);
-  lines.push(`Tél: +216 71 000 000 | contact@acilretro.com`);
+  lines.push(`Tél: +216 71 000 000 | king-glass@hotmail.com`);
   lines.push(``);
   lines.push(`Date: ${formatDate(order.created_at)}`);
   if (!isInvoice && order.expires_at) lines.push(`Valable jusqu'au: ${formatDate(order.expires_at)}`);

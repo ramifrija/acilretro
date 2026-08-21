@@ -437,7 +437,7 @@ export default function NewLandingPage() {
                 <Phone className="w-5 h-5 group-hover:rotate-12 transition-transform" />
                 <span>Nous appeler</span>
               </a>
-              <a href="mailto:contact@acilretro.com" className="flex items-center gap-3 bg-white/10 border-2 border-white/50 text-white font-bold px-8 py-4 rounded-xl hover:bg-white/20 transition-all hover:-translate-y-1 hover:border-white w-full sm:w-auto justify-center backdrop-blur-sm">
+              <a href="mailto:king-glass@hotmail.com" className="flex items-center gap-3 bg-white/10 border-2 border-white/50 text-white font-bold px-8 py-4 rounded-xl hover:bg-white/20 transition-all hover:-translate-y-1 hover:border-white w-full sm:w-auto justify-center backdrop-blur-sm">
                 <Mail className="w-5 h-5" />
                 <span>Envoyer un mail</span>
               </a>
@@ -605,7 +605,7 @@ export default function NewLandingPage() {
                 </div>
                 <div>
                   <p className="font-bold text-slate-900 text-sm">Envoyez-nous un e-mail</p>
-                  <p className="text-slate-500 text-sm">contact@acilretro.com</p>
+                  <p className="text-slate-500 text-sm">king-glass@hotmail.com</p>
                 </div>
               </div>
 

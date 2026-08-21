@@ -257,7 +257,7 @@ export default function ProductPage() {
 
             {product.stock > 0 ? (
               <span className="text-xs font-semibold text-success-600 flex items-center gap-1 px-2.5 py-1 rounded-lg bg-success-500/10">
-                <Zap className="w-3 h-3" /> En stock ({product.stock} unités)
+                <Zap className="w-3 h-3" /> En stock
               </span>
             ) : (
               <span className="text-xs font-semibold text-error-500 px-2.5 py-1 rounded-lg bg-error-500/10">Rupture de stock</span>
