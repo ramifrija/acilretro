@@ -17,6 +17,7 @@ import ContactPage from '@/pages/ContactPage';
 import LegalPage from '@/pages/LegalPage';
 import NotFoundPage from '@/pages/NotFoundPage';
 import BrandsPage from '@/pages/BrandsPage';
+import PingPage from '@/pages/PingPage';
 import AdminLayout from '@/components/admin/AdminLayout';
 import AdminDashboard from '@/pages/admin/AdminDashboard';
 import AdminProducts from '@/pages/admin/AdminProducts';
@@ -111,6 +112,10 @@ function Routes() {
   }
 
   // Storefront routes
+  if (path === '/ping') {
+    return <PingPage />;
+  }
+
   let page;
   if (path === '/' || path === '') {
     page = <NewLandingPage />;
