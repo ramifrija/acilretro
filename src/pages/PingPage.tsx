@@ -2,26 +2,27 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 
 export default function PingPage() {
-  const [count, setCount] = useState<number | null>(null);
+  const [productName, setProductName] = useState<string | null>(null);
 
   useEffect(() => {
-    async function fetchUsersCount() {
-      const { count: usersCount, error } = await supabase
-        .from('customers')
-        .select('*', { count: 'exact', head: true });
+    async function fetchFirstProduct() {
+      const { data, error } = await supabase
+        .from('products')
+        .select('name')
+        .limit(1);
       
-      if (!error && usersCount !== null) {
-        setCount(usersCount);
+      if (!error && data && data.length > 0) {
+        setProductName(data[0].name);
       } else {
-        setCount(0);
+        setProductName('Aucun produit trouvé');
       }
     }
-    fetchUsersCount();
+    fetchFirstProduct();
   }, []);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', fontFamily: 'monospace', fontSize: '1.2rem', gap: '1rem' }}>
-      {count !== null ? (
+      {productName !== null ? (
         <>
           <div style={{ color: 'green', fontWeight: 'bold' }}>
             ping avec succès à la base de données
@@ -30,7 +31,7 @@ export default function PingPage() {
             Date et heure : {new Date().toLocaleString('fr-FR')}
           </div>
           <div>
-            Nombre d'utilisateurs : {count}
+            1er catalogue : {productName}
           </div>
         </>
       ) : (
