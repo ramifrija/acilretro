@@ -118,7 +118,7 @@ export default function NewLandingPage() {
                 <button onClick={() => navigate('/catalog')} className="bg-[#3d6eff] hover:bg-blue-600 text-white px-8 py-4 rounded-xl font-bold text-lg shadow-lg shadow-[#3d6eff]/30 transition-all hover:-translate-y-1 flex items-center gap-2">
                   <Search className="w-5 h-5" /> Explorer le catalogue
                 </button>
-                <button onClick={() => navigate('/contact')} className="bg-white hover:bg-slate-100 text-slate-900 border border-slate-200 px-8 py-4 rounded-xl font-bold text-lg transition-all flex items-center gap-2 shadow-sm">
+                <button onClick={() => navigate('/catalog')} className="bg-white hover:bg-slate-100 text-slate-900 border border-slate-200 px-8 py-4 rounded-xl font-bold text-lg transition-all flex items-center gap-2 shadow-sm">
                   Obtenir un devis gratuit
                 </button>
               </motion.div>

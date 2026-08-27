@@ -61,7 +61,7 @@ export default function Footer() {
           </div>
 
           {/* 3. LIENS UTILES */}
-          <div className="lg:col-span-2">
+          <div className="hidden md:block lg:col-span-2">
             <h4 className="font-display font-bold text-white mb-4 text-sm uppercase pt-2">LIENS UTILES</h4>
             <ul className="space-y-2 text-xs xl:text-sm">
               {[

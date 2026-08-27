@@ -25,10 +25,10 @@ export default function AdminLayout({ children, section }: { children: ReactNode
     <div className="min-h-screen bg-slate-100 dark:bg-brand-950 flex print:bg-white print:min-h-0 print:block">
       {/* Sidebar */}
       <aside
-        className={`print:hidden fixed lg:sticky top-0 left-0 h-screen w-64 bg-[#3d6eff] text-brand-100 z-50 transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+        className={`print:hidden fixed lg:sticky top-0 left-0 h-screen w-64 bg-[#3d6eff] text-brand-100 z-50 transition-transform duration-300 flex flex-col ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
           }`}
       >
-        <div className="p-5 flex items-center justify-between">
+        <div className="p-5 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2.5">
             <div className="w-10 h-10 rounded-xl bg-brand-gradient flex items-center justify-center">
               <span className="text-white font-display font-extrabold text-lg">A</span>
@@ -43,7 +43,7 @@ export default function AdminLayout({ children, section }: { children: ReactNode
           </button>
         </div>
 
-        <nav className="px-3 py-4 space-y-1">
+        <nav className="px-3 py-4 space-y-1 flex-1 overflow-y-auto min-h-0">
           {nav.map((n) => (
             <button
               key={n.id}
@@ -59,7 +59,7 @@ export default function AdminLayout({ children, section }: { children: ReactNode
           ))}
         </nav>
 
-        <div className="absolute bottom-0 left-0 right-0 p-4">
+        <div className="p-4 shrink-0 mt-auto border-t border-white/10">
           <button onClick={() => navigate('/')} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-white hover:bg-white/10 hover:text-white/90 transition-all">
             <ArrowLeft className="w-4 h-4" /> Retour au site
           </button>

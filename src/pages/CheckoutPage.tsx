@@ -108,7 +108,9 @@ Merci pour votre confiance.`;
       console.error('Popup blocked', e);
     }
 
+    const newOrderId = crypto.randomUUID();
     const orderData = {
+      id: newOrderId,
       customer_type: customerType,
       status: 'pending',
       type,
@@ -121,15 +123,16 @@ Merci pour votre confiance.`;
       expires_at: type === 'quote' ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() : null,
     };
 
-    const { data: order, error } = await supabase.from('orders').insert(orderData).select().single();
-    if (error || !order) {
+    const { error } = await supabase.from('orders').insert(orderData);
+    if (error) {
+      console.error(error);
       toast.error('La sauvegarde de la commande a échoué, mais WhatsApp devrait s\'ouvrir.');
       setSubmitting(false);
       return;
     }
 
     const itemRows = items.map((i) => ({
-      order_id: order.id,
+      order_id: newOrderId,
       product_id: i.productId,
       product_name: i.name,
       quantity: i.quantity,
@@ -143,7 +146,7 @@ Merci pour votre confiance.`;
       console.error(e);
     }
 
-    setOrderId(order.id);
+    setOrderId(newOrderId);
     setSuccess(true);
     clear();
     setSubmitting(false);
