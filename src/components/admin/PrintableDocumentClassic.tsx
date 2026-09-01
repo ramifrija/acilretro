@@ -186,7 +186,7 @@ export default function PrintableDocumentClassic({ order, documentType }: Props)
         </div>
         <div className="w-20 h-20 border border-gray-200 p-0.5">
           <img
-            src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent('https://acilretro.netlify.app')}`}
+            src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent('https://acilretro.com')}`}
             alt="QR Code"
             className="w-full h-full object-contain"
           />

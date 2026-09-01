@@ -107,7 +107,7 @@ export default function PrintableDocument({ order, documentType }: Props) {
           <div className="font-bold text-[14px] mb-1 text-black">N° : {prefix}{new Date(order.created_at).getFullYear()}/{docNumber}</div>
           <div className="text-gray-500 mb-3">Date : {formatDateString(order.created_at)}</div>
           <div className="w-20 h-20">
-            <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent('https://acilretro.netlify.app')}`} alt="QR Code" className="w-full h-full object-contain" />
+            <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent('https://acilretro.com')}`} alt="QR Code" className="w-full h-full object-contain" />
           </div>
         </div>
       </div>
