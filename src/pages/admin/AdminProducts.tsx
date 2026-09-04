@@ -109,6 +109,7 @@ export default function AdminProducts() {
                 <th className="px-4 py-3 font-semibold cursor-pointer hover:bg-slate-100 dark:hover:bg-white/10 transition-colors" onClick={() => handleSort('price')}>
                   <div className="flex items-center gap-1">Prix {sortField === 'price' && (sortDirection === 'asc' ? <ChevronUp className="w-3 h-3"/> : <ChevronDown className="w-3 h-3"/>)}</div>
                 </th>
+                <th className="px-4 py-3 font-semibold">Prix Entr.</th>
                 <th className="px-4 py-3 font-semibold">Stock</th>
                 <th className="px-4 py-3 font-semibold">Actions</th>
               </tr>
@@ -134,12 +135,10 @@ export default function AdminProducts() {
                       {brands.find(b => b.id === p.brand_id)?.name || '-'}
                     </td>
                     <td className="px-4 py-3 font-semibold text-slate-900 dark:text-white">
-                      {p.promo_price ? (
-                        <div>
-                          <span>{formatPrice(p.promo_price)}</span>
-                          <span className="block text-xs text-slate-400 line-through">{formatPrice(p.base_price)}</span>
-                        </div>
-                      ) : formatPrice(p.base_price)}
+                      {formatPrice(p.base_price)}
+                    </td>
+                    <td className="px-4 py-3 font-semibold text-brand-600 dark:text-brand-400">
+                      {p.promo_price ? formatPrice(p.promo_price) : '-'}
                     </td>
                     <td className="px-4 py-3">
                       <span className={`px-2 py-1 rounded-lg text-xs font-semibold ${p.stock <= p.min_stock ? 'bg-error-500/10 text-error-500' : 'bg-success-500/10 text-success-600'}`}>
@@ -315,8 +314,7 @@ function ProductForm({ product, categories, onClose, onSaved }: { product: Produ
       return;
     }
 
-    // Ensure promo price is cleared if promo is not checked
-    const finalPromoPrice = form.is_promo ? form.promo_price : null;
+    const finalPromoPrice = form.promo_price;
 
     setSaving(true);
     const finalSlug = form.slug || form.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
@@ -433,9 +431,7 @@ function ProductForm({ product, categories, onClose, onSaved }: { product: Produ
                 <textarea value={form.description} onChange={(e) => set('description', e.target.value)} rows={3} className="input-field resize-none" />
               </div>
               <Input label="Prix (TND)" value={form.base_price} onChange={(v) => set('base_price', v)} type="number" />
-              {form.is_promo && (
-                <Input label="Prix promo (TND)" value={form.promo_price} onChange={(v) => set('promo_price', v)} type="number" />
-              )}
+              <Input label="Prix entreprise (TND)" value={form.promo_price} onChange={(v) => set('promo_price', v)} type="number" />
               <Input label="Stock" value={form.stock} onChange={(v) => set('stock', v)} type="number" />
               <div className="sm:col-span-2 mt-2">
                 <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5 block">Badge / Mise en avant</label>
@@ -457,7 +453,6 @@ function ProductForm({ product, categories, onClose, onSaved }: { product: Produ
                             is_promo: b.id === 'is_promo',
                             new_arrival: b.id === 'new_arrival',
                             best_seller: b.id === 'best_seller',
-                            ...(b.id !== 'is_promo' ? { promo_price: '' } : {})
                           }));
                         }}
                         className="accent-brand-600 w-4 h-4"

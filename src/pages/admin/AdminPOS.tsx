@@ -38,6 +38,7 @@ export default function AdminPOS() {
   const [printDoc, setPrintDoc] = useState<{ order: OrderWithItems; type: 'invoice' | 'delivery_note' } | null>(null);
   const [activeCategory, setActiveCategory] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [posCustomerType, setPosCustomerType] = useState<'individual' | 'company'>('individual');
   const searchRef = useRef<HTMLInputElement>(null);
 
   // Clients CRM
@@ -91,6 +92,14 @@ export default function AdminPOS() {
     searchRef.current?.focus();
   }, []);
 
+  useEffect(() => {
+    setCart((currentCart) => currentCart.map((item) => {
+      const baseUnitPrice = posCustomerType === 'company' && item.product.promo_price ? item.product.promo_price : item.product.base_price;
+      const unitPrice = baseUnitPrice + item.options.reduce((sum, opt) => sum + opt.priceModifier, 0);
+      return { ...item, unitPrice };
+    }));
+  }, [posCustomerType]);
+
   // Unique categories
   const categories = Array.from(new Set(products.map(p => p.category_id || 'Autre').filter(Boolean)));
 
@@ -122,7 +131,8 @@ export default function AdminPOS() {
   };
 
   const addToCart = (product: ProductWithOpts, options: { option: string; value: string; priceModifier: number }[]) => {
-    const unitPrice = (product.promo_price ?? product.base_price) + options.reduce((sum, opt) => sum + opt.priceModifier, 0);
+    const baseUnitPrice = posCustomerType === 'company' && product.promo_price ? product.promo_price : product.base_price;
+    const unitPrice = baseUnitPrice + options.reduce((sum, opt) => sum + opt.priceModifier, 0);
 
     setCart((c) => {
       const existing = c.find((i) =>
@@ -165,7 +175,7 @@ export default function AdminPOS() {
     const finalCustomerName = customerName.trim() || 'Client Passager';
 
     const { data: order } = await supabase.from('orders').insert({
-      customer_type: 'individual', status: isDeliveryMode ? 'delivery_note' : 'paid', type: 'order',
+      customer_type: posCustomerType, status: isDeliveryMode ? 'delivery_note' : 'paid', type: 'order',
       subtotal, vat, shipping: 0, total,
       notes: 'Vente directe au point de vente',
       client_id: selectedClientForOrder?.id || null,
@@ -348,7 +358,7 @@ export default function AdminPOS() {
               ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3">
                   {paginated.map((p) => {
-                    const price = p.promo_price ?? p.base_price;
+                    const price = posCustomerType === 'company' && p.promo_price ? p.promo_price : p.base_price;
                     const isOutOfStock = p.stock === 0;
                     const hasOptions = p.product_options && p.product_options.length > 0;
                     return (
@@ -375,9 +385,9 @@ export default function AdminPOS() {
                                 OPTIONS
                               </span>
                             )}
-                            {p.promo_price && (
-                              <span className="bg-error-500 text-white text-[9px] font-bold px-2 py-0.5 rounded shadow-sm tracking-wide">
-                                PROMO
+                            {p.promo_price && posCustomerType === 'company' && (
+                              <span className="bg-brand-500 text-white text-[9px] font-bold px-2 py-0.5 rounded shadow-sm tracking-wide">
+                                PRIX ENTR.
                               </span>
                             )}
                           </div>
@@ -398,10 +408,14 @@ export default function AdminPOS() {
 
                           <div className="flex items-end justify-between gap-2 mt-3 pt-3 border-t border-slate-100 dark:border-white/5">
                             <div className="flex flex-col">
-                              {p.promo_price && (
-                                <span className="text-[10px] text-slate-400 line-through leading-none mb-0.5">{formatPrice(p.base_price)}</span>
+                              {posCustomerType === 'company' && p.promo_price ? (
+                                <>
+                                  <span className="text-[10px] text-slate-400 line-through leading-none mb-0.5">{formatPrice(p.base_price)}</span>
+                                  <span className="text-[15px] font-black text-brand-600 dark:text-brand-400 leading-none">{formatPrice(price)}</span>
+                                </>
+                              ) : (
+                                <span className="text-[15px] font-black text-brand-600 dark:text-brand-400 leading-none">{formatPrice(price)}</span>
                               )}
-                              <span className="text-[15px] font-black text-brand-600 dark:text-brand-400 leading-none">{formatPrice(price)}</span>
                             </div>
 
                             <div className={`flex items-center gap-1.5 px-2 py-1 rounded-md border ${p.stock <= (p.min_stock || 3) ? 'bg-amber-50 border-amber-200 text-amber-700' : 'bg-emerald-50 border-emerald-200 text-emerald-700'}`}>
@@ -564,6 +578,21 @@ export default function AdminPOS() {
             {/* Cart Footer */}
             {cart.length > 0 && (
               <div className="shrink-0 border-t border-slate-100 dark:border-white/10 p-3 space-y-3">
+                {/* Type Client Selector */}
+                <div className="flex bg-slate-100 dark:bg-brand-900/50 p-1 rounded-lg">
+                  <button 
+                    onClick={() => setPosCustomerType('individual')}
+                    className={`flex-1 py-1.5 text-xs font-semibold rounded-md transition-colors ${posCustomerType === 'individual' ? 'bg-white dark:bg-brand-800 shadow-sm text-slate-900 dark:text-white' : 'text-slate-500'}`}
+                  >
+                    Passager
+                  </button>
+                  <button 
+                    onClick={() => setPosCustomerType('company')}
+                    className={`flex-1 py-1.5 text-xs font-semibold rounded-md transition-colors ${posCustomerType === 'company' ? 'bg-white dark:bg-brand-800 shadow-sm text-brand-600 dark:text-brand-400' : 'text-slate-500'}`}
+                  >
+                    Entreprise
+                  </button>
+                </div>
 
                 {/* Customer Selection */}
                 <div className="relative" ref={clientRef}>
@@ -701,7 +730,7 @@ export default function AdminPOS() {
                 {selectedProduct.name}
               </h2>
               <p className="text-base text-brand-600 dark:text-brand-400 font-bold mt-1.5">
-                {formatPrice(selectedProduct.promo_price ?? selectedProduct.base_price)}
+                {formatPrice(posCustomerType === 'company' && selectedProduct.promo_price ? selectedProduct.promo_price : selectedProduct.base_price)}
               </p>
             </div>
 
