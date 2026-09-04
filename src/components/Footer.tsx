@@ -18,7 +18,7 @@ export default function Footer() {
   }, []);
 
   return (
-    <footer className="bg-[#3d6eff] text-white mt-10">
+    <footer className="bg-[#3d6eff] text-white mt-10" dir="ltr">
       <div className="container-x pt-10 pb-2">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-6 xl:gap-8">
 
@@ -55,15 +55,15 @@ export default function Footer() {
           {/* 2. ACIL RETRO (About) */}
           <div className="lg:col-span-2">
             <h4 className="font-display font-bold text-white mb-4 text-sm uppercase pt-2">ACIL RETRO</h4>
-            <p className="text-xs xl:text-sm leading-relaxed mb-4">
+            <p className="text-xs xl:text-sm leading-relaxed mb-4 text-left">
               Spécialiste tunisien des rétroviseurs et pièces détachées.
             </p>
           </div>
 
           {/* 3. LIENS UTILES */}
           <div className="hidden md:block lg:col-span-2">
-            <h4 className="font-display font-bold text-white mb-4 text-sm uppercase pt-2">LIENS UTILES</h4>
-            <ul className="space-y-2 text-xs xl:text-sm">
+            <h4 className="font-display font-bold text-white mb-4 text-sm uppercase pt-2 text-left">LIENS UTILES</h4>
+            <ul className="space-y-2 text-xs xl:text-sm text-left">
               {[
                 ['/', 'Accueil'],
                 ['/catalog', 'Catalogue'],
@@ -81,8 +81,8 @@ export default function Footer() {
 
           {/* 4. NOTRE ADRESSE */}
           <div className="lg:col-span-2">
-            <h4 className="font-display font-bold text-white mb-4 text-sm uppercase pt-2">NOTRE ADRESSE</h4>
-            <ul className="space-y-2 text-xs xl:text-sm mb-4">
+            <h4 className="font-display font-bold text-white mb-4 text-sm uppercase pt-2 text-left">NOTRE ADRESSE</h4>
+            <ul className="space-y-2 text-xs xl:text-sm mb-4 text-left">
               <li className="flex items-start gap-2"><MapPin className="w-4 h-4 shrink-0 text-white mt-0.5" /> <span>{settings.address}</span></li>
               <li className="flex items-center gap-2"><Phone className="w-4 h-4 shrink-0 text-white" /> <span>{settings.phone}</span></li>
               <li className="flex items-center gap-2"><Mail className="w-4 h-4 shrink-0 text-white" /> <span>{settings.email}</span></li>
@@ -91,8 +91,8 @@ export default function Footer() {
 
           {/* 5. CONTACTEZ-NOUS */}
           <div className="lg:col-span-2">
-            <h4 className="font-display font-bold text-white mb-4 text-sm uppercase pt-2">CONTACTEZ-NOUS</h4>
-            <div className="flex items-start gap-2 text-xs xl:text-sm mb-4">
+            <h4 className="font-display font-bold text-white mb-4 text-sm uppercase pt-2 text-left">CONTACTEZ-NOUS</h4>
+            <div className="flex items-start gap-2 text-xs xl:text-sm mb-4 text-left">
               <Clock className="w-4 h-4 shrink-0 text-white mt-0.5" /> 
               <span className="whitespace-pre-line">Lun-Vendredi: 8h00 - 17h00{'\n'}Sam : 8h00 - 15h00</span>
             </div>
@@ -103,7 +103,7 @@ export default function Footer() {
 
       {/* Copyright */}
       <div className="bg-[#2d58d9] py-4">
-        <div className="container-x flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-white/70 font-medium">
+        <div className="container-x flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-white/70 font-medium text-left">
           <p>© 2026 ACIL RETRO. Tous droits réservés.</p>
           <div className="flex gap-4">
             <button onClick={() => navigate('/mentions-legales')} className="hover:text-white transition-colors">Mentions légales</button>

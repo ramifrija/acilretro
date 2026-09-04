@@ -7,9 +7,11 @@ import { supabase } from '@/lib/supabase';
 import ProductCard from '@/components/ProductCard';
 import type { Product } from '@/types/database';
 import { brandLogos } from '@/data/brands';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function NewLandingPage() {
   const { navigate } = useRouter();
+  const { t, language } = useLanguage();
   const [topProducts, setTopProducts] = useState<Product[]>([]);
   const [showCertModal, setShowCertModal] = useState(false);
 
@@ -103,23 +105,23 @@ export default function NewLandingPage() {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#3d6eff] opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-[#3d6eff]"></span>
                 </span>
-                Spécialiste N°1 en Tunisie
+                {t('Spécialiste N°1 en Tunisie', 'المتخصص الأول في تونس')}
               </motion.div>
 
               <motion.h1 variants={fadeIn} className="font-display font-extrabold text-4xl md:text-5xl lg:text-6xl text-slate-900 leading-[1.15] mb-6">
-                Trouvez le <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#3d6eff] to-blue-700 drop-shadow-sm">rétroviseur parfait</span> pour votre voiture en 3 clics.
+                {t('Trouvez le ', 'ابحث عن ')}<span className="text-transparent bg-clip-text bg-gradient-to-r from-[#3d6eff] to-blue-700 drop-shadow-sm">{t('rétroviseur parfait', 'المرآة المثالية')}</span> {t('pour votre voiture en 3 clics.', 'لسيارتك في 3 نقرات.')}
               </motion.h1>
 
               <motion.p variants={fadeIn} className="text-lg text-slate-600 max-w-xl mb-8 leading-relaxed">
-                Plus besoin de chercher des heures ou de vous déplacer. Sélectionnez votre véhicule, commandez en ligne et recevez votre pièce chez vous, prête à être montée.
+                {t('Plus besoin de chercher des heures ou de vous déplacer. Sélectionnez votre véhicule, commandez en ligne et recevez votre pièce chez vous, prête à être montée.', 'لا حاجة للبحث لساعات أو التنقل. اختر سيارتك، اطلب عبر الإنترنت واستلم قطعتك في المنزل، جاهزة للتركيب.')}
               </motion.p>
 
               <motion.div variants={fadeIn} className="flex flex-wrap gap-4">
                 <button onClick={() => navigate('/catalog')} className="bg-[#3d6eff] hover:bg-blue-600 text-white px-8 py-4 rounded-xl font-bold text-lg shadow-lg shadow-[#3d6eff]/30 transition-all hover:-translate-y-1 flex items-center gap-2">
-                  <Search className="w-5 h-5" /> Explorer le catalogue
+                  <Search className="w-5 h-5" /> {t('Explorer le catalogue', 'تصفح الكتالوج')}
                 </button>
                 <button onClick={() => navigate('/catalog')} className="bg-white hover:bg-slate-100 text-slate-900 border border-slate-200 px-8 py-4 rounded-xl font-bold text-lg transition-all flex items-center gap-2 shadow-sm">
-                  Obtenir un devis gratuit
+                  {t('Obtenir un devis gratuit', 'احصل على عرض سعر مجاني')}
                 </button>
               </motion.div>
 
@@ -131,7 +133,7 @@ export default function NewLandingPage() {
                     </div>
                   ))}
                 </div>
-                <p>Déjà plus de <strong className="text-slate-900">5,000 clients</strong> satisfaits</p>
+                <p>{t('Déjà plus de', 'أكثر من')} <strong className="text-slate-900">5,000 {t('clients', 'عملاء')}</strong> {t('satisfaits', 'راضين')}</p>
               </motion.div>
             </motion.div>
 
@@ -144,7 +146,7 @@ export default function NewLandingPage() {
             >
               <div className="bg-white p-2 rounded-[2rem] shadow-2xl relative">
                 <div className="absolute -top-4 -right-4 bg-yellow-400 text-yellow-900 font-black px-4 py-2 rounded-full transform rotate-12 shadow-lg text-sm border-2 border-white z-10">
-                  Recherche Rapide !
+                  {t('Recherche Rapide !', 'بحث سريع !')}
                 </div>
                 <VehicleSelector variant="hero" />
               </div>
@@ -187,9 +189,9 @@ export default function NewLandingPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 w-full rounded-2xl md:rounded-3xl overflow-hidden shadow-xl border border-slate-200">
 
             <div className="bg-[#595959] text-white p-5 md:p-6 flex flex-col justify-center min-h-[180px] lg:min-h-[200px]">
-              <h3 className="font-display font-bold text-2xl lg:text-3xl leading-tight uppercase tracking-tight mb-2">Un concept<br />novateur</h3>
+              <h3 className="font-display font-bold text-2xl lg:text-3xl leading-tight uppercase tracking-tight mb-2">{t('Un concept', 'مفهوم')}<br />{t('novateur', 'مبتكر')}</h3>
               <p className="text-left text-sm md:text-sm font-medium leading-relaxed text-white/90">
-                Vente tous type de miroirs de rétroviseurs en un seul site
+                {t('Vente tous type de miroirs de rétroviseurs en un seul site', 'بيع جميع أنواع مرايا السيارات في موقع واحد')}
               </p>
             </div>
 
@@ -202,10 +204,10 @@ export default function NewLandingPage() {
             </div>
 
             <div className="bg-[#3d6eff] text-white p-5 md:p-6 flex flex-col justify-center min-h-[180px] lg:min-h-[200px]">
-              <h3 className="font-display font-bold text-2xl lg:text-3xl leading-tight uppercase tracking-tight mb-2">La qualité<br />Acil Retro</h3>
+              <h3 className="font-display font-bold text-2xl lg:text-3xl leading-tight uppercase tracking-tight mb-2">{t('La qualité', 'جودة')}<br />{t('Acil Retro', 'أصيل ريترو')}</h3>
               <p className="text-left text-sm md:text-sm font-medium leading-relaxed text-white/90">
-                Une Vaste gamme de références.<br className="hidden lg:block" />
-                Un Service rapide et un gain de temps précieux.
+                {t('Une Vaste gamme de références.', 'مجموعة واسعة من المراجع.')}<br className="hidden lg:block" />
+                {t('Un Service rapide et un gain de temps précieux.', 'خدمة سريعة وتوفير وقت ثمين.')}
               </p>
             </div>
 
@@ -227,19 +229,19 @@ export default function NewLandingPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <div className="flex flex-col items-center justify-center">
               <img src="/images/camion.png" alt="Livraison Express" className="h-14 w-auto mb-4 object-contain" />
-              <h3 className="font-display font-bold text-[13px] uppercase tracking-wider text-black">Livraison Express</h3>
+              <h3 className="font-display font-bold text-[13px] uppercase tracking-wider text-black">{t('Livraison Express', 'توصيل سريع')}</h3>
             </div>
             <div className="flex flex-col items-center justify-center">
               <Wrench className="w-14 h-14 mb-4 text-black" strokeWidth={1.5} />
-              <h3 className="font-display font-bold text-[13px] uppercase tracking-wider text-black">Pose Possible</h3>
+              <h3 className="font-display font-bold text-[13px] uppercase tracking-wider text-black">{t('Pose Possible', 'إمكانية التركيب')}</h3>
             </div>
             <div className="flex flex-col items-center justify-center">
               <img src="/images/paiement.png" alt="Paiement à la livraison" className="h-14 w-auto mb-4 object-contain" />
-              <h3 className="font-display font-bold text-[13px] uppercase tracking-wider text-black">Paiement à la livraison</h3>
+              <h3 className="font-display font-bold text-[13px] uppercase tracking-wider text-black">{t('Paiement à la livraison', 'الدفع عند الاستلام')}</h3>
             </div>
             <div className="flex flex-col items-center justify-center">
               <Headset className="w-14 h-14 mb-4 text-black" strokeWidth={1.5} />
-              <h3 className="font-display font-bold text-[13px] uppercase tracking-wider text-black">Assistance Téléphonique 7/7</h3>
+              <h3 className="font-display font-bold text-[13px] uppercase tracking-wider text-black">{t('Assistance Téléphonique 7/7', 'دعم هاتفي 7/7')}</h3>
             </div>
           </div>
         </div>
@@ -251,7 +253,7 @@ export default function NewLandingPage() {
               ACIL RETRO
             </h2>
             <p className="text-white font-medium tracking-[0.3em] text-sm md:text-base uppercase">
-              Spécialiste du rétroviseur
+              {t('Spécialiste du rétroviseur', 'متخصص في مرايا السيارات')}
             </p>
           </div>
         </div>
@@ -260,9 +262,9 @@ export default function NewLandingPage() {
       {/* ===== BRAND LOGO CAROUSEL ===== */}
       <section className="bg-white py-16 border-y border-slate-200 overflow-hidden">
         <div className="container-x">
-          <h2 className="text-2xl font-bold text-slate-900 mb-10 text-center">Trouvez les pièces de votre constructeur</h2>
+          <h2 className="text-2xl font-bold text-slate-900 mb-10 text-center">{t('Trouvez les pièces de votre constructeur', 'ابحث عن قطع غيار الشركة المصنعة لسيارتك')}</h2>
 
-          <div className="relative w-full overflow-hidden">
+          <div className="relative w-full overflow-hidden" dir="ltr">
             <div className="animate-marquee gap-8 md:gap-12 pb-4 pt-2">
               {[...brandLogos, ...brandLogos].map((brand, i) => (
                 <div
@@ -292,9 +294,9 @@ export default function NewLandingPage() {
               viewport={{ once: true, amount: 0.2 }}
             >
               <div className="inline-flex items-center gap-2 text-brand-600 font-bold mb-2 text-sm uppercase tracking-wider">
-                <Star className="w-4 h-4 fill-brand-600" /> Les plus demandés
+                <Star className="w-4 h-4 fill-brand-600" /> {t('Les plus demandés', 'الأكثر طلباً')}
               </div>
-              <h2 className="font-display font-black text-3xl md:text-4xl text-slate-900">Produits Populaires</h2>
+              <h2 className="font-display font-black text-3xl md:text-4xl text-slate-900">{t('Produits Populaires', 'منتجات شائعة')}</h2>
             </motion.div>
             <motion.button
               initial={{ opacity: 0, x: 30 }}
@@ -303,7 +305,7 @@ export default function NewLandingPage() {
               onClick={() => navigate('/catalog')}
               className="text-brand-600 font-bold hover:text-brand-700 flex items-center gap-2 group bg-brand-50 px-6 py-3 rounded-xl hover:bg-brand-100 transition-colors"
             >
-              Voir tout le catalogue <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              {t('Voir tout le catalogue', 'عرض كل الكتالوج')} <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </motion.button>
           </div>
 
@@ -345,8 +347,8 @@ export default function NewLandingPage() {
               <img src="/images/retro-paysage.jpg" alt="Atelier Acil Retro" className="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent"></div>
               <div className="absolute bottom-8 left-8 right-8 text-white">
-                <div className="bg-[#3d6eff] text-white font-bold px-4 py-2 rounded-lg inline-block mb-3 shadow-lg">Depuis 1994</div>
-                <h3 className="text-2xl font-bold">L'expertise à votre service</h3>
+                <div className="bg-[#3d6eff] text-white font-bold px-4 py-2 rounded-lg inline-block mb-3 shadow-lg">{t('Depuis 1994', 'منذ 1994')}</div>
+                <h3 className="text-2xl font-bold">{t('L\'expertise à votre service', 'الخبرة في خدمتكم')}</h3>
               </div>
             </motion.div>
 
@@ -359,22 +361,22 @@ export default function NewLandingPage() {
               className="flex flex-col justify-center"
             >
               <div className="inline-flex items-center gap-2 text-[#3d6eff] font-bold mb-2 text-sm uppercase tracking-wider">
-                <ShieldCheck className="w-5 h-5" /> À propos de nous
+                <ShieldCheck className="w-5 h-5" /> {t('À propos de nous', 'معلومات عنا')}
               </div>
               <h2 className="font-display font-black text-3xl md:text-4xl mb-4 leading-tight text-slate-900">
-                L'expert du miroir de rétroviseur
+                {t('L\'expert du miroir de rétroviseur', 'خبير مرايا السيارات')}
               </h2>
               <p className="text-slate-600 text-base md:text-lg mb-6 leading-relaxed">
-                Né d'une passion pour l'automobile, <strong className="text-[#3d6eff]">Acil Retro</strong> est devenu la référence incontournable pour la vision arrière de votre véhicule. Nous allions savoir-faire technique et service client irréprochable.
-                <strong className="text-[#3d6eff]"> Depuis 1994</strong>, AcilRetro entretient vos miroirs de rétroviseurs selon les normes internationales.
-                Proposant une livraison partout en <strong className="text-[#3d6eff]">Tunisie</strong> et en <strong className="text-[#3d6eff]">Europe</strong>.
+                {t('Né d\'une passion pour l\'automobile, ', 'تأسست من شغف بالسيارات، ')}<strong className="text-[#3d6eff]">Acil Retro</strong> {t('est devenu la référence incontournable pour la vision arrière de votre véhicule. Nous allions savoir-faire technique et service client irréprochable.', 'أصبحت المرجع الأساسي للرؤية الخلفية لسيارتك. نحن نجمع بين الخبرة التقنية وخدمة العملاء التي لا تشوبها شائبة.')}
+                <strong className="text-[#3d6eff]"> {t('Depuis 1994', 'منذ 1994')}</strong>, {t('AcilRetro entretient vos miroirs de rétroviseurs selon les normes internationales.', 'تقوم AcilRetro بصيانة مرايا سيارتك وفقًا للمعايير الدولية.')}
+                {t('Proposant une livraison partout en ', 'نقدم التوصيل في كل مكان في ')}<strong className="text-[#3d6eff]">{t('Tunisie', 'تونس')}</strong> {t('et en ', 'و ')}<strong className="text-[#3d6eff]">{t('Europe', 'أوروبا')}</strong>.
               </p>
 
               <ul className="space-y-3 mb-6">
                 {[
-                  "Vente de pièces d'origine et adaptables de haute qualité.",
-                  "A la recherche d’une solution pratique ? Commandez votre miroir de rétroviseur et recevez votre pièce directement de votre voiture",
-                  "Installation professionnelle rapide dans nos ateliers ou chez vous."
+                  t("Vente de pièces d'origine et adaptables de haute qualité.", "بيع قطع غيار أصلية ومطابقة عالية الجودة."),
+                  t("A la recherche d’une solution pratique ? Commandez votre miroir de rétroviseur et recevez votre pièce directement de votre voiture", "تبحث عن حل عملي؟ اطلب مرآة سيارتك واستلم قطعتك مباشرة"),
+                  t("Installation professionnelle rapide dans nos ateliers ou chez vous.", "تركيب احترافي سريع في ورشنا أو في منزلك.")
                 ].map((item, i) => (
                   <motion.li
                     key={i}
@@ -394,7 +396,7 @@ export default function NewLandingPage() {
 
               <div>
                 <button onClick={() => setShowCertModal(true)} className="bg-[#3d6eff] text-white font-bold px-6 py-3 rounded-xl hover:bg-blue-600 transition-all hover:-translate-y-1 shadow-lg shadow-[#3d6eff]/30 flex items-center gap-2 justify-center w-full sm:w-auto">
-                  <ShieldCheck className="w-5 h-5" /> Nos certifications
+                  <ShieldCheck className="w-5 h-5" /> {t('Nos certifications', 'شهاداتنا')}
                 </button>
               </div>
             </motion.div>
@@ -425,21 +427,21 @@ export default function NewLandingPage() {
             </div>
             
             <h2 className="font-display font-black text-3xl md:text-4xl mb-6 text-white leading-tight">
-              Vous ne trouvez pas votre pièce ?
+              {t('Vous ne trouvez pas votre pièce ?', 'لا يمكنك العثور على قطعتك؟')}
             </h2>
             <p className="text-white/90 text-lg md:text-xl mb-10 leading-relaxed max-w-3xl mx-auto font-medium">
-              Nous sommes en mesure de proposer des pièces de rétroviseur pour de nombreux véhicules. Tous nos produits ne sont pas en ligne.<br className="hidden md:block mt-2" />
-              Contactez nous par mail ou téléphone, nous vous proposerons un tarif sous 24h.
+              {t('Nous sommes en mesure de proposer des pièces de rétroviseur pour de nombreux véhicules. Tous nos produits ne sont pas en ligne.', 'نحن قادرون على توفير قطع مرايا للعديد من السيارات. ليست كل منتجاتنا متوفرة على الإنترنت.')}<br className="hidden md:block mt-2" />
+              {t('Contactez nous par mail ou téléphone, nous vous proposerons un tarif sous 24h.', 'اتصل بنا عبر البريد الإلكتروني أو الهاتف، وسنقدم لك عرض سعر في غضون 24 ساعة.')}
             </p>
             
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <a href="tel:+21600000000" className="flex items-center gap-3 bg-white text-[#3d6eff] font-bold px-8 py-4 rounded-xl hover:bg-slate-50 transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-white/20 w-full sm:w-auto justify-center group">
                 <Phone className="w-5 h-5 group-hover:rotate-12 transition-transform" />
-                <span>Nous appeler</span>
+                <span>{t('Nous appeler', 'اتصل بنا')}</span>
               </a>
               <a href="mailto:king-glass@hotmail.com" className="flex items-center gap-3 bg-white/10 border-2 border-white/50 text-white font-bold px-8 py-4 rounded-xl hover:bg-white/20 transition-all hover:-translate-y-1 hover:border-white w-full sm:w-auto justify-center backdrop-blur-sm">
                 <Mail className="w-5 h-5" />
-                <span>Envoyer un mail</span>
+                <span>{t('Envoyer un mail', 'إرسال بريد إلكتروني')}</span>
               </a>
             </div>
           </motion.div>
@@ -456,7 +458,7 @@ export default function NewLandingPage() {
               viewport={{ once: true, amount: 0.2 }}
               className="font-display font-black text-3xl md:text-4xl text-slate-900 mb-4"
             >
-              Ils nous font confiance
+              {t('Ils nous font confiance', 'إنهم يثقون بنا')}
             </motion.h2>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -465,7 +467,7 @@ export default function NewLandingPage() {
               transition={{ delay: 0.1 }}
               className="text-lg text-slate-600"
             >
-              Découvrez ce que nos clients pensent de la qualité de nos produits et de notre service.
+              {t('Découvrez ce que nos clients pensent de la qualité de nos produits et de notre service.', 'اكتشف ما يفكر فيه عملاؤنا حول جودة منتجاتنا وخدمتنا.')}
             </motion.p>
           </div>
 
@@ -527,7 +529,7 @@ export default function NewLandingPage() {
       </section>
 
       {/* ===== CTA FINAL ===== */}
-      <section className="pt-8 pb-10 bg-slate-50 text-left px-4 relative">
+      <section className="pt-8 pb-10 bg-slate-50 text-start px-4 relative">
         <div className="max-w-6xl mx-auto">
           {/* Main Banner */}
           <motion.div
@@ -538,24 +540,24 @@ export default function NewLandingPage() {
           >
             {/* Background image on the right */}
             <div
-              className="absolute inset-y-0 right-0 w-full md:w-1/2 bg-cover bg-center mix-blend-overlay opacity-80 md:opacity-100 md:mix-blend-normal"
+              className={`absolute inset-y-0 ${language === 'ar' ? 'left-0' : 'right-0'} w-full md:w-1/2 bg-cover bg-center mix-blend-overlay opacity-80 md:opacity-100 md:mix-blend-normal`}
               style={{ backgroundImage: "url('/images/retro-route.jpg')" }}
             ></div>
             {/* Gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-r from-[#3d6eff] via-[#3d6eff]/90 to-transparent"></div>
+            <div className={`absolute inset-0 bg-gradient-to-r ${language === 'ar' ? 'from-transparent via-[#3d6eff]/90 to-[#3d6eff]' : 'from-[#3d6eff] via-[#3d6eff]/90 to-transparent'}`}></div>
 
             {/* Content */}
-            <div className="relative z-10 px-8 py-8 md:px-12 md:py-10 lg:px-16 lg:py-12 max-w-2xl text-left">
-              <p className="text-white/80 uppercase tracking-widest text-xs font-bold mb-3">VOTRE SÉCURITÉ AVANT TOUT</p>
+            <div className="relative z-10 px-8 py-8 md:px-12 md:py-10 lg:px-16 lg:py-12 max-w-2xl text-start">
+              <p className="text-white/80 uppercase tracking-widest text-xs font-bold mb-3">{t('VOTRE SÉCURITÉ AVANT TOUT', 'سلامتك أولاً')}</p>
               <h2 className="font-display font-bold text-3xl md:text-4xl lg:text-5xl text-white mb-4 leading-tight">
-                Prêt à réparer votre véhicule ?
+                {t('Prêt à réparer votre véhicule ?', 'هل أنت مستعد لإصلاح سيارتك؟')}
               </h2>
               <p className="text-white/90 text-base md:text-lg mb-6 leading-relaxed max-w-xl">
-                Ne laissez pas un rétroviseur cassé gâcher votre sécurité. Choisissez parmi nos options de qualité. Pré-commandez en quelques minutes et reprenez la route en toute confiance.
+                {t('Ne laissez pas un rétroviseur cassé gâcher votre sécurité. Choisissez parmi nos options de qualité. Pré-commandez en quelques minutes et reprenez la route en toute confiance.', 'لا تدع مرآة مكسورة تفسد سلامتك. اختر من بين خياراتنا عالية الجودة. اطلب مسبقًا في بضع دقائق وعد إلى الطريق بثقة.')}
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <button onClick={() => navigate('/catalog')} className="bg-white text-[#3d6eff] px-8 py-3.5 rounded-lg font-bold text-base hover:bg-slate-50 transition-colors shadow-lg">
-                  Voir le catalogue
+                  {t('Voir le catalogue', 'عرض الكتالوج')}
                 </button>
               </div>
             </div>
@@ -570,8 +572,8 @@ export default function NewLandingPage() {
             className="mt-8 flex flex-col xl:flex-row items-start xl:items-center justify-between gap-8 py-6 px-4 md:px-8 bg-white rounded-2xl shadow-sm border border-slate-100"
           >
             <div className="flex-1">
-              <h3 className="text-xl font-bold text-slate-900 mb-1">Prêt à commencer ?</h3>
-              <p className="text-slate-500 text-sm md:text-base">Vous avez des questions ? Notre équipe est là pour vous aider à trouver la pièce parfaite.</p>
+              <h3 className="text-xl font-bold text-slate-900 mb-1">{t('Prêt à commencer ?', 'مستعد للبدء؟')}</h3>
+              <p className="text-slate-500 text-sm md:text-base">{t('Vous avez des questions ? Notre équipe est là pour vous aider à trouver la pièce parfaite.', 'هل لديك أسئلة؟ فريقنا هنا لمساعدتك في العثور على القطعة المثالية.')}</p>
             </div>
 
             <div className="flex flex-col md:flex-row items-start md:items-center gap-6 lg:gap-10">
@@ -582,8 +584,8 @@ export default function NewLandingPage() {
                     <Phone className="w-5 h-5" />
                   </div>
                   <div>
-                    <p className="font-bold text-slate-900 text-sm">Appelez-nous</p>
-                    <p className="text-slate-500 text-sm">+216 27 804 642</p>
+                    <p className="font-bold text-slate-900 text-sm">{t('Appelez-nous', 'اتصل بنا')}</p>
+                    <p className="text-slate-500 text-sm" dir="ltr">+216 27 804 642</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
@@ -591,7 +593,7 @@ export default function NewLandingPage() {
                     <Phone className="w-5 h-5" />
                   </div>
                   <div>
-                    <p className="text-slate-500 text-sm">+216 24 244 061</p>
+                    <p className="text-slate-500 text-sm" dir="ltr">+216 24 244 061</p>
                   </div>
                 </div>
               </div>
@@ -604,7 +606,7 @@ export default function NewLandingPage() {
                   <Mail className="w-5 h-5" />
                 </div>
                 <div>
-                  <p className="font-bold text-slate-900 text-sm">Envoyez-nous un e-mail</p>
+                  <p className="font-bold text-slate-900 text-sm">{t('Envoyez-nous un e-mail', 'أرسل لنا بريدًا إلكترونيًا')}</p>
                   <p className="text-slate-500 text-sm">king-glass@hotmail.com</p>
                 </div>
               </div>
@@ -617,7 +619,7 @@ export default function NewLandingPage() {
                   <MapPin className="w-5 h-5" />
                 </div>
                 <div>
-                  <p className="font-bold text-slate-900 text-sm">Visitez-nous</p>
+                  <p className="font-bold text-slate-900 text-sm">{t('Visitez-nous', 'قم بزيارتنا')}</p>
                   <p className="text-slate-500 text-sm">Ben Arous, Rue D'Egypte</p>
                 </div>
               </div>
@@ -651,7 +653,7 @@ export default function NewLandingPage() {
               </button>
 
               <h3 className="text-2xl md:text-3xl font-black font-display text-slate-900 mb-8 text-center">
-                Nos Certifications Officielles
+                {t('Nos Certifications Officielles', 'شهاداتنا الرسمية')}
               </h3>
 
               <div className="flex flex-col md:flex-row gap-6">

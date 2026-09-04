@@ -36,6 +36,10 @@ export default function CatalogPage() {
   const totalPages = Math.max(1, Math.ceil(totalProducts / itemsPerPage));
 
   useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [currentPage]);
+
+  useEffect(() => {
     setCurrentPage(1);
   }, [q, brandFilter, categoryFilter, filterType, priceRange, sortBy]);
 

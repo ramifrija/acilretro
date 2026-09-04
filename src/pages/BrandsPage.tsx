@@ -13,6 +13,10 @@ export default function BrandsPage() {
   const itemsPerPage = 12;
 
   useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [currentPage]);
+
+  useEffect(() => {
     (async () => {
       const { data, error } = await supabase
         .from('brands')

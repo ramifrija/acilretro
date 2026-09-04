@@ -3,6 +3,7 @@ import { Warehouse, TrendingDown, TrendingUp, Package, Search, History, Plus, Mi
 import { supabase } from '@/lib/supabase';
 import { formatDate } from '@/lib/format';
 import type { Product, InventoryMovement } from '@/types/database';
+import { customAlert, customConfirm } from '@/lib/dialogs';
 
 export default function AdminInventory() {
   const [allProducts, setAllProducts] = useState<Product[]>([]);
@@ -16,6 +17,10 @@ export default function AdminInventory() {
   // Pagination states
   const [page, setPage] = useState(1);
   const itemsPerPage = 10;
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [page]);
 
   // Stats states
   const [stats, setStats] = useState({
@@ -53,6 +58,41 @@ export default function AdminInventory() {
     setAllProducts(productsRes.data || []);
     setAllMovements(movementsRes.data || []);
     setLoading(false);
+  };
+
+  const handleRestockAll = async () => {
+    if (!(await customConfirm('Voulez-vous vraiment ajouter 10 unités à TOUS les produits ?'))) return;
+    
+    setLoading(true);
+    try {
+      const batchSize = 50;
+      for (let i = 0; i < allProducts.length; i += batchSize) {
+        const batch = allProducts.slice(i, i + batchSize);
+        await Promise.all(
+          batch.map(p => supabase.from('products').update({ stock: p.stock + 10 }).eq('id', p.id))
+        );
+      }
+      
+      const movementInserts = allProducts.map(p => ({
+        product_id: p.id,
+        type: 'in',
+        quantity: 10,
+        reason: 'Restock global +10'
+      }));
+      
+      for (let i = 0; i < movementInserts.length; i += batchSize) {
+        const batch = movementInserts.slice(i, i + batchSize);
+        await supabase.from('inventory_movements').insert(batch);
+      }
+
+      customAlert('Restockage de +10 effectué pour tous les produits.');
+      loadAllData();
+      fetchStats();
+    } catch (e) {
+      console.error(e);
+      customAlert('Erreur lors du restockage.');
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -112,15 +152,26 @@ export default function AdminInventory() {
           </button>
         </div>
 
-        {/* Global Search */}
-        <div className="relative w-full sm:max-w-xs">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-          <input 
-            value={search} 
-            onChange={(e) => setSearch(e.target.value)} 
-            placeholder={tab === 'stock' ? "Rechercher un produit ou SKU..." : "Rechercher par produit ou raison..."} 
-            className="input-field pl-10" 
-          />
+        {/* Global Search & Actions */}
+        <div className="flex items-center gap-3 w-full sm:w-auto">
+          {tab === 'stock' && (
+            <button 
+              onClick={handleRestockAll}
+              disabled={loading || allProducts.length === 0}
+              className="px-4 py-2 rounded-xl text-sm font-medium bg-brand-gradient text-white shadow-md shadow-brand-500/20 hover:opacity-90 transition-all flex items-center gap-2 whitespace-nowrap disabled:opacity-50"
+            >
+              <Plus className="w-4 h-4" /> Restock +10
+            </button>
+          )}
+          <div className="relative w-full sm:max-w-xs flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <input 
+              value={search} 
+              onChange={(e) => setSearch(e.target.value)} 
+              placeholder={tab === 'stock' ? "Rechercher un produit ou SKU..." : "Rechercher par produit ou raison..."} 
+              className="input-field pl-10 w-full" 
+            />
+          </div>
         </div>
       </div>
 

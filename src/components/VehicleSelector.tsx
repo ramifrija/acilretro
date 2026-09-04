@@ -3,11 +3,13 @@ import { Car, ChevronDown, Search, X } from 'lucide-react';
 import { useRouter } from '@/context/RouterContext';
 import { supabase } from '@/lib/supabase';
 import type { Brand, Model } from '@/types/database';
+import { useLanguage } from '@/context/LanguageContext';
 
 type Props = { variant?: 'hero' | 'compact'; onClose?: () => void };
 
 export default function VehicleSelector({ variant = 'hero', onClose }: Props) {
   const { navigate } = useRouter();
+  const { t } = useLanguage();
   const [brands, setBrands] = useState<Brand[]>([]);
   const [models, setModels] = useState<Model[]>([]);
   const [brand, setBrand] = useState('');
@@ -69,7 +71,7 @@ export default function VehicleSelector({ variant = 'hero', onClose }: Props) {
       {variant === 'hero' && (
         <div className="flex items-center gap-3 mb-6">
           <Car className="w-5 h-5 text-[#3d6eff]" />
-          <h3 className="font-bold text-slate-900 text-base">Trouvez votre pièce</h3>
+          <h3 className="font-bold text-slate-900 text-base">{t('Trouvez votre pièce', 'ابحث عن قطعتك')}</h3>
         </div>
       )}
       <div className="grid grid-cols-1 gap-3">
@@ -87,7 +89,7 @@ export default function VehicleSelector({ variant = 'hero', onClose }: Props) {
                   <span className="truncate font-medium">{brands.find(b => b.slug === brand)?.name}</span>
                 </>
               ) : (
-                <span className="text-slate-500">Marque de la pièce</span>
+                <span className="text-slate-500">{t('Marque de la pièce', 'ماركة القطعة')}</span>
               )}
             </div>
             <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${isBrandOpen ? 'rotate-180' : ''}`} />
@@ -99,7 +101,7 @@ export default function VehicleSelector({ variant = 'hero', onClose }: Props) {
                 <Search className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
-                  placeholder="Rechercher une marque..."
+                  placeholder={t('Rechercher une marque...', 'ابحث عن ماركة...')}
                   value={brandSearch}
                   onChange={(e) => setBrandSearch(e.target.value)}
                   className="w-full bg-slate-50 dark:bg-white/5 border-none rounded-lg pl-9 pr-3 py-2 text-sm text-slate-900 dark:text-white outline-none focus:ring-1 focus:ring-brand-500"
@@ -109,7 +111,7 @@ export default function VehicleSelector({ variant = 'hero', onClose }: Props) {
               </div>
               <div className="overflow-y-auto p-1 custom-scrollbar">
                 {filteredBrands.length === 0 ? (
-                  <div className="p-3 text-center text-sm text-slate-500">Aucune marque trouvée</div>
+                  <div className="p-3 text-center text-sm text-slate-500">{t('Aucune marque trouvée', 'لم يتم العثور على أي ماركة')}</div>
                 ) : (
                   filteredBrands.map((b) => (
                     <button
@@ -147,7 +149,7 @@ export default function VehicleSelector({ variant = 'hero', onClose }: Props) {
             ? "bg-[#3d6eff] hover:bg-blue-600 text-white px-6 py-2.5 rounded-lg font-medium text-sm flex items-center justify-center gap-2 transition-colors w-auto shadow-md shadow-[#3d6eff]/30" 
             : "btn-primary flex-1 sm:flex-none"}
         >
-          <Search className="w-4 h-4" /> Rechercher
+          <Search className="w-4 h-4" /> {t('Rechercher', 'بحث')}
         </button>
         {onClose && (
           <button onClick={onClose} className="btn-ghost">

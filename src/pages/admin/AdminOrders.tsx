@@ -249,7 +249,7 @@ export default function AdminOrders({ quotesOnly = false }: { quotesOnly?: boole
               />
             </div>
             {(dateFrom || dateTo) && (
-              <button 
+              <button
                 onClick={() => { setDateFrom(''); setDateTo(''); }}
                 className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500 transition-colors ml-2"
                 title="Effacer les dates"
@@ -260,303 +260,302 @@ export default function AdminOrders({ quotesOnly = false }: { quotesOnly?: boole
           </div>
         </div>
 
-      {/* Orders list */}
-      <div className="space-y-3">
-        {loading ? (
-          <div className="glass-card h-32 animate-shimmer" />
-        ) : filtered.length === 0 ? (
-          <div className="glass-card p-12 text-center">
-            <FileText className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-            <p className="text-slate-500">Aucune {quotesOnly ? 'demande de devis' : 'commande'}</p>
+        {/* Orders list */}
+        <div className="space-y-3">
+          {loading ? (
+            <div className="glass-card h-32 animate-shimmer" />
+          ) : filtered.length === 0 ? (
+            <div className="glass-card p-12 text-center">
+              <FileText className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+              <p className="text-slate-500">Aucune {quotesOnly ? 'demande de devis' : 'commande'}</p>
+            </div>
+          ) : (
+            paginated.map((o) => (
+              <div key={o.id} className={`p-5 rounded-2xl border transition-all ${o.status === 'pending'
+                  ? 'bg-amber-50 border-amber-200 shadow-sm dark:bg-amber-900/20 dark:border-amber-700/50'
+                  : 'glass-card border-transparent'
+                }`}>
+                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                  <div className="flex items-center gap-4">
+                    <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${o.type === 'quote' ? 'bg-amber-500/10' : 'bg-brand-500/10'}`}>
+                      {o.type === 'quote' ? <FileText className="w-5 h-5 text-amber-500" /> : <ShoppingCart className="w-5 h-5 text-brand-500" />}
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono text-sm font-bold text-slate-900 dark:text-white">#{o.id.slice(0, 8).toUpperCase()}</span>
+                        <StatusBadge status={o.type === 'quote' ? 'quote' : o.status} />
+                      </div>
+                      <div className="font-semibold text-sm text-slate-900 dark:text-white mt-1">
+                        {o.customer_info?.fullName || o.customer_info?.companyName || 'Client Inconnu'}
+                      </div>
+                      <div className="text-xs text-slate-500 mt-0.5">
+                        {formatDate(o.created_at)} · {o.order_items.length} article(s) · {o.customer_type === 'company' ? 'Entreprise' : 'Particulier'}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <span className="font-display font-bold text-lg text-slate-900 dark:text-white">{formatPrice(Number(o.total))}</span>
+                    <div className="flex gap-1.5">
+                      <button onClick={() => setSelected(o)} className="p-2 rounded-lg glass hover:bg-brand-50 dark:hover:bg-white/10 transition-all" title="Voir détails">
+                        <Eye className="w-4 h-4" />
+                      </button>
+
+                      {/* Pending order: accept / reject */}
+                      {o.status === 'pending' && o.type === 'order' && (
+                        <>
+                          <button onClick={() => acceptOrder(o)} className="p-2 rounded-lg bg-success-500/10 text-success-600 hover:bg-success-500/20 transition-all" title="Accepter et générer facture">
+                            <Check className="w-4 h-4" />
+                          </button>
+                          <button onClick={() => setRejecting(o)} className="p-2 rounded-lg bg-error-500/10 text-error-500 hover:bg-error-500/20 transition-all" title="Refuser">
+                            <X className="w-4 h-4" />
+                          </button>
+                        </>
+                      )}
+
+                      {/* Pending quote: convert to order or reject */}
+                      {o.status === 'pending' && o.type === 'quote' && (
+                        <>
+                          <button onClick={() => convertQuote(o)} className="p-2 rounded-lg bg-brand-500/10 text-brand-600 hover:bg-brand-500/20 transition-all" title="Convertir en commande">
+                            <ArrowRight className="w-4 h-4" />
+                          </button>
+                          <button onClick={() => setRejecting(o)} className="p-2 rounded-lg bg-error-500/10 text-error-500 hover:bg-error-500/20 transition-all" title="Refuser">
+                            <X className="w-4 h-4" />
+                          </button>
+                        </>
+                      )}
+
+                      {/* Accepted order: view/print invoice */}
+                      {o.status === 'accepted' && o.type === 'order' && (
+                        <button onClick={() => markAsPaidAndPrint(o)} className="p-2 rounded-lg bg-brand-500/10 text-brand-600 hover:bg-brand-500/20 transition-all" title="Voir / Imprimer facture (Marquer comme Payée)">
+                          <Receipt className="w-4 h-4" />
+                        </button>
+                      )}
+
+                      {/* Accepted quote: print quote */}
+                      {o.status === 'accepted' && o.type === 'quote' && (
+                        <button onClick={() => setPrintDoc({ order: o, type: 'quote' })} className="p-2 rounded-lg bg-amber-500/10 text-amber-600 hover:bg-amber-500/20 transition-all" title="Voir / Imprimer devis">
+                          <FileText className="w-4 h-4" />
+                        </button>
+                      )}
+
+                      {/* Pending quote: print quote (no stock change) */}
+                      {o.status === 'pending' && o.type === 'quote' && (
+                        <button onClick={() => setPrintDoc({ order: o, type: 'quote' })} className="p-2 rounded-lg glass hover:bg-amber-50 dark:hover:bg-white/10 transition-all" title="Imprimer devis (le stock ne change pas)">
+                          <Printer className="w-4 h-4" />
+                        </button>
+                      )}
+
+                      {/* Cancel accepted order */}
+                      {o.status === 'accepted' && (
+                        <button onClick={() => cancelOrder(o)} className="p-2 rounded-lg bg-slate-500/10 text-slate-500 hover:bg-slate-500/20 transition-all" title="Annuler">
+                          <XCircle className="w-4 h-4" />
+                        </button>
+                      )}
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {totalPages > 1 && (
+          <div className="p-4 flex items-center justify-between">
+            <span className="text-sm text-slate-500">
+              Page {currentPage} sur {totalPages}
+            </span>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="px-3 py-1.5 text-sm font-medium rounded-lg border border-slate-200 dark:border-white/10 disabled:opacity-50 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+              >
+                Précédent
+              </button>
+              <button
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                className="px-3 py-1.5 text-sm font-medium rounded-lg border border-slate-200 dark:border-white/10 disabled:opacity-50 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+              >
+                Suivant
+              </button>
+            </div>
           </div>
-        ) : (
-          paginated.map((o) => (
-            <div key={o.id} className={`p-5 rounded-2xl border transition-all ${
-              o.status === 'pending' 
-                ? 'bg-amber-50 border-amber-200 shadow-sm dark:bg-amber-900/20 dark:border-amber-700/50' 
-                : 'glass-card border-transparent'
-            }`}>
-              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                <div className="flex items-center gap-4">
-                  <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${o.type === 'quote' ? 'bg-amber-500/10' : 'bg-brand-500/10'}`}>
-                    {o.type === 'quote' ? <FileText className="w-5 h-5 text-amber-500" /> : <ShoppingCart className="w-5 h-5 text-brand-500" />}
+        )}
+
+        {/* Detail modal */}
+        {selected && (
+          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 animate-fade-in">
+            <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setSelected(null)} />
+            <div className="relative glass-card w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="font-display font-bold text-xl text-slate-900 dark:text-white">
+                    {selected.type === 'quote' ? 'Devis' : 'Commande'} #{selected.id.slice(0, 8).toUpperCase()}
+                  </h2>
+                  <p className="text-sm text-slate-500 mt-1">{formatDate(selected.created_at)}</p>
+                </div>
+                <div className="flex gap-2 items-center">
+                  <button
+                    onClick={() => {
+                      if (selected.status === 'accepted' && selected.type === 'order') {
+                        markAsPaidAndPrint(selected);
+                      } else {
+                        setPrintDoc({ order: selected, type: selected.type === 'quote' ? 'quote' : 'invoice' });
+                      }
+                    }}
+                    className="p-2 rounded-lg bg-brand-500/10 text-brand-600 hover:bg-brand-500/20 transition-all"
+                    title={`Imprimer ${selected.type === 'quote' ? 'Devis' : 'Facture'}`}
+                  >
+                    <Printer className="w-5 h-5" />
+                  </button>
+                  <select
+                    value={selected.type === 'quote' ? 'quote' : selected.status}
+                    onChange={(e) => updateStatus(selected, e.target.value)}
+                    className="input-field text-sm font-semibold py-2 bg-brand-50 text-brand-700 dark:bg-brand-900 dark:text-white border-0 cursor-pointer"
+                  >
+                    <option value="pending" className="bg-white text-slate-900 dark:bg-brand-950 dark:text-white">En attente</option>
+                    <option value="accepted" className="bg-white text-slate-900 dark:bg-brand-950 dark:text-white">Acceptée</option>
+                    <option value="delivery_note" className="bg-white text-slate-900 dark:bg-brand-950 dark:text-white">Bon de livraison</option>
+                    <option value="paid" className="bg-white text-slate-900 dark:bg-brand-950 dark:text-white">Payée</option>
+                    <option value="cancelled" className="bg-white text-slate-900 dark:bg-brand-950 dark:text-white">Annulée</option>
+                    <option value="quote" className="bg-white text-slate-900 dark:bg-brand-950 dark:text-white">Devis</option>
+                  </select>
+                  <button onClick={() => setSelected(null)} className="p-2 rounded-lg glass"><X className="w-5 h-5" /></button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 mb-6">
+                <div className="glass p-4 rounded-xl">
+                  <div className="text-xs text-slate-500 uppercase tracking-wide mb-1">Type client</div>
+                  <div className="font-semibold text-slate-900 dark:text-white">{selected.customer_type === 'company' ? 'Entreprise' : 'Particulier'}</div>
+                </div>
+                <div className="glass p-4 rounded-xl">
+                  <div className="text-xs text-slate-500 uppercase tracking-wide mb-1">Statut actuel</div>
+                  <StatusBadge status={selected.type === 'quote' ? 'quote' : selected.status} />
+                </div>
+              </div>
+
+              <div className="glass p-4 rounded-xl mb-6">
+                <h3 className="font-bold text-sm text-slate-900 dark:text-white mb-3">Informations Client</h3>
+                <div className="grid sm:grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <p className="text-slate-500">Nom / Raison sociale</p>
+                    <p className="font-semibold text-slate-900 dark:text-white">{selected.customer_info?.fullName || selected.customer_info?.companyName || '-'}</p>
                   </div>
                   <div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-mono text-sm font-bold text-slate-900 dark:text-white">#{o.id.slice(0, 8).toUpperCase()}</span>
-                      <StatusBadge status={o.type === 'quote' ? 'quote' : o.status} />
-                    </div>
-                    <div className="font-semibold text-sm text-slate-900 dark:text-white mt-1">
-                      {o.customer_info?.fullName || o.customer_info?.companyName || 'Client Inconnu'}
-                    </div>
-                    <div className="text-xs text-slate-500 mt-0.5">
-                      {formatDate(o.created_at)} · {o.order_items.length} article(s) · {o.customer_type === 'company' ? 'Entreprise' : 'Particulier'}
-                    </div>
+                    <p className="text-slate-500">Téléphone</p>
+                    <p className="font-semibold text-slate-900 dark:text-white">{selected.customer_info?.phone || '-'}</p>
                   </div>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <span className="font-display font-bold text-lg text-slate-900 dark:text-white">{formatPrice(Number(o.total))}</span>
-                  <div className="flex gap-1.5">
-                    <button onClick={() => setSelected(o)} className="p-2 rounded-lg glass hover:bg-brand-50 dark:hover:bg-white/10 transition-all" title="Voir détails">
-                      <Eye className="w-4 h-4" />
-                    </button>
-
-                    {/* Pending order: accept / reject */}
-                    {o.status === 'pending' && o.type === 'order' && (
-                      <>
-                        <button onClick={() => acceptOrder(o)} className="p-2 rounded-lg bg-success-500/10 text-success-600 hover:bg-success-500/20 transition-all" title="Accepter et générer facture">
-                          <Check className="w-4 h-4" />
-                        </button>
-                        <button onClick={() => setRejecting(o)} className="p-2 rounded-lg bg-error-500/10 text-error-500 hover:bg-error-500/20 transition-all" title="Refuser">
-                          <X className="w-4 h-4" />
-                        </button>
-                      </>
-                    )}
-
-                    {/* Pending quote: convert to order or reject */}
-                    {o.status === 'pending' && o.type === 'quote' && (
-                      <>
-                        <button onClick={() => convertQuote(o)} className="p-2 rounded-lg bg-brand-500/10 text-brand-600 hover:bg-brand-500/20 transition-all" title="Convertir en commande">
-                          <ArrowRight className="w-4 h-4" />
-                        </button>
-                        <button onClick={() => setRejecting(o)} className="p-2 rounded-lg bg-error-500/10 text-error-500 hover:bg-error-500/20 transition-all" title="Refuser">
-                          <X className="w-4 h-4" />
-                        </button>
-                      </>
-                    )}
-
-                    {/* Accepted order: view/print invoice */}
-                    {o.status === 'accepted' && o.type === 'order' && (
-                      <button onClick={() => markAsPaidAndPrint(o)} className="p-2 rounded-lg bg-brand-500/10 text-brand-600 hover:bg-brand-500/20 transition-all" title="Voir / Imprimer facture (Marquer comme Payée)">
-                        <Receipt className="w-4 h-4" />
-                      </button>
-                    )}
-
-                    {/* Accepted quote: print quote */}
-                    {o.status === 'accepted' && o.type === 'quote' && (
-                      <button onClick={() => setPrintDoc({ order: o, type: 'quote' })} className="p-2 rounded-lg bg-amber-500/10 text-amber-600 hover:bg-amber-500/20 transition-all" title="Voir / Imprimer devis">
-                        <FileText className="w-4 h-4" />
-                      </button>
-                    )}
-
-                    {/* Pending quote: print quote (no stock change) */}
-                    {o.status === 'pending' && o.type === 'quote' && (
-                      <button onClick={() => setPrintDoc({ order: o, type: 'quote' })} className="p-2 rounded-lg glass hover:bg-amber-50 dark:hover:bg-white/10 transition-all" title="Imprimer devis (le stock ne change pas)">
-                        <Printer className="w-4 h-4" />
-                      </button>
-                    )}
-
-                    {/* Cancel accepted order */}
-                    {o.status === 'accepted' && (
-                      <button onClick={() => cancelOrder(o)} className="p-2 rounded-lg bg-slate-500/10 text-slate-500 hover:bg-slate-500/20 transition-all" title="Annuler">
-                        <XCircle className="w-4 h-4" />
-                      </button>
-                    )}
-
+                  <div>
+                    <p className="text-slate-500">Email</p>
+                    <p className="font-semibold text-slate-900 dark:text-white">{selected.customer_info?.email || '-'}</p>
                   </div>
-                </div>
-              </div>
-            </div>
-          ))
-        )}
-      </div>
-
-      {totalPages > 1 && (
-        <div className="p-4 flex items-center justify-between">
-          <span className="text-sm text-slate-500">
-            Page {currentPage} sur {totalPages}
-          </span>
-          <div className="flex gap-2">
-            <button
-              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-              disabled={currentPage === 1}
-              className="px-3 py-1.5 text-sm font-medium rounded-lg border border-slate-200 dark:border-white/10 disabled:opacity-50 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
-            >
-              Précédent
-            </button>
-            <button
-              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-              disabled={currentPage === totalPages}
-              className="px-3 py-1.5 text-sm font-medium rounded-lg border border-slate-200 dark:border-white/10 disabled:opacity-50 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
-            >
-              Suivant
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Detail modal */}
-      {selected && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 animate-fade-in">
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setSelected(null)} />
-          <div className="relative glass-card w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6">
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h2 className="font-display font-bold text-xl text-slate-900 dark:text-white">
-                  {selected.type === 'quote' ? 'Devis' : 'Commande'} #{selected.id.slice(0, 8).toUpperCase()}
-                </h2>
-                <p className="text-sm text-slate-500 mt-1">{formatDate(selected.created_at)}</p>
-              </div>
-              <div className="flex gap-2 items-center">
-                <button 
-                  onClick={() => {
-                    if (selected.status === 'accepted' && selected.type === 'order') {
-                      markAsPaidAndPrint(selected);
-                    } else {
-                      setPrintDoc({ order: selected, type: selected.type === 'quote' ? 'quote' : 'invoice' });
-                    }
-                  }} 
-                  className="p-2 rounded-lg bg-brand-500/10 text-brand-600 hover:bg-brand-500/20 transition-all" 
-                  title={`Imprimer ${selected.type === 'quote' ? 'Devis' : 'Facture'}`}
-                >
-                  <Printer className="w-5 h-5" />
-                </button>
-                <select
-                  value={selected.type === 'quote' ? 'quote' : selected.status}
-                  onChange={(e) => updateStatus(selected, e.target.value)}
-                  className="input-field text-sm font-semibold py-2 bg-brand-50 text-brand-700 dark:bg-brand-900 dark:text-white border-0 cursor-pointer"
-                >
-                  <option value="pending" className="bg-white text-slate-900 dark:bg-brand-950 dark:text-white">En attente</option>
-                  <option value="accepted" className="bg-white text-slate-900 dark:bg-brand-950 dark:text-white">Acceptée</option>
-                  <option value="delivery_note" className="bg-white text-slate-900 dark:bg-brand-950 dark:text-white">Bon de livraison</option>
-                  <option value="paid" className="bg-white text-slate-900 dark:bg-brand-950 dark:text-white">Payée</option>
-                  <option value="cancelled" className="bg-white text-slate-900 dark:bg-brand-950 dark:text-white">Annulée</option>
-                  <option value="quote" className="bg-white text-slate-900 dark:bg-brand-950 dark:text-white">Devis</option>
-                </select>
-                <button onClick={() => setSelected(null)} className="p-2 rounded-lg glass"><X className="w-5 h-5" /></button>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              <div className="glass p-4 rounded-xl">
-                <div className="text-xs text-slate-500 uppercase tracking-wide mb-1">Type client</div>
-                <div className="font-semibold text-slate-900 dark:text-white">{selected.customer_type === 'company' ? 'Entreprise' : 'Particulier'}</div>
-              </div>
-              <div className="glass p-4 rounded-xl">
-                <div className="text-xs text-slate-500 uppercase tracking-wide mb-1">Statut actuel</div>
-                <StatusBadge status={selected.type === 'quote' ? 'quote' : selected.status} />
-              </div>
-            </div>
-
-            <div className="glass p-4 rounded-xl mb-6">
-              <h3 className="font-bold text-sm text-slate-900 dark:text-white mb-3">Informations Client</h3>
-              <div className="grid sm:grid-cols-2 gap-4 text-sm">
-                <div>
-                  <p className="text-slate-500">Nom / Raison sociale</p>
-                  <p className="font-semibold text-slate-900 dark:text-white">{selected.customer_info?.fullName || selected.customer_info?.companyName || '-'}</p>
-                </div>
-                <div>
-                  <p className="text-slate-500">Téléphone</p>
-                  <p className="font-semibold text-slate-900 dark:text-white">{selected.customer_info?.phone || '-'}</p>
-                </div>
-                <div>
-                  <p className="text-slate-500">Email</p>
-                  <p className="font-semibold text-slate-900 dark:text-white">{selected.customer_info?.email || '-'}</p>
-                </div>
-                <div>
-                  <p className="text-slate-500">Adresse de livraison</p>
-                  <p className="font-semibold text-slate-900 dark:text-white">
-                    {[selected.customer_info?.address, selected.customer_info?.city, selected.customer_info?.postalCode]
-                      .filter(Boolean)
-                      .join(', ')}
-                  </p>
-                </div>
-                {selected.customer_type === 'company' && (
-                  <>
-                    <div>
-                      <p className="text-slate-500">Matricule Fiscal</p>
-                      <p className="font-semibold text-slate-900 dark:text-white">{selected.customer_info?.taxId || '-'}</p>
-                    </div>
-                    <div>
-                      <p className="text-slate-500">Personne à contacter</p>
-                      <p className="font-semibold text-slate-900 dark:text-white">{selected.customer_info?.contactPerson || '-'}</p>
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
-
-            {selected.notes && (
-              <div className="glass p-4 rounded-xl mb-6">
-                <div className="text-xs text-slate-500 uppercase tracking-wide mb-1">Notes</div>
-                <p className="text-sm text-slate-700 dark:text-slate-200">{selected.notes}</p>
-              </div>
-            )}
-
-            {/* Items */}
-            <div className="space-y-3 mb-6">
-              <h3 className="font-bold text-sm text-slate-900 dark:text-white">Articles</h3>
-              {selected.order_items.map((item) => (
-                <div key={item.id} className="glass p-4 rounded-xl">
-                  <div className="flex justify-between items-start gap-4">
-                    <div>
-                      <p className="font-medium text-slate-900 dark:text-white">{item.product_name}</p>
-                      <p className="text-xs text-slate-500 mt-1">Quantité: {item.quantity}</p>
-                      {item.options_snapshot && Array.isArray(item.options_snapshot) && item.options_snapshot.length > 0 && (
-                        <div className="flex flex-wrap gap-1.5 mt-2">
-                          {item.options_snapshot.map((o, i) => (
-                            <span key={i} className="text-xs px-2 py-0.5 rounded bg-brand-50 dark:bg-brand-800/40 text-brand-600 dark:text-brand-300">
-                              {o.option}: {o.value}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                    <span className="font-semibold text-slate-900 dark:text-white">{formatPrice(Number(item.unit_price) * item.quantity)}</span>
+                  <div>
+                    <p className="text-slate-500">Adresse de livraison</p>
+                    <p className="font-semibold text-slate-900 dark:text-white">
+                      {[selected.customer_info?.address, selected.customer_info?.city, selected.customer_info?.postalCode]
+                        .filter(Boolean)
+                        .join(', ')}
+                    </p>
                   </div>
+                  {selected.customer_type === 'company' && (
+                    <>
+                      <div>
+                        <p className="text-slate-500">Matricule Fiscal</p>
+                        <p className="font-semibold text-slate-900 dark:text-white">{selected.customer_info?.taxId || '-'}</p>
+                      </div>
+                      <div>
+                        <p className="text-slate-500">Personne à contacter</p>
+                        <p className="font-semibold text-slate-900 dark:text-white">{selected.customer_info?.contactPerson || '-'}</p>
+                      </div>
+                    </>
+                  )}
                 </div>
-              ))}
-            </div>
+              </div>
 
-            {/* Totals */}
-            <div className="glass p-4 rounded-xl space-y-2">
-              <div className="flex justify-between text-sm text-slate-600 dark:text-slate-300"><span>Sous-total</span><span>{formatPrice(Number(selected.subtotal))}</span></div>
-              <div className="flex justify-between text-sm text-slate-600 dark:text-slate-300"><span>TVA</span><span>{formatPrice(Number(selected.vat))}</span></div>
-              {Number(selected.subtotal) > 0 && (
-                <div className="flex justify-between text-sm text-slate-600 dark:text-slate-300"><span>Timbre fiscal</span><span>{formatPrice(1)}</span></div>
+              {selected.notes && (
+                <div className="glass p-4 rounded-xl mb-6">
+                  <div className="text-xs text-slate-500 uppercase tracking-wide mb-1">Notes</div>
+                  <p className="text-sm text-slate-700 dark:text-slate-200">{selected.notes}</p>
+                </div>
               )}
-              <div className="flex justify-between text-sm text-slate-600 dark:text-slate-300">
-                <span>RAS (1%)</span>
-                <span className="text-brand-600 dark:text-brand-400">+{formatPrice((Number(selected.subtotal) + Number(selected.vat) + 1) * 0.01)}</span>
+
+              {/* Items */}
+              <div className="space-y-3 mb-6">
+                <h3 className="font-bold text-sm text-slate-900 dark:text-white">Articles</h3>
+                {selected.order_items.map((item) => (
+                  <div key={item.id} className="glass p-4 rounded-xl">
+                    <div className="flex justify-between items-start gap-4">
+                      <div>
+                        <p className="font-medium text-slate-900 dark:text-white">{item.product_name}</p>
+                        <p className="text-xs text-slate-500 mt-1">Quantité: {item.quantity}</p>
+                        {item.options_snapshot && Array.isArray(item.options_snapshot) && item.options_snapshot.length > 0 && (
+                          <div className="flex flex-wrap gap-1.5 mt-2">
+                            {item.options_snapshot.map((o, i) => (
+                              <span key={i} className="text-xs px-2 py-0.5 rounded bg-brand-50 dark:bg-brand-800/40 text-brand-600 dark:text-brand-300">
+                                {o.option}: {o.value}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      <span className="font-semibold text-slate-900 dark:text-white">{formatPrice(Number(item.unit_price) * item.quantity)}</span>
+                    </div>
+                  </div>
+                ))}
               </div>
-              <div className="flex justify-between font-bold text-lg text-slate-900 dark:text-white border-t border-slate-100 dark:border-white/10 pt-2">
-                <span>Total</span>
-                <span>{formatPrice(Number(selected.total))}</span>
+
+              {/* Totals */}
+              <div className="glass p-4 rounded-xl space-y-2">
+                <div className="flex justify-between text-sm text-slate-600 dark:text-slate-300"><span>Sous-total</span><span>{formatPrice(Number(selected.subtotal))}</span></div>
+                <div className="flex justify-between text-sm text-slate-600 dark:text-slate-300"><span>TVA</span><span>{formatPrice(Number(selected.vat))}</span></div>
+                {Number(selected.subtotal) > 0 && (
+                  <div className="flex justify-between text-sm text-slate-600 dark:text-slate-300"><span>Timbre fiscal</span><span>{formatPrice(1)}</span></div>
+                )}
+                <div className="flex justify-between text-sm text-slate-600 dark:text-slate-300">
+                  <span>RAS (1%)</span>
+                  <span className="text-brand-600 dark:text-brand-400">+{formatPrice((Number(selected.subtotal) + Number(selected.vat) + 1) * 0.01)}</span>
+                </div>
+                <div className="flex justify-between font-bold text-lg text-slate-900 dark:text-white border-t border-slate-100 dark:border-white/10 pt-2">
+                  <span>Total</span>
+                  <span>{formatPrice(Number(selected.total))}</span>
+                </div>
+              </div>
+
+
+            </div>
+          </div>
+        )}
+
+        {/* Reject reason modal */}
+        {rejecting && (
+          <div className="fixed inset-0 z-[61] flex items-center justify-center p-4 animate-fade-in">
+            <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setRejecting(null)} />
+            <div className="relative glass-card w-full max-w-md p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="font-display font-bold text-lg text-slate-900 dark:text-white">Refuser la {rejecting.type === 'quote' ? 'demande de devis' : 'commande'}</h2>
+                <button onClick={() => setRejecting(null)} className="p-2 rounded-lg glass"><X className="w-5 h-5" /></button>
+              </div>
+              <p className="text-sm text-slate-500 mb-4">Indiquez le motif du refus (visible dans les notes)</p>
+              <textarea
+                value={rejectReason}
+                onChange={(e) => setRejectReason(e.target.value)}
+                rows={3}
+                placeholder="Motif du refus..."
+                className="input-field resize-none mb-4"
+              />
+              <div className="flex gap-3">
+                <button onClick={() => rejectOrder(rejecting, rejectReason || 'Non spécifié')} className="btn-primary flex-1">
+                  <X className="w-4 h-4" /> Confirmer le refus
+                </button>
+                <button onClick={() => setRejecting(null)} className="btn-ghost">Annuler</button>
               </div>
             </div>
-
-
           </div>
-        </div>
-      )}
-
-      {/* Reject reason modal */}
-      {rejecting && (
-        <div className="fixed inset-0 z-[61] flex items-center justify-center p-4 animate-fade-in">
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setRejecting(null)} />
-          <div className="relative glass-card w-full max-w-md p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="font-display font-bold text-lg text-slate-900 dark:text-white">Refuser la {rejecting.type === 'quote' ? 'demande de devis' : 'commande'}</h2>
-              <button onClick={() => setRejecting(null)} className="p-2 rounded-lg glass"><X className="w-5 h-5" /></button>
-            </div>
-            <p className="text-sm text-slate-500 mb-4">Indiquez le motif du refus (visible dans les notes)</p>
-            <textarea
-              value={rejectReason}
-              onChange={(e) => setRejectReason(e.target.value)}
-              rows={3}
-              placeholder="Motif du refus..."
-              className="input-field resize-none mb-4"
-            />
-            <div className="flex gap-3">
-              <button onClick={() => rejectOrder(rejecting, rejectReason || 'Non spécifié')} className="btn-primary flex-1">
-                <X className="w-4 h-4" /> Confirmer le refus
-              </button>
-              <button onClick={() => setRejecting(null)} className="btn-ghost">Annuler</button>
-            </div>
-          </div>
-        </div>
-      )}
+        )}
       </div>
 
       {/* Print document modal */}

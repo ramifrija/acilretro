@@ -2,12 +2,14 @@ import { useEffect, useState } from 'react';
 import { Search, ShoppingCart, Menu, X, Phone, Mail, MapPin, ChevronDown } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { useRouter } from '@/context/RouterContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { supabase } from '@/lib/supabase';
 import type { Brand } from '@/types/database';
 
 export default function Header() {
   const { count } = useCart();
   const { navigate, path } = useRouter();
+  const { language, setLanguage, t } = useLanguage();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [brands, setBrands] = useState<Brand[]>([]);
@@ -66,9 +68,9 @@ export default function Header() {
           </div>
           <div className="flex items-center gap-6">
             <span className="text-white">
-              Livraison rapide partout en Tunisie</span>
+              {t('Livraison rapide partout en Tunisie', 'توصيل سريع إلى جميع أنحاء تونس')}</span>
             <button onClick={() => navigate('/admin')} className="hover:text-white transition-colors">
-              Espace Pro
+              {t('Espace Pro', 'مساحة المحترفين')}
             </button>
           </div>
         </div>
@@ -84,20 +86,27 @@ export default function Header() {
               </div>
               <div className="text-left leading-none">
                 <div className="font-display font-extrabold text-3xl text-white tracking-tight">ACIL RETRO</div>
-                <div className="text-sm text-white/90 font-medium tracking-wide uppercase mt-1">Spécialiste du Rétroviseur</div>
+                <div className="text-sm text-white/90 font-medium tracking-wide uppercase mt-1">{t('Spécialiste du Rétroviseur', 'متخصص في مرايا السيارات')}</div>
               </div>
             </button>
 
             {/* Nav (desktop) */}
             <nav className="hidden md:flex flex-1 items-center justify-center gap-8 mx-4">
-              {navLink('/', 'Accueil')}
-              {navLink('/catalog', 'Catalogue')}
-              {navLink('/brands', 'Marques')}
-              {navLink('/contact', 'Contact')}
+              {navLink('/', t('Accueil', 'الرئيسية'))}
+              {navLink('/catalog', t('Catalogue', 'الكتالوج'))}
+              {navLink('/brands', t('Marques', 'الماركات'))}
+              {navLink('/contact', t('Contact', 'اتصل بنا'))}
             </nav>
 
             {/* Actions */}
             <div className="flex items-center gap-2 shrink-0">
+              <button
+                onClick={() => setLanguage(language === 'fr' ? 'ar' : 'fr')}
+                className="font-bold text-white p-2.5 rounded-xl hover:bg-white/10 transition-all text-sm uppercase mr-2"
+                aria-label="Toggle language"
+              >
+                {language === 'fr' ? 'عربي' : 'FR'}
+              </button>
               <button
                 onClick={() => navigate('/cart')}
                 className="relative p-2.5 rounded-xl hover:bg-white/10 transition-all"
@@ -137,11 +146,11 @@ export default function Header() {
             </div>
             <div className="flex flex-col gap-1">
               {[
-                ['/', 'Accueil'],
-                ['/catalog', 'Catalogue'],
-                ['/brands', 'Marques'],
-                ['/contact', 'Contact'],
-                ['/admin', 'Espace Pro'],
+                ['/', t('Accueil', 'الرئيسية')],
+                ['/catalog', t('Catalogue', 'الكتالوج')],
+                ['/brands', t('Marques', 'الماركات')],
+                ['/contact', t('Contact', 'اتصل بنا')],
+                ['/admin', t('Espace Pro', 'مساحة المحترفين')],
               ].map(([to, label]) => (
                 <button
                   key={to}

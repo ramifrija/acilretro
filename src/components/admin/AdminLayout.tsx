@@ -38,9 +38,6 @@ export default function AdminLayout({ children, section }: { children: ReactNode
               <div className="text-[10px] text-white/90 uppercase tracking-wide">ERP Admin</div>
             </div>
           </div>
-          <button onClick={() => setSidebarOpen(false)} className="lg:hidden p-1.5 rounded-lg glass">
-            <X className="w-4 h-4" />
-          </button>
         </div>
 
         <nav className="px-3 py-4 space-y-1 flex-1 overflow-y-auto min-h-0">

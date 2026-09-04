@@ -19,6 +19,10 @@ export default function AdminProducts() {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const itemsPerPage = 10;
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [currentPage]);
+
   const load = async () => {
     setLoading(true);
     const { data } = await supabase.from('products').select('*').order('created_at', { ascending: false });
@@ -162,38 +166,26 @@ export default function AdminProducts() {
       </div>
 
       {totalPages > 1 && (
-        <div className="flex justify-center items-center gap-2 mt-6">
-          <button
-            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-            disabled={currentPage === 1}
-            className="p-2 rounded-xl glass hover:bg-white disabled:opacity-50 transition-colors"
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </button>
-          
-          <div className="flex items-center gap-1">
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-              <button
-                key={page}
-                onClick={() => setCurrentPage(page)}
-                className={`w-10 h-10 rounded-xl font-medium transition-all ${
-                  currentPage === page
-                    ? 'bg-brand-600 text-white shadow-lg'
-                    : 'glass hover:bg-white text-slate-600'
-                }`}
-              >
-                {page}
-              </button>
-            ))}
+        <div className="p-4 flex items-center justify-between">
+          <span className="text-sm text-slate-500">
+            Page {currentPage} sur {totalPages}
+          </span>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="px-3 py-1.5 text-sm font-medium rounded-lg border border-slate-200 dark:border-white/10 disabled:opacity-50 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+            >
+              Précédent
+            </button>
+            <button
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="px-3 py-1.5 text-sm font-medium rounded-lg border border-slate-200 dark:border-white/10 disabled:opacity-50 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+            >
+              Suivant
+            </button>
           </div>
-
-          <button
-            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-            disabled={currentPage === totalPages}
-            className="p-2 rounded-xl glass hover:bg-white disabled:opacity-50 transition-colors"
-          >
-            <ChevronRight className="w-5 h-5" />
-          </button>
         </div>
       )}
 

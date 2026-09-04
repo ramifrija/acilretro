@@ -3,6 +3,7 @@ import { CartProvider } from '@/context/CartContext';
 import { RouterProvider, useRouter } from '@/context/RouterContext';
 import { ThemeProvider } from '@/context/ThemeContext';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
+import { LanguageProvider } from '@/context/LanguageContext';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
@@ -173,14 +174,16 @@ function Routes() {
 export default function App() {
   return (
     <ThemeProvider>
-      <AuthProvider>
-        <CartProvider>
-          <RouterProvider>
-            <Routes />
-            <Toaster position="top-right" />
-          </RouterProvider>
-        </CartProvider>
-      </AuthProvider>
+      <LanguageProvider>
+        <AuthProvider>
+          <CartProvider>
+            <RouterProvider>
+              <Routes />
+              <Toaster position="top-right" />
+            </RouterProvider>
+          </CartProvider>
+        </AuthProvider>
+      </LanguageProvider>
     </ThemeProvider>
   );
 }
