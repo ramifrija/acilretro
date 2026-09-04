@@ -272,8 +272,8 @@ export default function AdminOrders({ quotesOnly = false }: { quotesOnly?: boole
           ) : (
             paginated.map((o) => (
               <div key={o.id} className={`p-5 rounded-2xl border transition-all ${o.status === 'pending'
-                  ? 'bg-amber-50 border-amber-200 shadow-sm dark:bg-amber-900/20 dark:border-amber-700/50'
-                  : 'glass-card border-transparent'
+                ? 'bg-amber-50 border-amber-200 shadow-sm dark:bg-amber-900/20 dark:border-amber-700/50'
+                : 'glass-card border-transparent'
                 }`}>
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                   <div className="flex items-center gap-4">

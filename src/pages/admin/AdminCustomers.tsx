@@ -11,13 +11,13 @@ import { customAlert, customConfirm } from "@/lib/dialogs";
 function getInitials(prenom: string, nom: string) {
   return `${(prenom?.[0] || "").toUpperCase()}${(nom?.[0] || "").toUpperCase()}`;
 }
-const AVATAR_COLORS = ["bg-blue-500","bg-emerald-500","bg-violet-500","bg-amber-500","bg-rose-500","bg-cyan-500","bg-indigo-500","bg-orange-500"];
+const AVATAR_COLORS = ["bg-blue-500", "bg-emerald-500", "bg-violet-500", "bg-amber-500", "bg-rose-500", "bg-cyan-500", "bg-indigo-500", "bg-orange-500"];
 function getAvatarColor(id: string) {
   const sum = id.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
   return AVATAR_COLORS[sum % AVATAR_COLORS.length];
 }
 
-function ClientAvatar({ client, size = "md" }: { client: any; size?: "sm"|"md"|"lg" }) {
+function ClientAvatar({ client, size = "md" }: { client: any; size?: "sm" | "md" | "lg" }) {
   const sizes = { sm: "w-9 h-9 text-xs", md: "w-11 h-11 text-sm", lg: "w-16 h-16 text-xl" };
   return (
     <div className={`${sizes[size]} ${getAvatarColor(client.id)} rounded-full flex items-center justify-center font-bold text-white shrink-0`}>
@@ -43,7 +43,7 @@ function SkeletonRow() {
   );
 }
 
-function ActionMenu({ position = "bottom", onView, onEdit, onDelete }: { position?: "top" | "bottom"; onView:()=>void; onEdit:()=>void; onDelete:()=>void }) {
+function ActionMenu({ position = "bottom", onView, onEdit, onDelete }: { position?: "top" | "bottom"; onView: () => void; onEdit: () => void; onDelete: () => void }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -99,16 +99,16 @@ function Spinner() {
 export default function AdminCustomers() {
   const [clients, setClients] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedClient, setSelectedClient] = useState<any|null>(null);
+  const [selectedClient, setSelectedClient] = useState<any | null>(null);
   const [clientOrders, setClientOrders] = useState<any[]>([]);
   const [loadingOrders, setLoadingOrders] = useState(false);
-  const [selectedOrder, setSelectedOrder] = useState<any|null>(null);
+  const [selectedOrder, setSelectedOrder] = useState<any | null>(null);
   const [ordersPage, setOrdersPage] = useState(1);
   const ORDERS_PER_PAGE = 4;
   const [showModal, setShowModal] = useState(false);
-  const [editingId, setEditingId] = useState<string|null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
-  const [form, setForm] = useState({ nom:"", prenom:"", email:"", num_tel:"", tax_id:"", adresse:"" });
+  const [form, setForm] = useState({ nom: "", prenom: "", email: "", num_tel: "", tax_id: "", adresse: "" });
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalClients, setTotalClients] = useState(0);
@@ -148,8 +148,8 @@ export default function AdminCustomers() {
   };
 
   const handleSelectClient = (c: any) => { setSelectedClient(c); setOrdersPage(1); fetchClientOrders(c); };
-  const openAddModal = () => { setForm({ nom:"", prenom:"", email:"", num_tel:"", tax_id:"", adresse:"" }); setEditingId(null); setShowModal(true); };
-  const openEditModal = (c: any) => { setForm({ nom:c.nom||"", prenom:c.prenom||"", email:c.email||"", num_tel:c.num_tel||"", tax_id:c.tax_id||"", adresse:c.adresse||"" }); setEditingId(c.id); setShowModal(true); };
+  const openAddModal = () => { setForm({ nom: "", prenom: "", email: "", num_tel: "", tax_id: "", adresse: "" }); setEditingId(null); setShowModal(true); };
+  const openEditModal = (c: any) => { setForm({ nom: c.nom || "", prenom: c.prenom || "", email: c.email || "", num_tel: c.num_tel || "", tax_id: c.tax_id || "", adresse: c.adresse || "" }); setEditingId(c.id); setShowModal(true); };
 
   const handleDelete = async (client: any) => {
     if (!(await customConfirm(<span>Supprimer <span className="text-red-500 font-bold">{client.prenom} {client.nom}</span> ?</span>))) return;
@@ -159,7 +159,7 @@ export default function AdminCustomers() {
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault(); setSaving(true);
-    const payload = { nom:form.nom, prenom:form.prenom, email:form.email, num_tel:form.num_tel, tax_id:form.tax_id, adresse:form.adresse };
+    const payload = { nom: form.nom, prenom: form.prenom, email: form.email, num_tel: form.num_tel, tax_id: form.tax_id, adresse: form.adresse };
     let error;
     if (editingId) { ({ error } = await supabase.from("client").update(payload).eq("id", editingId)); }
     else { ({ error } = await supabase.from("client").insert([payload])); }
@@ -187,22 +187,22 @@ export default function AdminCustomers() {
             <div>
               <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-3">Informations personnelles</p>
               <div className="grid grid-cols-2 gap-4">
-                <FormField label="Nom" required><input required type="text" value={form.nom} onChange={e => setForm({...form,nom:e.target.value})} className={INPUT_CLS} placeholder="Dupont" /></FormField>
-                <FormField label="Prénom" required><input required type="text" value={form.prenom} onChange={e => setForm({...form,prenom:e.target.value})} className={INPUT_CLS} placeholder="Jean" /></FormField>
+                <FormField label="Nom" required><input required type="text" value={form.nom} onChange={e => setForm({ ...form, nom: e.target.value })} className={INPUT_CLS} placeholder="Dupont" /></FormField>
+                <FormField label="Prénom" required><input required type="text" value={form.prenom} onChange={e => setForm({ ...form, prenom: e.target.value })} className={INPUT_CLS} placeholder="Jean" /></FormField>
               </div>
             </div>
             <div>
               <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-3">Contact</p>
               <div className="grid grid-cols-2 gap-4">
-                <FormField label="Téléphone"><input type="tel" value={form.num_tel} onChange={e => setForm({...form,num_tel:e.target.value})} className={INPUT_CLS} placeholder="+216 XX XXX XXX" /></FormField>
-                <FormField label="Email"><input type="email" value={form.email} onChange={e => setForm({...form,email:e.target.value})} className={INPUT_CLS} placeholder="email@exemple.com" /></FormField>
+                <FormField label="Téléphone"><input type="tel" value={form.num_tel} onChange={e => setForm({ ...form, num_tel: e.target.value })} className={INPUT_CLS} placeholder="+216 XX XXX XXX" /></FormField>
+                <FormField label="Email"><input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} className={INPUT_CLS} placeholder="email@exemple.com" /></FormField>
               </div>
             </div>
             <div>
               <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-3">Fiscal &amp; Adresse</p>
               <div className="space-y-4">
-                <FormField label="Matricule Fiscal / RC"><input type="text" value={form.tax_id} onChange={e => setForm({...form,tax_id:e.target.value})} className={INPUT_CLS} placeholder="Ex: 1234567M/A/M000" /></FormField>
-                <FormField label="Adresse complète"><input type="text" value={form.adresse} onChange={e => setForm({...form,adresse:e.target.value})} className={INPUT_CLS} placeholder="Rue, ville, code postal..." /></FormField>
+                <FormField label="Matricule Fiscal / RC"><input type="text" value={form.tax_id} onChange={e => setForm({ ...form, tax_id: e.target.value })} className={INPUT_CLS} placeholder="Ex: 1234567M/A/M000" /></FormField>
+                <FormField label="Adresse complète"><input type="text" value={form.adresse} onChange={e => setForm({ ...form, adresse: e.target.value })} className={INPUT_CLS} placeholder="Rue, ville, code postal..." /></FormField>
               </div>
             </div>
           </div>
@@ -225,7 +225,7 @@ export default function AdminCustomers() {
         <div className="glass-card p-6">
           <div className="flex items-start justify-between mb-6">
             <div>
-              <h2 className="font-display font-bold text-xl text-slate-900 dark:text-white">{selectedOrder.type === "quote" ? "Devis" : "Commande"} #{selectedOrder.id.slice(0,8).toUpperCase()}</h2>
+              <h2 className="font-display font-bold text-xl text-slate-900 dark:text-white">{selectedOrder.type === "quote" ? "Devis" : "Commande"} #{selectedOrder.id.slice(0, 8).toUpperCase()}</h2>
               <p className="text-sm text-slate-500 mt-1">{formatDate(selectedOrder.created_at)}</p>
             </div>
             <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide ${selectedOrder.status === "completed" ? "bg-emerald-100 text-emerald-700" : selectedOrder.status === "pending" ? "bg-amber-100 text-amber-700" : "bg-slate-100 text-slate-600"}`}>{selectedOrder.status}</span>
@@ -304,7 +304,7 @@ export default function AdminCustomers() {
             <div className="glass-card p-5">
               <h3 className="font-display font-bold text-base text-slate-900 dark:text-white mb-5">Historique des commandes</h3>
               {loadingOrders ? (
-                <div className="space-y-3">{[1,2,3].map(i => <div key={i} className="h-16 rounded-xl bg-slate-100 dark:bg-white/5 animate-pulse" />)}</div>
+                <div className="space-y-3">{[1, 2, 3].map(i => <div key={i} className="h-16 rounded-xl bg-slate-100 dark:bg-white/5 animate-pulse" />)}</div>
               ) : clientOrders.length === 0 ? (
                 <div className="text-center py-14">
                   <div className="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-white/5 flex items-center justify-center mx-auto mb-4"><Package className="w-7 h-7 text-slate-300" /></div>
@@ -313,12 +313,12 @@ export default function AdminCustomers() {
                 </div>
               ) : (
                 <div className="space-y-2.5">
-                  {clientOrders.slice((ordersPage-1)*ORDERS_PER_PAGE, ordersPage*ORDERS_PER_PAGE).map(order => (
+                  {clientOrders.slice((ordersPage - 1) * ORDERS_PER_PAGE, ordersPage * ORDERS_PER_PAGE).map(order => (
                     <div key={order.id} onClick={() => setSelectedOrder(order)} className="flex items-center justify-between p-4 rounded-xl border border-slate-100 dark:border-white/5 hover:border-brand-400 hover:bg-brand-50/30 dark:hover:bg-brand-500/5 cursor-pointer transition-all group">
                       <div className="flex items-center gap-3.5">
                         <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${order.type === "quote" ? "bg-amber-100 text-amber-600" : "bg-brand-100 text-brand-600 dark:bg-brand-500/20 dark:text-brand-400"}`}>{order.type === "quote" ? <FileText className="w-4 h-4" /> : <Package className="w-4 h-4" />}</div>
                         <div>
-                          <p className="text-sm font-semibold text-slate-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">{order.type === "quote" ? "Devis" : "Commande"} #{order.id.slice(0,8).toUpperCase()}</p>
+                          <p className="text-sm font-semibold text-slate-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">{order.type === "quote" ? "Devis" : "Commande"} #{order.id.slice(0, 8).toUpperCase()}</p>
                           <p className="text-xs text-slate-400">{formatDate(order.created_at)}</p>
                         </div>
                       </div>
@@ -330,10 +330,10 @@ export default function AdminCustomers() {
                   ))}
                   {clientOrders.length > ORDERS_PER_PAGE && (
                     <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-white/5">
-                      <span className="text-xs text-slate-400">{((ordersPage-1)*ORDERS_PER_PAGE)+1}–{Math.min(ordersPage*ORDERS_PER_PAGE, clientOrders.length)} sur {clientOrders.length}</span>
+                      <span className="text-xs text-slate-400">{((ordersPage - 1) * ORDERS_PER_PAGE) + 1}–{Math.min(ordersPage * ORDERS_PER_PAGE, clientOrders.length)} sur {clientOrders.length}</span>
                       <div className="flex gap-2">
-                        <button onClick={() => setOrdersPage(p => Math.max(1,p-1))} disabled={ordersPage===1} className="px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-200 dark:border-white/10 disabled:opacity-30 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">← Préc.</button>
-                        <button onClick={() => setOrdersPage(p => Math.min(Math.ceil(clientOrders.length/ORDERS_PER_PAGE),p+1))} disabled={ordersPage===Math.ceil(clientOrders.length/ORDERS_PER_PAGE)} className="px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-200 dark:border-white/10 disabled:opacity-30 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">Suiv. →</button>
+                        <button onClick={() => setOrdersPage(p => Math.max(1, p - 1))} disabled={ordersPage === 1} className="px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-200 dark:border-white/10 disabled:opacity-30 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">← Préc.</button>
+                        <button onClick={() => setOrdersPage(p => Math.min(Math.ceil(clientOrders.length / ORDERS_PER_PAGE), p + 1))} disabled={ordersPage === Math.ceil(clientOrders.length / ORDERS_PER_PAGE)} className="px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-200 dark:border-white/10 disabled:opacity-30 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">Suiv. →</button>
                       </div>
                     </div>
                   )}
@@ -370,7 +370,7 @@ export default function AdminCustomers() {
         ))}
         <div className="glass-card p-5 hidden lg:block">
           <div className="flex items-center gap-3 mb-3"><div className="w-9 h-9 rounded-xl bg-violet-100 dark:bg-violet-500/20 flex items-center justify-center"><FileText className="w-4 h-4 text-violet-600 dark:text-violet-400" /></div><span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Page</span></div>
-          <p className="text-3xl font-black text-slate-900 dark:text-white">{currentPage}<span className="text-base font-semibold text-slate-400"> / {totalPages||1}</span></p>
+          <p className="text-3xl font-black text-slate-900 dark:text-white">{currentPage}<span className="text-base font-semibold text-slate-400"> / {totalPages || 1}</span></p>
         </div>
       </div>
 
@@ -380,7 +380,7 @@ export default function AdminCustomers() {
           <input type="text" placeholder="Rechercher par nom, prénom, email ou téléphone..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="w-full pl-10 pr-10 py-2.5 rounded-xl text-sm bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500 transition-all" />
           {searchQuery && <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"><X className="w-4 h-4" /></button>}
         </div>
-        {searchQuery && <p className="text-xs text-slate-500 mt-2 px-1">{totalClients} résultat{totalClients!==1?"s":""} pour « {searchQuery} »</p>}
+        {searchQuery && <p className="text-xs text-slate-500 mt-2 px-1">{totalClients} résultat{totalClients !== 1 ? "s" : ""} pour « {searchQuery} »</p>}
       </div>
 
       <div className="glass-card">
@@ -391,7 +391,7 @@ export default function AdminCustomers() {
           <span className="sr-only">Actions</span>
         </div>
         {loading ? (
-          <div>{[1,2,3,4,5].map(i => <SkeletonRow key={i} />)}</div>
+          <div>{[1, 2, 3, 4, 5].map(i => <SkeletonRow key={i} />)}</div>
         ) : clients.length === 0 ? (
           <div className="text-center py-20">
             <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-white/5 flex items-center justify-center mx-auto mb-5"><Users className="w-8 h-8 text-slate-300" /></div>
@@ -404,7 +404,7 @@ export default function AdminCustomers() {
         ) : (
           <div>
             {clients.map((c, idx) => (
-              <div key={c.id} onClick={() => handleSelectClient(c)} className={`group flex items-center gap-4 px-6 py-4 cursor-pointer transition-all hover:bg-slate-50/80 dark:hover:bg-white/3 ${idx!==clients.length-1?"border-b border-slate-100 dark:border-white/5":""}`}>
+              <div key={c.id} onClick={() => handleSelectClient(c)} className={`group flex items-center gap-4 px-6 py-4 cursor-pointer transition-all hover:bg-slate-50/80 dark:hover:bg-white/3 ${idx !== clients.length - 1 ? "border-b border-slate-100 dark:border-white/5" : ""}`}>
                 <div className="flex items-center gap-3.5 flex-1 min-w-0">
                   <ClientAvatar client={c} size="md" />
                   <div className="min-w-0">
@@ -427,11 +427,11 @@ export default function AdminCustomers() {
         )}
         {totalPages > 1 && (
           <div className="px-6 py-4 border-t border-slate-100 dark:border-white/5 flex items-center justify-between bg-slate-50/50 dark:bg-white/2 rounded-b-2xl">
-            <span className="text-xs text-slate-500">{((currentPage-1)*itemsPerPage)+1}–{Math.min(currentPage*itemsPerPage,totalClients)} sur <span className="font-semibold">{totalClients}</span> clients</span>
+            <span className="text-xs text-slate-500">{((currentPage - 1) * itemsPerPage) + 1}–{Math.min(currentPage * itemsPerPage, totalClients)} sur <span className="font-semibold">{totalClients}</span> clients</span>
             <div className="flex items-center gap-1.5">
-              <button onClick={() => setCurrentPage(p => Math.max(1,p-1))} disabled={currentPage===1} className="p-1.5 rounded-lg border border-slate-200 dark:border-white/10 text-slate-500 disabled:opacity-30 hover:bg-white dark:hover:bg-white/5 transition-colors" aria-label="Page précédente"><ChevronLeft className="w-4 h-4" /></button>
-              {Array.from({length:totalPages},(_,i)=>i+1).filter(n=>n===1||n===totalPages||Math.abs(n-currentPage)<=1).reduce<(number|"...")[]>((acc,n,i,arr)=>{if(i>0&&(n as number)-(arr[i-1] as number)>1)acc.push("...");acc.push(n);return acc;},[]).map((n,i)=>n==="..."?(<span key={`e${i}`} className="px-1 text-slate-400 text-xs">…</span>):(<button key={n} onClick={()=>setCurrentPage(n as number)} className={`w-8 h-8 rounded-lg text-xs font-semibold transition-all ${currentPage===n?"bg-brand-gradient text-white shadow-md":"border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-white/5"}`}>{n}</button>))}
-              <button onClick={() => setCurrentPage(p => Math.min(totalPages,p+1))} disabled={currentPage===totalPages} className="p-1.5 rounded-lg border border-slate-200 dark:border-white/10 text-slate-500 disabled:opacity-30 hover:bg-white dark:hover:bg-white/5 transition-colors" aria-label="Page suivante"><ChevronRight className="w-4 h-4" /></button>
+              <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1} className="p-1.5 rounded-lg border border-slate-200 dark:border-white/10 text-slate-500 disabled:opacity-30 hover:bg-white dark:hover:bg-white/5 transition-colors" aria-label="Page précédente"><ChevronLeft className="w-4 h-4" /></button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).filter(n => n === 1 || n === totalPages || Math.abs(n - currentPage) <= 1).reduce<(number | "...")[]>((acc, n, i, arr) => { if (i > 0 && (n as number) - (arr[i - 1] as number) > 1) acc.push("..."); acc.push(n); return acc; }, []).map((n, i) => n === "..." ? (<span key={`e${i}`} className="px-1 text-slate-400 text-xs">…</span>) : (<button key={n} onClick={() => setCurrentPage(n as number)} className={`w-8 h-8 rounded-lg text-xs font-semibold transition-all ${currentPage === n ? "bg-brand-gradient text-white shadow-md" : "border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-white/5"}`}>{n}</button>))}
+              <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} className="p-1.5 rounded-lg border border-slate-200 dark:border-white/10 text-slate-500 disabled:opacity-30 hover:bg-white dark:hover:bg-white/5 transition-colors" aria-label="Page suivante"><ChevronRight className="w-4 h-4" /></button>
             </div>
           </div>
         )}

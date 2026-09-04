@@ -45,13 +45,13 @@ export default function PrintableDocument({ order, documentType }: Props) {
   const fodec = totalHT * 0.01;
   const totalTVA = Number(order.vat);
   const totalTTC = Number(order.total);
-  
+
   // Use a base to calculate vat rate so it returns 19 instead of 19.19
   const baseTva = totalHT + fodec;
   const calculatedVatRate = baseTva > 0 ? Math.round((totalTVA / baseTva) * 100) : 0;
-  
+
   const timbre = (totalHT > 0 && !isDelivery) ? 1 : 0;
-  
+
   // finalTotal should visually match the sum of printed lines
   const finalTotal = totalHT + fodec + totalTVA + timbre;
   const dinars = Math.floor(finalTotal);

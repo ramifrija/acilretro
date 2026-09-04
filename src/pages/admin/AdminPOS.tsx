@@ -644,10 +644,10 @@ export default function AdminPOS() {
                     <span className="font-medium text-slate-700 dark:text-slate-300">{formatPrice(vat)}</span>
                   </div>
                   {subtotal > 0 && (
-                      <div className="flex justify-between text-xs text-slate-500">
-                        <span>Timbre fiscal</span>
-                        <span className="font-medium text-slate-700 dark:text-slate-300">{formatPrice(timbre)}</span>
-                      </div>
+                    <div className="flex justify-between text-xs text-slate-500">
+                      <span>Timbre fiscal</span>
+                      <span className="font-medium text-slate-700 dark:text-slate-300">{formatPrice(timbre)}</span>
+                    </div>
                   )}
                   <div className="flex justify-between font-extrabold text-sm text-slate-900 dark:text-white border-t border-slate-200 dark:border-white/10 pt-1.5 mt-1">
                     <span>Total TTC</span>
@@ -812,6 +812,10 @@ export default function AdminPOS() {
                 <span className="font-semibold text-slate-900 dark:text-white">{formatPrice(subtotal)}</span>
               </div>
               <div className="flex justify-between text-sm">
+                <span className="text-slate-500">FODEC 1%</span>
+                <span className="font-semibold text-slate-900 dark:text-white">{formatPrice(fodec)}</span>
+              </div>
+              <div className="flex justify-between text-sm">
                 <span className="text-slate-500">TVA ({vatRate}%)</span>
                 <span className="font-semibold text-slate-900 dark:text-white">{formatPrice(vat)}</span>
               </div>
@@ -821,10 +825,6 @@ export default function AdminPOS() {
                   <span className="font-semibold text-slate-900 dark:text-white">{formatPrice(timbre)}</span>
                 </div>
               )}
-              <div className="flex justify-between text-sm">
-                <span className="text-slate-500">RAS (1%)</span>
-                <span className="font-semibold text-brand-600 dark:text-brand-400">+{formatPrice(ras)}</span>
-              </div>
             </div>
 
             <p className="text-xs text-slate-400 mb-5">
