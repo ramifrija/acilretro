@@ -144,6 +144,9 @@ export default function PrintableDocument({ order, documentType }: Props) {
                 <td className="py-0.5 px-2 text-center text-black">{item.quantity}</td>
                 <td className="py-0.5 px-2 text-left">
                   <span className="font-medium text-black">{item.product_name}</span>
+                  {item.product?.sku && (
+                    <span className="text-[11px] text-gray-500 ml-1">({item.product.sku})</span>
+                  )}
                   {item.options_snapshot && item.options_snapshot.length > 0 && (
                     <span className="text-[11px] text-gray-500 ml-1">
                       ({item.options_snapshot.map((o: any) => `${o.option} : ${o.value}`).join(' | ')})

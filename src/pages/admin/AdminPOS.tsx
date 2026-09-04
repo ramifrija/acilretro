@@ -137,7 +137,6 @@ export default function AdminPOS() {
     });
 
     setSelectedProduct(null);
-    setSearch('');
     searchRef.current?.focus();
   };
 
@@ -200,7 +199,15 @@ export default function AdminPOS() {
         console.error('Error reducing stock via RPC:', rpcError);
       }
 
-      setPrintDoc({ order: { ...order, order_items: insertedItems || [] } as OrderWithItems, type: isDeliveryMode ? 'delivery_note' : 'invoice' });
+      const itemsWithSku = (insertedItems || []).map((item) => {
+        const matchingCartItem = cart.find(c => c.product.id === item.product_id);
+        return {
+          ...item,
+          product: { sku: matchingCartItem?.product.sku || null }
+        };
+      });
+
+      setPrintDoc({ order: { ...order, order_items: itemsWithSku } as OrderWithItems, type: isDeliveryMode ? 'delivery_note' : 'invoice' });
     }
     setCart([]);
     setCustomerName('');

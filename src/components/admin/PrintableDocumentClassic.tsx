@@ -136,7 +136,10 @@ export default function PrintableDocumentClassic({ order, documentType }: Props)
             return (
               <tr key={item.id} className="align-top h-8">
                 <td className="py-1 px-2 border border-black">{item.quantity}</td>
-                <td className="py-1 px-2 border border-black text-left">{item.product_name}</td>
+                <td className="py-1 px-2 border border-black text-left">
+                  {item.product_name}
+                  {item.product?.sku && <span className="ml-1">({item.product.sku})</span>}
+                </td>
                 <td className="py-1 px-2 border border-black text-right">{formatNumber(unitPrice)}</td>
                 <td className="py-1 px-2 border border-black text-right">{formatNumber(montantHT)}</td>
               </tr>

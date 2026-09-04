@@ -132,7 +132,7 @@ export default function AdminCustomers() {
 
   const fetchClientOrders = async (client: any) => {
     setLoadingOrders(true);
-    let q = supabase.from("orders").select("*, order_items(*)").order("created_at", { ascending: false });
+    let q = supabase.from("orders").select("*, order_items(*, product:products(sku))").order("created_at", { ascending: false });
     if (client.email && client.num_tel) {
       q = q.or(`client_id.eq.${client.id},customer_info->>email.eq.${client.email},customer_info->>phone.eq.${client.num_tel}`);
     } else if (client.email) {

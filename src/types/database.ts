@@ -129,6 +129,7 @@ export type OrderItem = {
   unit_price: number;
   options_snapshot: Array<{ option: string; value: string; modifier: number }>;
   created_at: string;
+  product?: { sku: string | null };
 };
 
 export type InventoryMovement = {

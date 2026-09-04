@@ -29,7 +29,7 @@ export default function AdminOrders({ quotesOnly = false }: { quotesOnly?: boole
 
   const load = async () => {
     setLoading(true);
-    let q = supabase.from('orders').select('*, order_items(*)').order('created_at', { ascending: false });
+    let q = supabase.from('orders').select('*, order_items(*, product:products(sku))').order('created_at', { ascending: false });
     if (quotesOnly) q = q.eq('type', 'quote');
     else q = q.eq('type', 'order');
     const { data } = await q;
