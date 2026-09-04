@@ -80,13 +80,13 @@ export default function Header() {
         <div className="container-x">
           <div className="flex items-center justify-between gap-4 py-3">
             {/* Logo */}
-            <button onClick={() => navigate('/')} className="flex items-center gap-3 shrink-0">
-              <div className="w-24 h-24 shrink-0">
+            <button onClick={() => navigate('/')} className="flex items-center gap-2 md:gap-3 shrink-0">
+              <div className="w-12 h-12 md:w-24 md:h-24 shrink-0">
                 <img src="/images/acil_logo.png" alt="ACIL RETRO Logo" className="w-full h-full object-contain" />
               </div>
               <div className="text-left leading-none">
-                <div className="font-display font-extrabold text-3xl text-white tracking-tight">ACIL RETRO</div>
-                <div className="text-sm text-white/90 font-medium tracking-wide uppercase mt-1">{t('Spécialiste du Rétroviseur', 'متخصص في مرايا السيارات')}</div>
+                <div className="font-display font-extrabold text-2xl md:text-3xl text-white tracking-tight">ACIL RETRO</div>
+                <div className="hidden sm:block text-xs md:text-sm text-white/90 font-medium tracking-wide uppercase mt-1">{t('Spécialiste du Rétroviseur', 'متخصص في مرايا السيارات')}</div>
               </div>
             </button>
 

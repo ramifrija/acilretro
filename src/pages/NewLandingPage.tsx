@@ -108,7 +108,7 @@ export default function NewLandingPage() {
                 {t('Spécialiste N°1 en Tunisie', 'المتخصص الأول في تونس')}
               </motion.div>
 
-              <motion.h1 variants={fadeIn} className="font-display font-extrabold text-4xl md:text-5xl lg:text-6xl text-slate-900 leading-[1.15] mb-6">
+              <motion.h1 variants={fadeIn} className="font-display font-extrabold text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-slate-900 leading-[1.15] mb-6">
                 {t('Trouvez le ', 'ابحث عن ')}<span className="text-transparent bg-clip-text bg-gradient-to-r from-[#3d6eff] to-blue-700 drop-shadow-sm">{t('rétroviseur parfait', 'المرآة المثالية')}</span> {t('pour votre voiture en 3 clics.', 'لسيارتك في 3 نقرات.')}
               </motion.h1>
 
