@@ -150,7 +150,6 @@ export default function Header() {
                 ['/catalog', t('Catalogue', 'الكتالوج')],
                 ['/brands', t('Marques', 'الماركات')],
                 ['/contact', t('Contact', 'اتصل بنا')],
-                ['/admin', t('Espace Pro', 'مساحة المحترفين')],
               ].map(([to, label]) => (
                 <button
                   key={to}
